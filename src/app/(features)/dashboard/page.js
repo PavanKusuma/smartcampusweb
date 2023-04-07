@@ -11,7 +11,7 @@ const biscuits = new Biscuits
 import dateFormat from 'dateformat'
 import { useRouter } from 'next/navigation'
 
-  export const getRequests = async (Keyverify,role, status,offset,collegeId,branch) => 
+  const getRequests = async (Keyverify,role, status,offset,collegeId,branch) => 
 
     fetch("/api/requests/"+Keyverify+"/"+role+"/"+status+"/"+offset+"/"+collegeId+"/"+branch, {
         method: "GET",
@@ -20,7 +20,7 @@ import { useRouter } from 'next/navigation'
             Accept: "application/json",
         },
     });
-  export const updateRequestAPI = async (Keyverify,stage,requestId,name,collegeId,role, status,comment) => 
+  const updateRequestAPI = async (Keyverify,stage,requestId,name,collegeId,role, status,comment) => 
     fetch("/api/updaterequests/"+Keyverify+"/"+stage+"/"+requestId+"/"+name+"/"+collegeId+"/"+role+"/"+status+"/"+comment, {
         method: "GET",
         headers: {

@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation'
 const biscuits = new Biscuits
 
 // declare the apis of this page
-  export const verifyUser = async (pass, id) => 
+  const verifyUser = async (pass, id) => 
     fetch("/api/verify/"+pass+"/"+id, {
         method: "GET",
         headers: {

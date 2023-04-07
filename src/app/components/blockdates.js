@@ -14,7 +14,7 @@ const biscuits = new Biscuits
 
 // create new request with below params
 // key, blockId, duration, from, to, blockBy, description, branch
-  export const blockOuting = async (pass, blockId, duration, blockFrom, blockTo, blockBy, description, branch) => 
+  const blockOuting = async (pass, blockId, duration, blockFrom, blockTo, blockBy, description, branch) => 
     fetch("/api/blockouting/"+pass+"/0/"+blockId+"/"+duration+"/"+blockFrom+"/"+blockTo+"/"+blockBy+"/"+description+"/"+branch, {
         
         method: "GET",
@@ -25,7 +25,7 @@ const biscuits = new Biscuits
     });
 
     // get blocked dates
-    export const getBlockedOuting = async (pass, today, branch) => 
+    const getBlockedOuting = async (pass, today, branch) => 
     fetch("/api/blockouting/"+pass+"/1/"+today+"/"+branch, {
         
         method: "GET",

@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 const inter = Inter({ subsets: ['latin'] })
 import styles from '../page.module.css'
 
-  export const getCampus = async (data) => 
+  const getCampus = async (data) => 
     fetch("/api/campuses/", {
         method: "GET",
         headers: {

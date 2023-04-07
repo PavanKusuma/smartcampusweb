@@ -16,7 +16,7 @@ const biscuits = new Biscuits
 
 // create new request with below params
 // key, requestId, requestType, collegeId, description, requestFrom, requestTo, duration
-  export const createNewRequest = async (pass, requestId, requestType, collegeId, description, requestFrom, requestTo, duration, isAllowed) => 
+  const createNewRequest = async (pass, requestId, requestType, collegeId, description, requestFrom, requestTo, duration, isAllowed) => 
     fetch("/api/newrequest/"+pass+"/"+requestId+"/"+requestType+"/"+collegeId+"/"+description+"/"+requestFrom+"/"+requestTo+"/"+duration+"/"+isAllowed, {
         
         method: "GET",
@@ -28,7 +28,7 @@ const biscuits = new Biscuits
 
 
     // get blocked dates
-    export const getBlockedOuting = async (pass, today, branch) => 
+    const getBlockedOuting = async (pass, today, branch) => 
     fetch("/api/blockouting/"+pass+"/1/"+today+"/"+branch, {
         
         method: "GET",
