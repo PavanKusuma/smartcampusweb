@@ -5,6 +5,9 @@ const nextConfig = {
     serverComponents: true,
     // styledComponents: true
   },
+  externals: {
+    'supports-color': 'supports-color'
+  }
 }
 
 module.exports = nextConfig
