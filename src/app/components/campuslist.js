@@ -27,13 +27,13 @@ export default function Vertification() {
 
         console.log('Starting verification')
 
-        async function getData(){
-            const result  = await getCampus(process.env.DB_PASS)
-            const dbCampusList = await result.json()
-            console.log(dbCampusList.data)
-            setcampuses(dbCampusList.data)
-        }
-        getData();
+        // async function getData(){
+        //     const result  = await getCampus(process.env.DB_PASS)
+        //     const dbCampusList = await result.json()
+        //     console.log(dbCampusList.data)
+        //     setcampuses(dbCampusList.data)
+        // }
+        // getData();
     
 },[])
 
