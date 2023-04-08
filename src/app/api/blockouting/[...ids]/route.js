@@ -1,7 +1,7 @@
 import pool from '../../db'
 import { Keyverify } from '../../secretverify';
 var mysql = require('mysql2')
-import dateFormat from 'dateformat'
+import dayjs from 'dayjs'
 
 // create new block for outing by the Admins
 // key, what, blockId, duration, from, to, blockBy, description, branch
@@ -13,7 +13,8 @@ export async function GET(request,{params}) {
     const connection = await pool.getConnection();
 
     // current date time for updating
-    var currentDate =  dateFormat(new Date(Date.now()), 'yyyy-mm-dd HH:MM:ss');
+    var currentDate =  dayjs(new Date(Date.now())).format('YYYY-MM-DD HH:mm:ss');
+    console.log(currentDate);
 
     try{
         // authorize secret key
