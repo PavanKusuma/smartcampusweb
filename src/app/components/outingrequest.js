@@ -153,7 +153,7 @@ export default function OutingRequest() {
         // call the api using secret key and below columns
         // key, requestId, requestType, collegeId, description, requestFrom, requestTo, duration
         const rId = "R"+randString() // generate request Id
-        const result  = await createNewRequest(process.env.NEXT_PUBLIC_API_PASS, rId, 'Outing', 'yeswe02', document.getElementById('description').value, dayjs(startDate).format("YYYY-MM-DD HH:mm:ss"), dayjs(toDate).format("YYYY-MM-DD HH:mm:ss"), duration, ((isAllowed) ? 0 : 1))
+        const result  = await createNewRequest(process.env.NEXT_PUBLIC_API_PASS, rId, 'Outing', 'yeswe02', document.getElementById('description').value, dayjs(startDate).format("YYYY-MM-DD HH:mm:ss"), dayjs(toDate).format("YYYY-MM-DD HH:mm:ss"), duration, ((isAllowed) ? 0 : 1),  dayjs(today.toDate()).format("YYYY-MM-DD HH:mm:ss"))
         const queryResult = await result.json() // get data
         
         // check if query result status is 200

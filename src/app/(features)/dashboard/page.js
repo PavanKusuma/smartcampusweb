@@ -48,6 +48,9 @@ export default function Dashboard() {
     // table columns specific states
     const [t_duration, setTDuration] = useState(true);
 
+    //create new date object
+    const today = new dayjs();
+
     // get the user and fire the data fetch
     useEffect(()=>{
 
@@ -82,13 +85,8 @@ export default function Dashboard() {
                         console.log('OutingAssistant');
                         setViewByStatus('Issued')
                         getData(obj.role, 'Issued', obj.collegeId, obj.branch);
-                    }
-                    
-                    
+                    }   
                 }
-
-                
-
             }
             else{
                 console.log('Not found')
@@ -356,7 +354,7 @@ export default function Dashboard() {
     // Keyverify,stage,requestId,name,collegeId,role,status,comment
     async function updateRequest(stage, requestId, status, myUser, comment){
 
-        const result  = await updateRequestAPI(process.env.NEXT_PUBLIC_API_PASS, stage, requestId, myUser.username, myUser.collegeId, myUser.role, status,((comment.length > 0) ? comment : ''))
+        const result  = await updateRequestAPI(process.env.NEXT_PUBLIC_API_PASS, stage, requestId, myUser.username, myUser.collegeId, myUser.role, status,((comment.length > 0) ? comment : ''),dayjs(today.toDate()).format("YYYY-MM-DD HH:mm:ss"))
         const queryResult = await result.json() // get data
 
         // check for the status

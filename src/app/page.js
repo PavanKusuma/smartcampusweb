@@ -1,6 +1,6 @@
 import { Inter } from 'next/font/google'
 import styles from './page.module.css'
-// import Vertification from './components/verification'
+import Vertification from './components/verification'
 // import CampusList from './components/campuslist'
 import OutingRequest from './components/outingrequest'
 import BlockDates from './components/blockdates'
@@ -47,10 +47,10 @@ export default function Home() {
       <div className={styles.description}>
         
         
-          {/* <Vertification /> */}
+          <Vertification />
           {/* <BlockDates /> */}
           {/* <Dashboard /> */}
-          <OutingRequest />
+          {/* <OutingRequest /> */}
         
       </div>
 
