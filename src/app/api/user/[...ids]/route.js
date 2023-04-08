@@ -18,7 +18,7 @@ export async function GET(request,{params}) {
             // update the player Id for the user
             if(params.ids[1] == 'playerId'){
                 try {
-                    const [rows, fields] = await connection.execute('UPDATE user SET gcm_regId ="'+params.ids[3]+'", where collegeId = "'+params.ids[2]+'"');
+                    const [rows, fields] = await connection.execute('UPDATE user SET gcm_regId ="'+params.ids[3]+'" where collegeId = "'+params.ids[2]+'"');
                     connection.release();
                     // return successful update
                     return Response.json({status: 200, message:'Updated!'}, {status: 200})
