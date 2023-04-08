@@ -60,8 +60,8 @@ export default function BlockDates() {
     const [duration, setDuration] = useState(1);
 
     useEffect(()=>{ 
-        console.log(today.toDate().format('YYYY-MM-DD'));
-        getBlockedDates(today.toDate().format('YYYY-MM-DD'))
+        console.log(dayjs(today.toDate()).format('YYYY-MM-DD'));
+        getBlockedDates(dayjs(today.toDate()).format('YYYY-MM-DD'))
       },[])
         
     // change the type of the blocking

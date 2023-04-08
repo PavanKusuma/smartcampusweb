@@ -13,7 +13,7 @@ export async function GET(request,{params}) {
     const connection = await pool.getConnection();
 
     // current date time for updating
-    var currentDate =  dayjs(new Date(Date.now())).format('YYYY-MM-DD HH:mm:ss');
+    var currentDate =  dayjs(new Date(params.ids[2])).format('YYYY-MM-DD HH:mm:ss');
     console.log(currentDate);
 
     try{
