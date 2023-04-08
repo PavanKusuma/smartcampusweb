@@ -9,8 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "dateformat": "^5.0.3",
     "dayjs": "^1.11.7",
+    "debug": "^4.3.4",
     "lru-cache": "^7.14.1",
     "mysql": "^2.18.1",
     "mysql2": "^3.2.0",

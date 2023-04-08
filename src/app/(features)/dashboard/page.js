@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ['latin'] })
 import styles from '../../../app/page.module.css'
 import Biscuits from 'universal-cookie'
 const biscuits = new Biscuits
-import dateFormat from 'dateformat'
+import dayjs from 'dayjs'
 import { useRouter } from 'next/navigation'
 
   const getRequests = async (Keyverify,role, status,offset,collegeId,branch) => 
@@ -192,7 +192,8 @@ export default function Dashboard() {
                                         {(t_duration) ? 
                                         <div>
                                             <p className={`${inter.className} ${styles.text3_heading}`}>Duration: </p>
-                                            <p className={`${inter.className} ${styles.text2}`}>{dateFormat(requestItem.requestFrom, "dd mmm, yyyy")} - {dateFormat(requestItem.requestTo, "dd mmm, yyyy")}
+                                            {/* <p className={`${inter.className} ${styles.text2}`}>{dateFormat(requestItem.requestFrom, "dd mmm, yyyy")} - {dateFormat(requestItem.requestTo, "dd mmm, yyyy")} */}
+                                            <p className={`${inter.className} ${styles.text2}`}>{dayjs(requestItem.requestFrom).format('DD MMM, YYYY')} - {dayjs(requestItem.requestTo).format('DD MMM, YYYY')}
                                                 <br/><span className={`${inter.className} ${styles.text3}`}>{requestItem.duration} day(s)</span>
                                             </p>
                                         </div>
@@ -202,7 +203,7 @@ export default function Dashboard() {
                                         <div>
                                             <p className={`${inter.className} ${styles.text3_heading}`}> Status:</p>
                                             <p className={`${inter.className} ${styles.text2} ${styles.success}`}>Submitted</p> 
-                                            <p className={`${inter.className} ${styles.text3}`}>on {dateFormat(requestItem.requestDate, "dd mmm, yyyy HH:mm:ss")}</p>
+                                            <p className={`${inter.className} ${styles.text3}`}>on {dayjs(requestItem.requestDate).format('DD MMM, YYYY HH:mm:ss')}</p>
                                         </div>
                                          : ''}
                                          
@@ -218,10 +219,10 @@ export default function Dashboard() {
                                             <div >
                                                 <p className={`${inter.className} ${styles.text3_heading}`}> Status:</p>
                                                 <p className={`${inter.className} ${styles.text2} ${styles.success}`}>Submitted</p> 
-                                                <p className={`${inter.className} ${styles.text3}`}>on {dateFormat(requestItem.requestDate, "dd mmm, yyyy HH:mm:ss")}</p>
+                                                <p className={`${inter.className} ${styles.text3}`}>on {dayjs(requestItem.requestDate).format('DD MMM, YYYY HH:mm:ss')}</p>
                                                 <br/>
                                                 <p className={`${inter.className} ${styles.text2} ${styles.success}`}>{requestItem.requestStatus}</p>
-                                                <p className={`${inter.className} ${styles.text3}`}>by {requestItem.approverName} on {dateFormat(requestItem.approvedOn, "dd mmm, yyyy HH:mm:ss")}
+                                                <p className={`${inter.className} ${styles.text3}`}>by {requestItem.approverName} on {dayjs(requestItem.approvedOn).format('DD MMM, YYYY HH:mm:ss')}
                                                 <br/>Waiting for Hostel Administrator to allow the outing.</p>
                                             </div>
                                             : ''}
@@ -243,16 +244,16 @@ export default function Dashboard() {
                                             <div>
                                                 <p className={`${inter.className} ${styles.text3_heading}`}> Status:</p>
                                                 <p className={`${inter.className} ${styles.text2} ${styles.success}`}>Submitted</p> 
-                                                <p className={`${inter.className} ${styles.text3}`}>on {dateFormat(requestItem.requestDate, "dd mmm, yyyy HH:mm:ss")}</p>
+                                                <p className={`${inter.className} ${styles.text3}`}>on {dayjs(requestItem.requestDate).format('DD MMM, YYYY HH:mm:ss')}</p>
                                                 <br/>
                                                 <p className={`${inter.className} ${styles.text2} ${styles.success}`}>Approved</p>
-                                                <p className={`${inter.className} ${styles.text3}`}>by {requestItem.approverName} on {dateFormat(requestItem.approvedOn, "dd mmm, yyyy HH:mm:ss")}</p>
+                                                <p className={`${inter.className} ${styles.text3}`}>by {requestItem.approverName} on {dayjs(requestItem.approvedOn).format('DD MMM, YYYY HH:mm:ss')}</p>
                                                 
                                                 {/* <p className={`${inter.className} ${styles.text2} ${styles.success}`}>Allowed</p>
                                                 <p className={`${inter.className} ${styles.text3}`}>by {requestItem.allowedName} on {dateFormat(requestItem.allowedOn, "dd mmm, yyyy HH:mm:ss")}</p> */}
                                                 <br/>
                                                 <p className={`${inter.className} ${styles.text2} ${styles.success}`}>Issued</p>
-                                                <p className={`${inter.className} ${styles.text3}`}>by {requestItem.issuerName} on {dateFormat(requestItem.issuedOn, "dd mmm, yyyy HH:mm:ss")}
+                                                <p className={`${inter.className} ${styles.text3}`}>by {requestItem.issuerName} on {dayjs(requestItem.issuedOn).format('DD MMM, YYYY HH:mm:ss')}
                                                 <br/>Security to update on return </p>
                                             </div>
                                             : ''}
@@ -261,19 +262,19 @@ export default function Dashboard() {
                                             <div>
                                                 <p className={`${inter.className} ${styles.text3_heading}`}> Status:</p>
                                                 <p className={`${inter.className} ${styles.text2} ${styles.success}`}>Submitted</p> 
-                                                <p className={`${inter.className} ${styles.text3}`}>on {dateFormat(requestItem.requestDate, "dd mmm, yyyy HH:mm:ss")}</p>
+                                                <p className={`${inter.className} ${styles.text3}`}>on {dayjs(requestItem.requestDate).format('DD MMM, YYYY HH:mm:ss')}</p>
                                                 <br/>
                                                 <p className={`${inter.className} ${styles.text2} ${styles.success}`}>Approved</p>
-                                                <p className={`${inter.className} ${styles.text3}`}>by {requestItem.approverName} on {dateFormat(requestItem.approvedOn, "dd mmm, yyyy HH:mm:ss")}</p>
+                                                <p className={`${inter.className} ${styles.text3}`}>by {requestItem.approverName} on {dayjs(requestItem.approvedOn).format('DD MMM, YYYY HH:mm:ss')}</p>
                                                 
                                                 {/* <p className={`${inter.className} ${styles.text2} ${styles.success}`}>Allowed</p>
                                                 <p className={`${inter.className} ${styles.text3}`}>by {requestItem.allowedName} on {dateFormat(requestItem.allowedOn, "dd mmm, yyyy HH:mm:ss")}</p> */}
                                                 <br/>
                                                 <p className={`${inter.className} ${styles.text2} ${styles.success}`}>Issued</p>
-                                                <p className={`${inter.className} ${styles.text3}`}>by {requestItem.issuerName} on {dateFormat(requestItem.issuedOn, "dd mmm, yyyy HH:mm:ss")}</p>
+                                                <p className={`${inter.className} ${styles.text3}`}>by {requestItem.issuerName} on {dayjs(requestItem.issuedOn).format('DD MMM, YYYY HH:mm:ss')}</p>
                                                 <br/>
                                                 <p className={`${inter.className} ${styles.text2} ${styles.success}`}>Returned</p>
-                                                <p className={`${inter.className} ${styles.text3}`}>on {dateFormat(requestItem.returnedOn, "dd mmm, yyyy HH:mm:ss")}</p>
+                                                <p className={`${inter.className} ${styles.text3}`}>on {dayjs(requestItem.returnedOn).format('DD MMM, YYYY HH:mm:ss')}</p>
                                             </div>
                                              : ''}
                                             <br/>
@@ -282,12 +283,12 @@ export default function Dashboard() {
                                             <div>
                                                 <p className={`${inter.className} ${styles.text3_heading}`}> Status:</p>
                                                 <p className={`${inter.className} ${styles.text2} ${styles.success}`}>Submitted</p> 
-                                                <p className={`${inter.className} ${styles.text3}`}>on {dateFormat(requestItem.requestDate, "dd mmm, yyyy HH:mm:ss")}</p>
+                                                <p className={`${inter.className} ${styles.text3}`}>on {dayjs(requestItem.requestDate).format('DD MMM, YYYY HH:mm:ss')}</p>
                                                 <br/>
                                                 <p className={`${inter.className} ${styles.text3_heading}`}> Status:</p>
                                                 <p className={`${inter.className} ${styles.text2} ${styles.error}`}>Rejected</p>
                                                 {(requestItem.issuedOn != null) ?
-                                                    <p className={`${inter.className} ${styles.text3}`}>by {requestItem.issuerName} on {dateFormat(requestItem.issuedOn, "dd mmm, yyyy HH:mm:ss")}</p> 
+                                                    <p className={`${inter.className} ${styles.text3}`}>by {requestItem.issuerName} on {dayjs(requestItem.issuedOn).format('DD MMM, YYYY HH:mm:ss')}</p> 
                                                     : ''
                                                         }
                                                 
