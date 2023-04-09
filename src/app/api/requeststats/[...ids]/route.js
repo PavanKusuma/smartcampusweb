@@ -3,7 +3,7 @@ import { Keyverify } from '../../secretverify';
 
 // get the requests based on the user role and timing
 // params used for this API
-// key, role, branch
+// key, role, branch, status
 // branch value can be 'All' to get complete data
 
 export async function GET(request,{params}) {
