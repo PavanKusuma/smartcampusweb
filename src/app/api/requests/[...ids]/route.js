@@ -1,6 +1,7 @@
 import pool from '../../db'
 import { Keyverify } from '../../secretverify';
 
+// get the requests based on the user role and timing
 // params used for this API
 // key, role, status, offset, collegeId, branch
 export async function GET(request,{params}) {
@@ -16,9 +17,21 @@ export async function GET(request,{params}) {
             // check for the user role
             // if SuperAdmin, get all the requests w.r.t status
             if(params.ids[1] == 'Student'){
-                const [rows, fields] = await connection.execute('SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND r.collegeId = "'+params.ids[4]+'" ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3]);
+
+                let query = '';
+                // check what type of requests to be shown
+                // if status is Submitted, that means student is looking for recent request
+                if(params.ids[2] == 'Submitted'){
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND r.collegeId = "'+params.ids[4]+'" AND r.requestStatus != "Returned" ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3];
+                }
+                // if not student is looking for requests from the past
+                else {
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND r.collegeId = "'+params.ids[4]+'" AND r.requestStatus = "Returned" ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3];
+                }
+
+                const [rows, fields] = await connection.execute(query);
                 connection.release();
-            
+
                 // check if user is found
                 if(rows.length > 0){
                     // return the requests data

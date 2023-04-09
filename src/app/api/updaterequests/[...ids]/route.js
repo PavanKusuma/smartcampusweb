@@ -3,7 +3,7 @@ import { Keyverify } from '../../secretverify';
 import dayjs from 'dayjs'
 
 // params used for this API
-// Keyverify,stage,requestId,name,collegeId,role,status,comment,updatedAt
+// Keyverify,stage,requestId,name,collegeId,role,status,updatedAt,comment
 // stage is useful to define which stage of the request is
 // Stage1 –– To be Approved
 // Stage2 –– To be Issed
@@ -26,7 +26,7 @@ export async function GET(request,{params}) {
             // if(params.ids[4] == 'Admin' || params.ids[4] == 'SuperAdmin'){
             if(params.ids[1] == 'S1'){
                 try {
-                    const [rows, fields] = await connection.execute('UPDATE request SET approver ="'+params.ids[4]+'", approverName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", approvedOn ="'+params.ids[8]+'", comment = CONCAT(comment,"\n'+params.ids[7]+'") where requestId = "'+params.ids[2]+'"');
+                    const [rows, fields] = await connection.execute('UPDATE request SET approver ="'+params.ids[4]+'", approverName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", approvedOn ="'+params.ids[7]+'", comment = CONCAT(comment,"\n'+params.ids[8]+'") where requestId = "'+params.ids[2]+'"');
                     connection.release();
                     // return successful update
                     return Response.json({status: 200, message:'Updated!'}, {status: 200})
@@ -38,7 +38,7 @@ export async function GET(request,{params}) {
             else if(params.ids[1] == 'S2'){
                 
                 try {
-                    const [rows, fields] = await connection.execute('UPDATE request SET issuer ="'+params.ids[4]+'", issuerName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", issuedOn ="'+params.ids[8]+'", comment = CONCAT(comment,"\n'+params.ids[7]+'") where requestId = "'+params.ids[2]+'"');
+                    const [rows, fields] = await connection.execute('UPDATE request SET issuer ="'+params.ids[4]+'", issuerName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", issuedOn ="'+params.ids[7]+'", comment = CONCAT(comment,"\n'+params.ids[8]+'") where requestId = "'+params.ids[2]+'"');
                     connection.release();
                     // return successful update
                     return Response.json({status: 200, message:'Updated!'}, {status: 200})

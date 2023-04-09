@@ -68,8 +68,8 @@ export default function Dashboard() {
                     // set the view by status based on the role
                     if(obj.role == 'Student'){
                         console.log('Student');
-                        setViewByStatus('Submitted')
-                        getData(obj.role, 'Submitted', obj.collegeId, obj.branch);
+                        setViewByStatus('Returned')
+                        getData(obj.role, 'Returned', obj.collegeId, obj.branch);
                     }
                     else if(obj.role == 'SuperAdmin' || obj.role == 'Admin'){
                         console.log('SuperAdmin');
