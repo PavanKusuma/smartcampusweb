@@ -9,6 +9,7 @@ import dayjs from 'dayjs'
 // Stage2 –– To be Issed
 // Stage3 –– To be CheckOut
 // Stage4 –– To be CheckIn
+// Stage1.5 –– To be Rejected –– Move the request to closed by updating isOpen = 0
 export async function GET(request,{params}) {
 
     // get the pool connection to db
@@ -64,6 +65,18 @@ export async function GET(request,{params}) {
             else if(params.ids[1] == 'S4'){ 
                 try {
                     const [rows, fields] = await connection.execute('UPDATE request SET isStudentOut = 0, requestStatus ="'+params.ids[3]+'", returnedOn="'+params.ids[4]+'" where requestId = "'+params.ids[2]+'"');
+                    connection.release();
+                    // return successful update
+                    return Response.json({status: 200, message:'Updated!'}, {status: 200})
+                } catch (error) { // error updating
+                    return Response.json({status: 404, message:'No request found!'}, {status: 200})
+                }
+                
+            }
+            // this is when student views the rejected request and it will be moved to closed.
+            else if(params.ids[1] == 'S1.5'){ 
+                try {
+                    const [rows, fields] = await connection.execute('UPDATE request SET isOpen = 0 where requestId = "'+params.ids[2]+'"');
                     connection.release();
                     // return successful update
                     return Response.json({status: 200, message:'Updated!'}, {status: 200})

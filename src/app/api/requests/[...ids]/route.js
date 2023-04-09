@@ -22,11 +22,11 @@ export async function GET(request,{params}) {
                 // check what type of requests to be shown
                 // if status is Submitted, that means student is looking for recent request
                 if(params.ids[2] == 'Submitted'){
-                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND r.collegeId = "'+params.ids[4]+'" AND r.requestStatus != "Returned" ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3];
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND r.collegeId = "'+params.ids[4]+'" AND isOpen = 1 ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3];
                 }
                 // if not student is looking for requests from the past
                 else {
-                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND r.collegeId = "'+params.ids[4]+'" AND r.requestStatus = "Returned" ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3];
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND r.collegeId = "'+params.ids[4]+'" AND isOpen = 0 ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3];
                 }
 
                 const [rows, fields] = await connection.execute(query);
