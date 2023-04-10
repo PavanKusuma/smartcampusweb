@@ -5,6 +5,7 @@ import { Keyverify } from '../../secretverify';
 // params used for this API
 // key, type, collegeId, playerId
 // U1 – playerId update
+// U2 – get user details
 export async function GET(request,{params}) {
 
     // get the pool connection to db
@@ -16,12 +17,22 @@ export async function GET(request,{params}) {
         if(await Keyverify(params.ids[0])){
 
             // update the player Id for the user
-            if(params.ids[1] == 'playerId'){
+            if(params.ids[1] == 'U1'){
                 try {
                     const [rows, fields] = await connection.execute('UPDATE user SET gcm_regId ="'+params.ids[3]+'" where collegeId = "'+params.ids[2]+'"');
                     connection.release();
                     // return successful update
                     return Response.json({status: 200, message:'Updated!'}, {status: 200})
+                } catch (error) { // error updating
+                    return Response.json({status: 404, message:'No user found!'}, {status: 200})
+                }
+            }
+            else if(params.ids[1] == 'U2'){
+                try {
+                    const [rows, fields] = await connection.execute('SELECT * FROM user_details WHERE collegeId = "'+params.ids[2]+'"');
+                    connection.release();
+                    // return successful update
+                    return Response.json({status: 200, data: rows[0], message:'Updated!'}, {status: 200})
                 } catch (error) { // error updating
                     return Response.json({status: 404, message:'No user found!'}, {status: 200})
                 }
