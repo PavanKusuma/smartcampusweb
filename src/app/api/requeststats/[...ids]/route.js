@@ -50,7 +50,7 @@ export async function GET(request,{params}) {
                 // Also it returns if there are any late returns
                 let q = 'select LateReturn AS criteria, count(*) as count from request where returnedOn > requestTo and collegeId="'+params.ids[2]+'" UNION select requestStatus, count(*) as count from request where collegeId="'+params.ids[2]+'" group by requestStatus';
 
-                const [rows, fields] = await connection.execute('SELECT requestStatus, count(*) as count FROM request where collegeId="'+params.ids[2]+'" group by requestStatus');
+                const [rows, fields] = await connection.execute(q);
                 connection.release();
             
                 // check if user is found
