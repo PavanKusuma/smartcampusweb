@@ -48,7 +48,7 @@ export async function GET(request,{params}) {
 
                 // this is a combination of 2 queries that will return different status of the collegeId
                 // Also it returns if there are any late returns
-                let q = 'select LateReturn AS criteria, count(*) as count from request where returnedOn > requestTo and collegeId="'+params.ids[2]+'" UNION select requestStatus, count(*) as count from request where collegeId="'+params.ids[2]+'" group by requestStatus';
+                let q = 'select \'returnedOn > requestTo\' AS criteria, count(*) as count from request where returnedOn > requestTo and collegeId="'+params.ids[2]+'" UNION select requestStatus, count(*) as count from request where collegeId="'+params.ids[2]+'" group by requestStatus';
 
                 const [rows, fields] = await connection.execute(q);
                 connection.release();
