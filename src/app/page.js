@@ -47,8 +47,8 @@ export default function Home() {
       <div className={styles.description}>
         
         
-          <Vertification />
-          {/* <BlockDates /> */}
+          {/* <Vertification /> */}
+          <BlockDates />
           {/* <Dashboard /> */}
           {/* <OutingRequest /> */}
         
