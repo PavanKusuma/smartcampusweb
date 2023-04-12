@@ -20,8 +20,8 @@ import { useRouter } from 'next/navigation'
             Accept: "application/json",
         },
     });
-  const updateRequestAPI = async (Keyverify,stage,requestId,name,collegeId,role, status,comment) => 
-    fetch("/api/updaterequests/"+Keyverify+"/"+stage+"/"+requestId+"/"+name+"/"+collegeId+"/"+role+"/"+status+"/"+comment, {
+  const updateRequestAPI = async (Keyverify,stage,requestId,name,collegeId,role, status,approvedOn, comment, playerId) => 
+    fetch("/api/updaterequests/"+Keyverify+"/"+stage+"/"+requestId+"/"+name+"/"+collegeId+"/"+role+"/"+status+"/"+approvedOn+"/"+comment+"/"+playerId, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -101,7 +101,7 @@ export default function Dashboard() {
     async function getData(role, status, collegeId, branch){
         const result  = await getRequests(process.env.NEXT_PUBLIC_API_PASS, role, status, 0, collegeId, branch)
         const queryResult = await result.json() // get data
-
+console.log(queryResult);
         // check for the status
         if(queryResult.status == 200){
 
@@ -128,15 +128,16 @@ export default function Dashboard() {
 
     // handle user action
     // use the function outside the main component and pass the necessary state variables
-    const handleClick = useCallback(({requestId, status}) => {
-        
+    const handleClick = useCallback(({requestId, status, playerId}) => {
+        // print(playerId);
+        console.log(playerId);
         // stage 1
         if(user.role == 'Admin' || user.role == 'SuperAdmin'){
-            updateRequest("S1", requestId, status, user, document.getElementById(requestId).value)
+            updateRequest("S1", requestId, status, user, document.getElementById(requestId).value, today, playerId)
         }
         // stage 2
         else if(user.role == 'OutingAdmin' || user.role == 'OutingIssuer'){
-            updateRequest("S2", requestId, status, user, document.getElementById(requestId).value)
+            updateRequest("S2", requestId, status, user, document.getElementById(requestId).value, today, playerId)
         }
     },[user]);
 
@@ -302,9 +303,9 @@ export default function Dashboard() {
                                             <div className={styles.verticalsection} style={{gap: '8px', width:'100%'}} >
                                                 <div><input className={`${inter.className} ${styles.textInput}`} id={requestItem.requestId} placeholder="Type your comment here..."  type="text"/></div>
                                                 <div className={styles.horizontalsection} style={{gap: '8px'}}>
-                                                    <button className={`${inter.className} ${styles.text2} ${styles.success} ${styles.primarybtn}`} onClick={()=>handleClick({requestId: requestItem.requestId, status: 'Allowed'})} style={{verticalAlign:'text-top'}}>
+                                                    <button className={`${inter.className} ${styles.text2} ${styles.success} ${styles.primarybtn}`} onClick={()=>handleClick({requestId: requestItem.requestId, status: 'Allowed', playerId: requestItem.gcm_regId})} style={{verticalAlign:'text-top'}}>
                                                         <Check size={16} style={{verticalAlign:'text-top'}} /> Approve </button>
-                                                    <button className={`${inter.className} ${styles.text2} ${styles.success} ${styles.secondarybtn}`} onClick={()=>handleClick({requestId: requestItem.requestId, status: 'Rejected'})} style={{verticalAlign:'text-top'}}>
+                                                    <button className={`${inter.className} ${styles.text2} ${styles.success} ${styles.secondarybtn}`} onClick={()=>handleClick({requestId: requestItem.requestId, status: 'Rejected', playerId: requestItem.gcm_regId})} style={{verticalAlign:'text-top'}}>
                                                         <X size={16} style={{verticalAlign:'text-top'}} /> Reject </button>
                                                     <button className={`${inter.className} ${styles.text2} ${styles.success} ${styles.teritarybtn}`} style={{verticalAlign:'text-top'}}>
                                                         <Info size={16} style={{verticalAlign:'text-top'}} /> More details </button>
@@ -352,9 +353,9 @@ export default function Dashboard() {
 
     // update the request with status and other details
     // Keyverify,stage,requestId,name,collegeId,role,status,comment
-    async function updateRequest(stage, requestId, status, myUser, comment){
+    async function updateRequest(stage, requestId, status, myUser, comment, today, playerId){
 
-        const result  = await updateRequestAPI(process.env.NEXT_PUBLIC_API_PASS, stage, requestId, myUser.username, myUser.collegeId, myUser.role, status,((comment.length > 0) ? comment : ''),dayjs(today.toDate()).format("YYYY-MM-DD HH:mm:ss"))
+        const result  = await updateRequestAPI(process.env.NEXT_PUBLIC_API_PASS, stage, requestId, myUser.username, myUser.collegeId, myUser.role, status,dayjs(today.toDate()).format("YYYY-MM-DD HH:mm:ss"),((comment.length > 0) ? comment : ''), playerId)
         const queryResult = await result.json() // get data
 
         // check for the status

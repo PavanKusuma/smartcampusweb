@@ -6,7 +6,7 @@ const OneSignal = require('onesignal-node')
 const client = new OneSignal.Client(process.env.ONE_SIGNAL_APPID, process.env.ONE_SIGNAL_APIKEY)
 
 // params used for this API
-// Keyverify,stage,requestId,name,collegeId,role,status,updatedAt,comment
+// Keyverify,stage,requestId,name,collegeId,role,status,updatedAt,comment, playerId
 // stage is useful to define which stage of the request is
 // Stage1 –– To be Approved –– get the playerId of student for sending the status update for Stage 1 and 2
 // Stage2 –– To be Issed
@@ -45,7 +45,7 @@ export async function GET(request,{params}) {
                     connection.release();
 
                     // send the notification
-                    send_notification('🙌 Your outing is approved and is ⏳ waiting for issue!', params.ids[5]);
+                    send_notification('🙌 Your outing is approved and is ⏳ waiting for issue!', params.ids[9]);
                     // return successful update
                     return Response.json({status: 200, message:'Updated!'}, {status: 200})
                 } catch (error) { // error updating
@@ -60,7 +60,7 @@ export async function GET(request,{params}) {
                     connection.release();
 
                     // send the notification
-                    send_notification('✅ Your outing is issued!', params.ids[5]);
+                    send_notification('✅ Your outing is issued!', params.ids[9]);
                     // return successful update
                     return Response.json({status: 200, message:'Updated!'}, {status: 200})
                 } catch (error) { // error updating
