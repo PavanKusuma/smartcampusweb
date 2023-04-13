@@ -16,7 +16,7 @@ export async function GET(request,{params}) {
 
             // check for the user role
             // if SuperAdmin, get all the requests w.r.t status
-            if(params.ids[1].toLowerCase == 'Student'.toLowerCase){
+            if(params.ids[1] == 'Student'){
 
                 let query = '';
                 // check what type of requests to be shown
@@ -78,7 +78,7 @@ export async function GET(request,{params}) {
                 }
             }
             // if OutingAdmin, get all requests that are approved by department
-            else if(params.ids[1] == 'OutingAdmin' || params.ids[1] == 'OutingIssuer'){
+            else if((params.ids[1] == 'OutingAdmin') || (params.ids[1] == 'OutingIssuer')){
                 const [rows, fields] = await connection.execute('SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3]);
                 connection.release();
             

@@ -303,7 +303,7 @@ console.log(queryResult);
                                             <div className={styles.verticalsection} style={{gap: '8px', width:'100%'}} >
                                                 <div><input className={`${inter.className} ${styles.textInput}`} id={requestItem.requestId} placeholder="Type your comment here..."  type="text"/></div>
                                                 <div className={styles.horizontalsection} style={{gap: '8px'}}>
-                                                    <button className={`${inter.className} ${styles.text2} ${styles.success} ${styles.primarybtn}`} onClick={()=>handleClick({requestId: requestItem.requestId, status: 'Allowed', playerId: requestItem.gcm_regId})} style={{verticalAlign:'text-top'}}>
+                                                    <button className={`${inter.className} ${styles.text2} ${styles.success} ${styles.primarybtn}`} onClick={()=>handleClick({requestId: requestItem.requestId, status: 'Approved', playerId: requestItem.gcm_regId})} style={{verticalAlign:'text-top'}}>
                                                         <Check size={16} style={{verticalAlign:'text-top'}} /> Approve </button>
                                                     <button className={`${inter.className} ${styles.text2} ${styles.success} ${styles.secondarybtn}`} onClick={()=>handleClick({requestId: requestItem.requestId, status: 'Rejected', playerId: requestItem.gcm_regId})} style={{verticalAlign:'text-top'}}>
                                                         <X size={16} style={{verticalAlign:'text-top'}} /> Reject </button>
