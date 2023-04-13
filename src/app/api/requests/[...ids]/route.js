@@ -16,7 +16,7 @@ export async function GET(request,{params}) {
 
             // check for the user role
             // if SuperAdmin, get all the requests w.r.t status
-            if(params.ids[1] == 'Student'){
+            if(params.ids[1].toLowerCase == 'Student'.toLowerCase){
 
                 let query = '';
                 // check what type of requests to be shown
