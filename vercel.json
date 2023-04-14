@@ -1,7 +1,7 @@
 {
     "functions": {
       "api/**/*.js": {
-        "timeout": 30
+        "memory": 512
       }
     }
   }
