@@ -35,7 +35,7 @@ export async function GET(request,{params}) {
                 }
             }
             else { // fetch data
-                const [rows, fields] = await connection.execute('SELECT * from blocks WHERE branch = "'+params.ids[3]+'" AND blockFrom >= "'+currentDate+'" ORDER BY blockFrom DESC');
+                const [rows, fields] = await connection.execute('SELECT * from blocks WHERE branch = "'+params.ids[3]+'" AND (blockFrom >= "'+currentDate+'" OR blockTo >= "'+currentDate+'") ORDER BY blockFrom DESC');
                 connection.release();
             
                 // check if user is found

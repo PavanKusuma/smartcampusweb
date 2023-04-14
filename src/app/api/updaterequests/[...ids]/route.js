@@ -39,17 +39,16 @@ export async function GET(request,{params}) {
             // if(params.ids[4] == 'Admin' || params.ids[4] == 'SuperAdmin'){
             if(params.ids[1] == 'S1'){
                 try {
-
                     
                     const [rows, fields] = await connection.execute('UPDATE request SET approver ="'+params.ids[4]+'", approverName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", approvedOn ="'+params.ids[7]+'", comment = CONCAT(comment,"'+comment+'") where requestId = "'+params.ids[2]+'"');
                     connection.release();
 
                     // send the notification
-                    send_notification('🙌 Your outing is approved and is ⏳ waiting for issue!', params.ids[9]);
+                    send_notification('🙌 Your outing is approved and is ⏳ waiting for issue by the warden!', params.ids[9]);
                     // return successful update
                     return Response.json({status: 200, message:'Updated!'}, {status: 200})
                 } catch (error) { // error updating
-                    return Response.json({status: 404, message:'No request found!'}, {status: 200})
+                    return Response.json({status: 404, message:'No request found!'+error.message}, {status: 200})
                 }
             }
             // else if(params.ids[4] == 'OutingAdmin' || params.ids[4] == 'OutingIssuer'){
