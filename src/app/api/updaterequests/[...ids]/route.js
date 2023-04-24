@@ -59,7 +59,7 @@ export async function GET(request,{params}) {
                     connection.release();
 
                     // send the notification
-                    send_notification('✅ Your outing is issued!', params.ids[9]);
+                    send_notification('✅ Your outing is issued! Scan checkout QR code at security.', params.ids[9]);
                     // return successful update
                     return Response.json({status: 200, message:'Updated!'}, {status: 200})
                 } catch (error) { // error updating
