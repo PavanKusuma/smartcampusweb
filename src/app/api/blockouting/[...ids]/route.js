@@ -3,8 +3,8 @@ import { Keyverify } from '../../secretverify';
 var mysql = require('mysql2')
 import dayjs from 'dayjs'
 
-// create new block for outing by the Admins
-// key, what, blockId, duration, from, to, blockBy, description, branch
+// create new officialrequest for outing by the Admins
+// key, what, oRequestId, type, duration, from, to, by, description, branch, year
 // key, what, today, branch
 // what is used to understand what the request is about – whether to send data back or create data
 export async function GET(request,{params}) {
@@ -23,19 +23,19 @@ export async function GET(request,{params}) {
             if(params.ids[1] == 0){ // create block dates data
                 try {
                     // create query for insert
-                    const q = 'INSERT INTO blocks (blockId, duration, blockFrom, blockTo, blockBy, description, branch) VALUES ( ?, ?, ?, ?, ?, ?, ?)';
+                    const q = 'INSERT INTO officialrequest (oRequestId, oType, duration, oFrom, oTo, oBy, description, branch, year) VALUES ( ?, ?, ?, ?, ?, ?, ?)';
                     // create new request
-                    const [rows, fields] = await connection.execute(q, [ params.ids[2], params.ids[3], params.ids[4], params.ids[5], params.ids[6], params.ids[7], params.ids[8] ]);
+                    const [rows, fields] = await connection.execute(q, [ params.ids[2], params.ids[3], params.ids[4], params.ids[5], params.ids[6], params.ids[7], params.ids[8], params.ids[9], params.ids[10] ]);
                     connection.release();
                     // return the user data
-                    return Response.json({status: 200, message:'Block request submitted!'}, {status: 200})
+                    return Response.json({status: 200, message: params.ids[3]+' request submitted!'}, {status: 200})
                 } catch (error) {
                     // user doesn't exist in the system
                     return Response.json({status: 404, message:'Error creating request. Please try again later!'}, {status: 200})
                 }
             }
             else { // fetch data
-                const [rows, fields] = await connection.execute('SELECT * from blocks WHERE branch = "'+params.ids[3]+'" AND (blockFrom >= "'+currentDate+'" OR blockTo >= "'+currentDate+'") ORDER BY blockFrom DESC');
+                const [rows, fields] = await connection.execute('SELECT * from officialrequest WHERE branch = "'+params.ids[3]+'" AND (oFrom >= "'+currentDate+'" OR oTo >= "'+currentDate+'") ORDER BY oFrom DESC');
                 connection.release();
             
                 // check if user is found
@@ -46,7 +46,7 @@ export async function GET(request,{params}) {
                 }
                 else {
                     // user doesn't exist in the system
-                    return Response.json({status: 404, message:'No new blockers!'}, {status: 200})
+                    return Response.json({status: 404, message:'No data!'}, {status: 200})
                 }
             }
         }

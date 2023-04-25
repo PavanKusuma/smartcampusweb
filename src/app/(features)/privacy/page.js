@@ -3,11 +3,8 @@
 import { Inter } from 'next/font/google'
 import Link from 'next/link'
 import { Lock } from 'phosphor-react'
-import { useCallback, useEffect, useState } from 'react'
 const inter = Inter({ subsets: ['latin'] })
 import styles from '../../../app/page.module.css'
-
-import { useRouter } from 'next/navigation'
 
 
 // pass state variable and the method to update state variable

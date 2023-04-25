@@ -4,12 +4,14 @@ import Vertification from './components/verification'
 // import CampusList from './components/campuslist'
 import OutingRequest from './components/outingrequest'
 import BlockDates from './components/blockdates'
-// import { useState } from 'react'
+import Image from 'next/image'
 const twilio = require('twilio')
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+
+  // const [selectedTab, setSelectedTab] = useState('Projects');
 
   
   // check sms api
@@ -46,7 +48,6 @@ export default function Home() {
     <main className={styles.main}>
       <div className={styles.description}>
         
-        
           <Vertification />
           {/* <BlockDates /> */}
           {/* <Dashboard /> */}
@@ -56,5 +57,14 @@ export default function Home() {
 
     
     </main>
+
+
+
+
+
+
+
+
+   
   )
 }

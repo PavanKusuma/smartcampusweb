@@ -158,17 +158,20 @@ export default function BlockDates() {
 
   return (
     // new outing request form
-    <div>
+    <div className={`${styles.titleDialog}`} >
         
-        <div className={styles.titlecard}>
-            <div className={styles.section_one}>
+        <div>
+            <div>
+        {/* <div className={styles.titlecard}>
+            <div className={styles.section_one}> */}
             
             {/* prompt the user for college Id
             and verify if it exists in the sytem */}
-            <div className={styles.card_block1}>
+            <div>
             
+                <h3 className={`${inter.className}`}>Block outing dates  </h3><br/>
                 <p className={`${inter.className} ${styles.text2}`}>Reason for blocking </p><br/>
-                <textarea id="description" className={`${inter.className} ${styles.textInput} ${styles.text2}`} placeholder="Type here for students to know the reason"/>
+                <textarea id="description" className={`${inter.className} ${styles.textInput} ${styles.text2}`} placeholder="Type here for students to know the reason" style={{minWidth:'300px'}}/>
                 <br/><br/>
                 <div style={{display:'flex', gap: '8px'}}>
                     <label className={`${inter.className} ${styles.text2}`}>
@@ -245,7 +248,6 @@ export default function BlockDates() {
 
             </div>
         </div>
-    <br/>
     </div>
     
     

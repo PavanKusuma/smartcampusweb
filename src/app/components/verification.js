@@ -50,16 +50,16 @@ export default function Vertification() {
         let cookieValue = biscuits.get('sc_user_detail')
         // let cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)sc_user_detail\s*\=\s*([^;]*).*$)|^.*$/, "$1");
         if(cookieValue){
-        const obj = JSON.parse(decodeURIComponent(cookieValue))
-        console.log("This is from cookie"+obj.username)
-        setSession(true)
-        router.push('/dashboard')
+            const obj = JSON.parse(decodeURIComponent(cookieValue))
+            console.log("This is from cookie"+obj.username)
+            setSession(true)
+            router.push('/dashboard')
         }
         else{
-        setSession(false)
-        console.log('Not found')
+            setSession(false)
+            console.log('Not found')
         }
-    },[]);
+    },[session]);
  
 
 // verify the collegeId by calling the API
@@ -89,7 +89,7 @@ async function loginHere(){
             // let cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)sc_user_detail\s*\=\s*([^;]*).*$)|^.*$/, "$1");
             let cookieValue = biscuits.get('sc_user_detail')
             const obj = JSON.parse(decodeURIComponent(cookieValue))
-            console.log("This is from cookie"+obj.username)
+            // console.log("This is from cookie"+obj.username)
 
 
             // call the OTP api

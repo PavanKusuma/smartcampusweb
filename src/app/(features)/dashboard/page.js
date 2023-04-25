@@ -10,6 +10,8 @@ import Biscuits from 'universal-cookie'
 const biscuits = new Biscuits
 import dayjs from 'dayjs'
 import { useRouter } from 'next/navigation'
+import BlockDatesBtn from '../../components/blockdatesbtn'
+
 
   const getRequests = async (Keyverify,role, status,offset,collegeId,branch) => 
 
@@ -33,6 +35,13 @@ import { useRouter } from 'next/navigation'
 
 // pass state variable and the method to update state variable
 export default function Dashboard() {
+
+    // variable to store the active tab
+    const [selectedTab, setSelectedTab] = useState('Outing');
+    function handleTabChange(tabName) {
+        setSelectedTab(tabName)
+        console.log(tabName);
+      }
 
     // create a router for auto navigation
     const router = useRouter();
@@ -92,7 +101,7 @@ export default function Dashboard() {
                 console.log('Not found')
                 router.push('/')
             }
-    },[]);
+    },[requests]);
 
 
     // get the requests data
@@ -101,7 +110,7 @@ export default function Dashboard() {
     async function getData(role, status, collegeId, branch){
         const result  = await getRequests(process.env.NEXT_PUBLIC_API_PASS, role, status, 0, collegeId, branch)
         const queryResult = await result.json() // get data
-console.log(queryResult);
+// console.log(queryResult);
         // check for the status
         if(queryResult.status == 200){
 
@@ -116,12 +125,17 @@ console.log(queryResult);
                 setDataFound(false)
             }
         }
-        else if(queryResult.state == 401) {
+        else if(queryResult.status == 401) {
             console.log('Not Authorized ')
             setDataFound(false)
         }
+        else if(queryResult.status == 404) {
+            console.log('Not more requests')
+            setDataFound(false)
+        }
         else {
-            router.push('/')
+            console.log('Yes the do!');
+            // router.push('/')
             setDataFound(false)
         }
     }
@@ -149,7 +163,35 @@ console.log(queryResult);
     
   return (
     
-    <div>
+     <div>
+
+        <div className={`${styles.menuItems} ${inter.className}`}>
+            <div className={`${styles.menuItem} ${selectedTab === 'Outing' ? styles.menuItem_selected : ''}`} onClick={() => handleTabChange('Outing')}>Outing</div>
+            <div className={`${styles.menuItem} ${selectedTab === 'Students' ? styles.menuItem_selected : ''}`} onClick={() => handleTabChange('Students')}>Students</div>
+            <div className={`${styles.menuItem} ${selectedTab === 'Circulars' ? styles.menuItem_selected : ''}`} onClick={() => handleTabChange('Circulars')}>Circulars</div>
+        </div>
+        
+        <div style={{border: '0.5px solid #E5E7EB', width:'100vw'}}></div>
+              
+
+          <div className={styles.maindivcenter}>
+            
+            <h1 className={inter.className}>Exciting Project Ideas for Your Final Year</h1><br/>
+              <p className={`${inter.className} ${styles.headingtext2}`}>
+              Choose the best project that fits your needs and rest is assured. Get the abstract of the project for free and reach out to us if interested.
+              </p>
+              <BlockDatesBtn titleDialog={false} />
+              <br />
+            {/* <div>{children}</div> */}
+            {/* <ProjectsList /> */}
+            {/* <ProjectsList allProjects={allProjects}/> */}
+            <br />
+            {/* <MoreBtn projects={projects}/> */}
+            {/* <MoreBtn skip={skip} projects={projects}/> */}
+          
+
+      
+
         {/* check if data is not – API return 0 rows */}
     
     {/* if data is getting fetched, show the loading */}
@@ -344,6 +386,7 @@ console.log(queryResult);
         </div>
         }
     <br/>
+    </div>
     </div>
     
     

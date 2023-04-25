@@ -132,6 +132,51 @@
 }
 
 
+/************** Menu items ******************/
+
+.menuItems {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0px;
+  gap: 0px;
+  margin-left: 20px;
+  
+  /* background-color: #F7F8FA; */
+  border-radius: 4px;
+  transition: color .2s ease;
+  
+}
+.menuItem {
+  font-size: 14px;
+  font-weight: 400;
+  color: #666666;
+  padding: 8px 20px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: color .2s ease;
+}
+.menuItem:hover {
+  color: #000000;
+  background-color: #d4d4d4;
+}
+.menuItem_selected {
+  font-size: 14px;
+  font-weight: 500;
+  color: #000000;
+  padding: 8px 20px;
+  border-bottom: 2px solid #000000;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: color .2s ease;
+}
+.menuItem_selected:hover {
+  color: #000000;
+  background-color: #d4d4d4;
+}
+
+
 /************** Text field input ******************/
 
 .textInput{
@@ -501,8 +546,16 @@
   box-shadow: 0px 4px 20px 0px #dfe3e6;
   /* filter: blur(100px); */
   backdrop-filter: blur(100px);
+  transition: all 1s ease;
 }
-
+.hideshowdiv {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.hideshowdivshow {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
 
 .emailDialog:hover {
   box-shadow: 0px 4px 20px 0px #dfe3e6;
