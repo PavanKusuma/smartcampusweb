@@ -4,9 +4,16 @@ var mysql = require('mysql2')
 import dayjs from 'dayjs'
 
 // create new officialrequest for outing by the Admins
-// key, what, oRequestId, type, duration, from, to, by, description, branch, year
-// key, what, today, branch
+// key, what, oRequestId, type, duration, from, to, by, description, branch, year – Super admin
+// key, what, today – Super admin
+// key, what, today, branch – Department Admin
+// key, what, today, branch, year – student
+
 // what is used to understand what the request is about – whether to send data back or create data
+// what – If it is 0, then create
+// what – If it is 1, fetch data for all branches – Super admin
+// what – If it is 2, fetch data for specific branch – Department Admin
+// what – If it is 3, fetch data for specific branch and year – student
 export async function GET(request,{params}) {
 
     // get the pool connection to db
@@ -20,7 +27,7 @@ export async function GET(request,{params}) {
         // authorize secret key
         if(await Keyverify(params.ids[0])){
 
-            if(params.ids[1] == 0){ // create block dates data
+            if(params.ids[1] == 0){ // create official / blocked dates data
                 try {
                     // create query for insert
                     const q = 'INSERT INTO officialrequest (oRequestId, oType, duration, oFrom, oTo, oBy, description, branch, year) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?)';
@@ -31,11 +38,41 @@ export async function GET(request,{params}) {
                     return Response.json({status: 200, message: params.ids[3]+' request submitted!'}, {status: 200})
                 } catch (error) {
                     // user doesn't exist in the system
-                    return Response.json({status: 404, message:'Error creating request. Please try again later!'+error.message}, {status: 200})
+                    return Response.json({status: 404, message:'Error creating request. Please try again later!'}, {status: 200})
                 }
             }
-            else { // fetch data
-                const [rows, fields] = await connection.execute('SELECT * from officialrequest WHERE branch = "'+params.ids[3]+'" AND (oFrom >= "'+currentDate+'" OR oTo >= "'+currentDate+'") ORDER BY oFrom DESC');
+            else if(params.ids[1] == 1){ // fetch data for all branches – Super admin
+                const [rows, fields] = await connection.execute('SELECT * from officialrequest WHERE (oFrom >= "'+currentDate+'" OR oTo >= "'+currentDate+'") ORDER BY oFrom DESC');
+                connection.release();
+            
+                // check if user is found
+                if(rows.length > 0){
+                    // return the requests data
+                    return Response.json({status: 200, message:'Data found!', data: rows}, {status: 200})
+
+                }
+                else {
+                    // user doesn't exist in the system
+                    return Response.json({status: 404, message:'No data!'}, {status: 200})
+                }
+            }
+            else if(params.ids[1] == 2){ // fetch data for specific branch – Department Admin
+                const [rows, fields] = await connection.execute('SELECT * from officialrequest WHERE branch = "All" or FIND_IN_SET("'+params.ids[3]+'", branch)>0 AND (oFrom >= "'+currentDate+'" OR oTo >= "'+currentDate+'") ORDER BY oFrom DESC');
+                connection.release();
+            
+                // check if user is found
+                if(rows.length > 0){
+                    // return the requests data
+                    return Response.json({status: 200, message:'Data found!', data: rows}, {status: 200})
+
+                }
+                else {
+                    // user doesn't exist in the system
+                    return Response.json({status: 404, message:'No data!'}, {status: 200})
+                }
+            }
+            else if(params.ids[1] == 3){ // fetch data for specific branch and year – student
+                const [rows, fields] = await connection.execute('SELECT * from officialrequest WHERE branch = "All" or FIND_IN_SET("'+params.ids[3]+'", branch)>0 AND year="0" or FIND_IN_SET("'+params.ids[4]+'",year)>0 AND (oFrom >= "'+currentDate+'" OR oTo >= "'+currentDate+'") ORDER BY oFrom DESC');
                 connection.release();
             
                 // check if user is found
