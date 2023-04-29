@@ -23,8 +23,9 @@ export async function GET(request,{params}) {
         // authorize secret key
         if(await Keyverify(params.ids[0])){
 
-            // authorize secret key
-            if(await Keyverify(params.ids[2] != 3)){
+            // check the type of request
+            console.log("Yo!");
+            if(params.ids[2] != 3){
 
                 try {
                     // create query for insert
@@ -39,7 +40,7 @@ export async function GET(request,{params}) {
                     return Response.json({status: 404, message:'Error creating request. Please try again later!'+error.message}, {status: 200})
                 }
             }
-            else if(await Keyverify(params.ids[0] == 3)){
+            else if(params.ids[0] == 3){
                 // the only difference for official request is, we are adding approver details
                 // while the request gets created.
                 // this way, the official request is pre-approved
