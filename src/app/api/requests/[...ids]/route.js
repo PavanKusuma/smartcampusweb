@@ -70,7 +70,7 @@ export async function GET(request,{params}) {
                     query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" AND requestType="3" ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3];
                 }
                 else {
-                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3];
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" AND requestType!="3"  ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3];
                 }
 
                 const [rows, fields] = await connection.execute(query);
