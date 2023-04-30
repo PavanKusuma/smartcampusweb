@@ -3,7 +3,7 @@ import { Keyverify } from '../../secretverify';
 
 // get the requests based on the user role and timing
 // params used for this API
-// key, role, status, offset, collegeId, branch
+// key, role, status, offset, collegeId, branch, requestType
 export async function GET(request,{params}) {
 
     // get the pool connection to db
@@ -63,7 +63,17 @@ export async function GET(request,{params}) {
             }
             // if Admin, get all requests w.r.t status and department
             else if(params.ids[1] == 'Admin'){
-                const [rows, fields] = await connection.execute('SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3]);
+
+                // verify what type of requests admin is asking
+                let query = '';
+                if(params.ids[6] == '3'){
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" AND requestType="3" ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3];
+                }
+                else {
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3];
+                }
+
+                const [rows, fields] = await connection.execute(query);
                 connection.release();
             
                 // check if user is found
