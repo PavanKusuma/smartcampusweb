@@ -6,7 +6,10 @@ const OneSignal = require('onesignal-node')
 const client = new OneSignal.Client(process.env.ONE_SIGNAL_APPID, process.env.ONE_SIGNAL_APIKEY)
 
 // params used for this API
-// Keyverify,stage,requestId,name,collegeId,role,status,updatedAt,comment, playerId
+// Keyverify,stage,requestId,name,collegeId,role,status,updatedAt,comment, playerId,type
+
+// type –– Single/Bulk update
+
 // stage is useful to define which stage of the request is
 // Stage1 –– To be Approved –– get the playerId of student for sending the status update for Stage 1 and 2
 // Stage2 –– To be Issed
@@ -38,18 +41,36 @@ export async function GET(request,{params}) {
             // verify the role and accordingly update the columns specific to each role
             // if(params.ids[4] == 'Admin' || params.ids[4] == 'SuperAdmin'){
             if(params.ids[1] == 'S1'){
-                try {
-                    
-                    const [rows, fields] = await connection.execute('UPDATE request SET approver ="'+params.ids[4]+'", approverName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", approvedOn ="'+params.ids[7]+'", comment = CONCAT(comment,"'+comment+'") where requestId = "'+params.ids[2]+'"');
-                    connection.release();
 
-                    // send the notification
-                    send_notification('🙌 Your outing is approved and is ⏳ waiting for issue by the warden!', params.ids[9]);
-                    // return successful update
-                    return Response.json({status: 200, message:'Updated!'}, {status: 200})
-                } catch (error) { // error updating
-                    return Response.json({status: 404, message:'No request found!'+error.message}, {status: 200})
+                // check if the type of update request is bulk or single
+                if(params.ids[10] == 'Single'){
+                    try {
+                        const [rows, fields] = await connection.execute('UPDATE request SET approver ="'+params.ids[4]+'", approverName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", approvedOn ="'+params.ids[7]+'", comment = CONCAT(comment,"'+comment+'") where requestId = "'+params.ids[2]+'"');
+                        connection.release();
+    
+                        // send the notification
+                        send_notification('🙌 Your outing is approved and is ⏳ waiting for issue by the warden!', params.ids[9]);
+                        // return successful update
+                        return Response.json({status: 200, message:'Updated!'}, {status: 200})
+                    } catch (error) { // error updating
+                        return Response.json({status: 404, message:'No request found!'+error.message}, {status: 200})
+                    }
                 }
+                else {
+                    try {
+                        const [rows, fields] = await connection.execute('UPDATE request SET approver ="'+params.ids[4]+'", approverName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", approvedOn ="'+params.ids[7]+'", comment = CONCAT(comment,"'+comment+'") where requestId IN ("'+params.ids[2]+'")');
+                        connection.release();
+    
+                        // send the notification
+                        send_notification('🙌 Your outing is approved and is ⏳ waiting for issue by the warden!', params.ids[9]);
+                        // return successful update
+                        return Response.json({status: 200, message:'Updated!'}, {status: 200})
+                    } catch (error) { // error updating
+                        return Response.json({status: 404, message:'No request found!'+error.message}, {status: 200})
+                    }
+
+                }
+                
             }
             // else if(params.ids[4] == 'OutingAdmin' || params.ids[4] == 'OutingIssuer'){
             else if(params.ids[1] == 'S2'){
