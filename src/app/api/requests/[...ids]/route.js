@@ -89,7 +89,17 @@ export async function GET(request,{params}) {
             }
             // if OutingAdmin, get all requests that are approved by department
             else if((params.ids[1] == 'OutingAdmin') || (params.ids[1] == 'OutingIssuer')){
-                const [rows, fields] = await connection.execute('SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3]);
+
+                // verify what type of requests issuer is asking
+                let query = '';
+                if(params.ids[6] == '3'){
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND requestType="3" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
+                }
+                else {
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND requestType!="3" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
+                }
+
+                const [rows, fields] = await connection.execute(query);
                 connection.release();
             
                 // check if user is found

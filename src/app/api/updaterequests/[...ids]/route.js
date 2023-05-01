@@ -16,6 +16,7 @@ const client = new OneSignal.Client(process.env.ONE_SIGNAL_APPID, process.env.ON
 // Stage3 –– To be CheckOut –– get the playerId of student for check and checkIn to send notification
 // Stage4 –– To be CheckIn
 // Stage1.5 –– To be Rejected –– Move the request to closed by updating isOpen = 0
+// Stage0.5 –– To be Canceled –– Move the request to closed by updating isOpen = 0 and status to Canceled
 export async function GET(request,{params}) {
 
     // get the pool connection to db
@@ -147,6 +148,18 @@ export async function GET(request,{params}) {
                     connection.release();
                     // return successful update
                     return Response.json({status: 200, message:'Updated!'}, {status: 200})
+                } catch (error) { // error updating
+                    return Response.json({status: 404, message:'No request found!'}, {status: 200})
+                }
+                
+            }
+            // this is when student cancels the request and it will be moved to closed.
+            else if(params.ids[1] == 'S0.5'){ 
+                try {
+                    const [rows, fields] = await connection.execute('UPDATE request SET isOpen = 0, requestStatus="Cancelled" where requestId = "'+params.ids[2]+'"');
+                    connection.release();
+                    // return successful update
+                    return Response.json({status: 200, message:'Cancelled!'}, {status: 200})
                 } catch (error) { // error updating
                     return Response.json({status: 404, message:'No request found!'}, {status: 200})
                 }
