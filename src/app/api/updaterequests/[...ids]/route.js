@@ -44,6 +44,8 @@ export async function GET(request,{params}) {
 
                 // check if the type of update request is bulk or single
                 if(params.ids[10] == 'Single'){
+                    console.log('Single');
+                    console.log(params.ids[10]);
                     try {
                         const [rows, fields] = await connection.execute('UPDATE request SET approver ="'+params.ids[4]+'", approverName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", approvedOn ="'+params.ids[7]+'", comment = CONCAT(comment,"'+comment+'") where requestId = "'+params.ids[2]+'"');
                         connection.release();
@@ -57,8 +59,12 @@ export async function GET(request,{params}) {
                     }
                 }
                 else {
+                    console.log('Bulk');
+                    
+                    console.log('UPDATE request SET approver ="'+params.ids[4]+'", approverName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", approvedOn ="'+params.ids[7]+'", comment = CONCAT(comment,"'+comment+'") where requestId IN ('+params.ids[2]+')');
                     try {
-                        const [rows, fields] = await connection.execute('UPDATE request SET approver ="'+params.ids[4]+'", approverName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", approvedOn ="'+params.ids[7]+'", comment = CONCAT(comment,"'+comment+'") where requestId IN ("'+params.ids[2]+'")');
+
+                        const [rows, fields] = await connection.execute('UPDATE request SET approver ="'+params.ids[4]+'", approverName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", approvedOn ="'+params.ids[7]+'", comment = CONCAT(comment,"'+comment+'") where requestId IN ('+params.ids[2]+')');
                         connection.release();
     
                         // send the notification
