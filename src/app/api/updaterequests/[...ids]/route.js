@@ -6,13 +6,13 @@ const OneSignal = require('onesignal-node')
 const client = new OneSignal.Client(process.env.ONE_SIGNAL_APPID, process.env.ONE_SIGNAL_APIKEY)
 
 // params used for this API
-// Keyverify,stage,requestId,name,collegeId,role,status,updatedAt,comment, playerId,type
+// Keyverify,stage,requestId,name,collegeId,role,status,updatedAt,comment, playerId,type,consentBy
 
 // type –– Single/Bulk update
 
 // stage is useful to define which stage of the request is
 // Stage1 –– To be Approved –– get the playerId of student for sending the status update for Stage 1 and 2
-// Stage2 –– To be Issed
+// Stage2 –– To be Issed –– get the consentBy as well
 // Stage3 –– To be CheckOut –– get the playerId of student for check and checkIn to send notification
 // Stage4 –– To be CheckIn
 // Stage1.5 –– To be Rejected –– Move the request to closed by updating isOpen = 0
@@ -82,7 +82,7 @@ export async function GET(request,{params}) {
                 // check if the type of update request is bulk or single
                 if(params.ids[10] == 'Single'){
                     try {
-                        const [rows, fields] = await connection.execute('UPDATE request SET issuer ="'+params.ids[4]+'", issuerName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", issuedOn ="'+params.ids[7]+'", comment = CONCAT(comment,"'+comment+'") where requestId = "'+params.ids[2]+'"');
+                        const [rows, fields] = await connection.execute('UPDATE request SET issuer ="'+params.ids[4]+'", issuerName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", issuedOn ="'+params.ids[7]+'", consentBy="'+params.ids[11]+'", comment = CONCAT(comment,"'+comment+'") where requestId = "'+params.ids[2]+'"');
                         connection.release();
     
                         // send the notification
