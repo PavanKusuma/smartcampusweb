@@ -5,7 +5,7 @@ import dayjs from 'dayjs'
 
 // create new officialrequest for outing by the Admins
 // key, what, oRequestId, type, duration, from, to, by, description, branch, year – Super admin
-// key, what, today – Super admin
+// key, what, today – Super admin, Outing Issuer Admin, Outing Issuer
 // key, what, today, branch – Department Admin
 // key, what, today, branch, year – student
 
@@ -41,7 +41,7 @@ export async function GET(request,{params}) {
                     return Response.json({status: 404, message:'Error creating request. Please try again later!'}, {status: 200})
                 }
             }
-            else if(params.ids[1] == 1){ // fetch data for all branches – Super admin
+            else if(params.ids[1] == 1){ // fetch data for all branches – Super admin & Outing Issuer Admin & Outing Issuer
                 const [rows, fields] = await connection.execute('SELECT * from officialrequest WHERE (oFrom >= "'+currentDate+'" OR oTo >= "'+currentDate+'") ORDER BY oFrom DESC');
                 connection.release();
             
@@ -57,7 +57,7 @@ export async function GET(request,{params}) {
                 }
             }
             else if(params.ids[1] == 2){ // fetch data for specific branch – Department Admin
-                const [rows, fields] = await connection.execute('SELECT * from officialrequest WHERE branch = "All" or FIND_IN_SET("'+params.ids[3]+'", branch)>0 AND (oFrom >= "'+currentDate+'" OR oTo >= "'+currentDate+'") ORDER BY oType DESC');
+                const [rows, fields] = await connection.execute('SELECT * from officialrequest WHERE branch = "All" or FIND_IN_SET("'+params.ids[3]+'", branch)>0 AND (oFrom >= "'+currentDate+'" OR oTo >= "'+currentDate+'") ORDER BY oFrom DESC');
                 connection.release();
             
                 // check if user is found

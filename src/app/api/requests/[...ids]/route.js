@@ -3,7 +3,10 @@ import { Keyverify } from '../../secretverify';
 
 // get the requests based on the user role and timing
 // params used for this API
-// key, role, status, offset, collegeId, branch, requestType
+// key, role, status, offset, collegeId, branch, requestType, hostelId
+
+// requestType – if 3, its official request, 2 – Outcity, 1 – Local
+// hostelId – Used for fetching specific hostel official requests
 export async function GET(request,{params}) {
 
     // get the pool connection to db
@@ -87,8 +90,8 @@ export async function GET(request,{params}) {
                     return Response.json({status: 404, message:'No new requests!'}, {status: 200})
                 }
             }
-            // if OutingAdmin, get all requests that are approved by department
-            else if((params.ids[1] == 'OutingAdmin') || (params.ids[1] == 'OutingIssuer')){
+            // if OutingAdmin, get all requests that are approved by admins
+            else if((params.ids[1] == 'OutingAdmin')){
 
                 // verify what type of requests issuer is asking
                 let query = '';
@@ -113,7 +116,23 @@ export async function GET(request,{params}) {
                     return Response.json({status: 404, message:'No new requests!'}, {status: 200})
                 }
             }
-            // if OutingIssuer, get all requests that are issued by OutingIssuer
+            // if OutingIssuer, get only OFFICIAL requests that are approved by admin and that belong to issuer hostel
+            else if(params.ids[1] == 'OutingIssuer'){
+                const [rows, fields] = await connection.execute('SELECT r.*,u.*, d.* FROM request r JOIN user u ON r.collegeId = u.collegeId JOIN user_details d ON r.collegeId = d.collegeId WHERE r.requestStatus = "'+params.ids[2]+'" AND r.requestType="3" AND d.hostelId = "'+params.ids[7]+'" ORDER BY r.approvedOn DESC LIMIT 20 OFFSET '+params.ids[3]);
+                connection.release();
+            
+                // check if user is found
+                if(rows.length > 0){
+                    // return the requests data
+                    return Response.json({status: 200, message:'Data found!', data: rows}, {status: 200})
+
+                }
+                else {
+                    // user doesn't exist in the system
+                    return Response.json({status: 404, message:'No new requests!'}, {status: 200})
+                }
+            }
+            // if OutingAssistant, get all requests that are issued by OutingIssuer
             else if(params.ids[1] == 'OutingAssistant'){
                 const [rows, fields] = await connection.execute('SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY issuedOn DESC LIMIT 20 OFFSET '+params.ids[3]);
                 connection.release();
