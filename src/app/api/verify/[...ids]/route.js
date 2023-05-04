@@ -1,9 +1,22 @@
 import pool from '../../db'
 import { Keyverify } from '../../secretverify';
+import nodemailer from 'nodemailer';
 
 // this is used to verify the user and send OTP for authorizing into the system
 // returns the user data on success
 export async function GET(request,{params}) {
+
+    // Send emails to each user with their respective OTP code
+    const transporter = nodemailer.createTransport({
+        // host: 'smtp.gmail.com',
+        // port: 587,
+        // secure: false,
+        service: 'gmail',
+        auth: {
+          user: 'hello.helpmecode@gmail.com',
+          pass: 'mditmfjmflmihhnj',
+        },
+      })
 
     // get the pool connection to db
     const connection = await pool.getConnection();
@@ -22,6 +35,25 @@ export async function GET(request,{params}) {
             
             // check if user is found
             if(rows.length > 0){
+
+                // check if email is present
+                if(rows[0].email.length > 2){
+                    // send mail with defined transport object
+                    let info = await transporter.sendMail({
+                        name: 'Smart Campus',
+                        from: '"❇️ Smart campus" <hello.helpmecode@gmail.com>', // sender address
+                        to: "newtonpavan33@gmail.com, kusumapavankumar@gmail.com", // list of receivers
+                        subject: "OTP for your login", // Subject line
+                        text: "Hello world?", // plain text body
+                        html: "<b>Hello world?</b>", // html body
+                    });
+                }
+                // console.log("Message sent: %s", info.messageId);
+                // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+
+                // Preview only available when sending through an Ethereal account
+                // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+
                 // return the user data
                 return Response.json({status: 200, message:'User found!', data: rows[0]}, {status: 200})
 

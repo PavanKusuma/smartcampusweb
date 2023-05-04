@@ -116,10 +116,17 @@ export async function GET(request,{params}) {
                     const [rows, fields] = await connection.execute('UPDATE request SET isStudentOut = 1, requestStatus ="'+params.ids[3]+'", checkoutOn = "'+params.ids[4]+'" where requestId = "'+params.ids[2]+'"');
                     connection.release();
                     
-                    // send the notification
-                    send_notification('👋 You checked out of the campus', params.ids[5]);
-                    // return successful update
-                    return Response.json({status: 200, message:'Updated!'}, {status: 200})
+                    if(rows.affectedRows == 0){
+                        return Response.json({status: 403, message:'Your request is rejected!'}, {status: 200})
+                    }
+                    else {
+                        // send the notification
+                        send_notification('👋 You checked out of the campus', params.ids[5]);
+
+                        // return successful update
+                        return Response.json({status: 200, message:'Updated!'}, {status: 200})
+                    }
+                    
                 } catch (error) { // error updating
                     return Response.json({status: 404, message:'No request found!'}, {status: 200})
                 }
