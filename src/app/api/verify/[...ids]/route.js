@@ -41,11 +41,12 @@ export async function GET(request,{params}) {
                     // send mail with defined transport object
                     let info = await transporter.sendMail({
                         name: 'Smart Campus',
-                        from: '"❇️ Smart campus" <hello.helpmecode@gmail.com>', // sender address
-                        to: "newtonpavan33@gmail.com, kusumapavankumar@gmail.com", // list of receivers
+                        from: '"Smart campus" <hello.helpmecode@gmail.com>', // sender address
+                        to: rows[0].email, // list of receivers
                         subject: "OTP for your login", // Subject line
-                        text: "Hello world?", // plain text body
-                        html: "<b>Hello world?</b>", // html body
+                        // text: "Hello world?", // plain text body
+                        html: '<center><table style="text-align: center;"><tr><td><h1 style="color:#333;font-size:20px">Login to Smart Campus</h1></td></tr><tr><td><p>Copy and paste below OTP to verify your login</p></td></tr><tbody><tr><td><h1 style="background-color: #f5f5f5;text-align: center;padding: 10px;">'+params.ids[2]+'</h1></td></tr> <tr><td><p>Smart Campus, a smart assistant to you at your campus.</p></td></tr></tbody></table><br></center>', // html body
+                        // html: '<center><table><tr><td><p>Copy and paste below OTP to verify your login</p></td></tr> <tr><td><h1 style="background-color:#f5f5f5,text-align:center">'+params.ids[2]+'</h1></td></tr></table><br/></center>', // html body
                     });
                 }
                 // console.log("Message sent: %s", info.messageId);
