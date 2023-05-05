@@ -198,9 +198,10 @@ export async function GET(request,{params}) {
         var playerIds = []
         playerIds.push(playerId)
 
+        const notification = {};
         // notification object
         if(type == 'Single'){
-            const notification = {
+            notification = {
                 contents: {
                     'en' : message,
                 },
@@ -209,7 +210,7 @@ export async function GET(request,{params}) {
             };
         }
         else {
-            const notification = {
+            notification = {
                 
             contents: {
                 'en' : message,
