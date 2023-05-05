@@ -51,7 +51,7 @@ export async function GET(request,{params}) {
                         connection.release();
     
                         // send the notification
-                        send_notification('🙌 Your outing is approved and is ⏳ waiting for issue by the warden!', params.ids[9]);
+                        send_notification('🙌 Your outing is approved and is ⏳ waiting for issue by the warden!', params.ids[9], params.ids[10]);
                         // return successful update
                         return Response.json({status: 200, message:'Updated!'}, {status: 200})
                     } catch (error) { // error updating
@@ -66,7 +66,7 @@ export async function GET(request,{params}) {
                         connection.release();
     
                         // send the notification
-                        send_notification('🙌 Your outing is approved and is ⏳ waiting for issue by the warden!', params.ids[9]);
+                        send_notification('🙌 Your outing is approved and is ⏳ waiting for issue by the warden!', params.ids[9], params.ids[10]);
                         // return successful update
                         return Response.json({status: 200, message:'Updated!'}, {status: 200})
                     } catch (error) { // error updating
@@ -86,7 +86,7 @@ export async function GET(request,{params}) {
                         connection.release();
     
                         // send the notification
-                        send_notification('✅ Your outing is issued! Scan checkout QR code at security.', params.ids[9]);
+                        send_notification('✅ Your outing is issued! Scan checkout QR code at security.', params.ids[9], params.ids[10]);
                         // return successful update
                         return Response.json({status: 200, message:'Updated!'}, {status: 200})
                     } catch (error) { // error updating
@@ -99,7 +99,7 @@ export async function GET(request,{params}) {
                         connection.release();
     
                         // send the notification
-                        send_notification('✅ Your outing is issued! Scan checkout QR code at security.', params.ids[9]);
+                        send_notification('✅ Your outing is issued! Scan checkout QR code at security.', params.ids[9], params.ids[10]);
                         // return successful update
                         return Response.json({status: 200, message:'Updated!'}, {status: 200})
                     } catch (error) { // error updating
@@ -121,7 +121,7 @@ export async function GET(request,{params}) {
                     }
                     else {
                         // send the notification
-                        send_notification('👋 You checked out of the campus', params.ids[5]);
+                        send_notification('👋 You checked out of the campus', params.ids[5], 'Single');
 
                         // return successful update
                         return Response.json({status: 200, message:'Updated!'}, {status: 200})
@@ -140,7 +140,7 @@ export async function GET(request,{params}) {
                     connection.release();
                     
                     // send the notification
-                    send_notification('✅ You checked in to the campus', params.ids[5]);
+                    send_notification('✅ You checked in to the campus', params.ids[5], 'Single');
                     // return successful update
                     return Response.json({status: 200, message:'Updated!'}, {status: 200})
                 } catch (error) { // error updating
@@ -191,7 +191,7 @@ export async function GET(request,{params}) {
   // send the notification using onesignal.
   // use the playerIds of the users.
   // check if playerId length > 2
-  function send_notification(message, playerId){
+  function send_notification(message, playerId, type){
     
     // send notification only if there is playerId for the user
     if(playerId.length > 0){
@@ -199,19 +199,29 @@ export async function GET(request,{params}) {
         playerIds.push(playerId)
 
         // notification object
-        const notification = {
-
+        if(type == 'Single'){
+            const notification = {
+                contents: {
+                    'en' : message,
+                },
+                // include_player_ids: ['playerId'],
+                include_player_ids: [playerId]
+            };
+        }
+        else {
+            const notification = {
+                
             contents: {
                 'en' : message,
             },
-            // include_player_ids: ['playerId'],
             include_player_ids: playerIds,
         };
+        }
 
         client.createNotification(notification).then(res => {
-            // console.log(res);
+            console.log(res);
         }).catch(e => {
-            // console.log(e);
+            console.log(e);
         })
     }
   }
