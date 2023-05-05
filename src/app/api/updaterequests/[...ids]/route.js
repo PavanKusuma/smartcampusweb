@@ -198,7 +198,7 @@ export async function GET(request,{params}) {
         var playerIds = []
         playerIds.push(playerId)
 
-        const notification = {};
+        var notification;
         // notification object
         if(type == 'Single'){
             notification = {
