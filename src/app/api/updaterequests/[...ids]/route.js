@@ -51,7 +51,8 @@ export async function GET(request,{params}) {
                         connection.release();
     
                         // send the notification
-                        send_notification('🙌 Your outing is approved and is ⏳ waiting for issue by the warden!', params.ids[9], params.ids[10]);
+                        await send_notification('🙌 Your outing is approved and is ⏳ waiting for issue by the warden!', params.ids[9], params.ids[10]);
+
                         // return successful update
                         return Response.json({status: 200, message:'Updated!'}, {status: 200})
                     } catch (error) { // error updating
@@ -191,7 +192,7 @@ export async function GET(request,{params}) {
   // send the notification using onesignal.
   // use the playerIds of the users.
   // check if playerId length > 2
-  function send_notification(message, playerId, type){
+   function send_notification(message, playerId, type){
     
     // send notification only if there is playerId for the user
     if(playerId.length > 0){
@@ -220,9 +221,14 @@ export async function GET(request,{params}) {
         }
 
         client.createNotification(notification).then(res => {
+            // return Response.json({status: 200, message:'Updated!', data: res}, {status: 200})
             console.log(res);
+            // return 'Yes';
         }).catch(e => {
+            // return 'No';
             console.log(e);
         })
+        
     }
+    // return 'No';
   }
