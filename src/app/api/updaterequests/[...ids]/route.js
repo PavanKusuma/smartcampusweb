@@ -51,10 +51,50 @@ export async function GET(request,{params}) {
                         connection.release();
     
                         // send the notification
-                        send_notification('🙌 Your outing is approved and is ⏳ waiting for issue by the warden!', params.ids[9], params.ids[10]);
+                        // send_notification('🙌 Your outing is approved and is ⏳ waiting for issue by the warden!', params.ids[9], params.ids[10]);
 
+var playerId = params.ids[9];
+var type = params.ids[10];
+    // send notification only if there is playerId for the user
+    if(playerId.length > 0){
+        var playerIds = []
+        playerIds.push(playerId)
+
+        var notification;
+        // notification object
+        if(type == 'Single'){
+            notification = {
+                contents: {
+                    'en' : '🙌 Your outing is approved and is ⏳',
+                },
+                // include_player_ids: ['playerId'],
+                include_player_ids: [playerId]
+            };
+        }
+        else {
+            notification = {
+                
+            contents: {
+                'en' : '🙌 Your outing is approved and is ⏳!',
+            },
+            include_player_ids: playerIds,
+        };
+        }
+
+        await client.createNotification(notification).then(res => {
+            // return Response.json({status: 200, message:'Updated!', data: res}, {status: 200})
+            console.log(res);
+            return Response.json({status: 2000, message:'Updated!'}, {status: 200})
+            // return 'Yes';
+        }).catch(e => {
+            // return 'No';
+            console.log(e);
+            return Response.json({status: 2001, message:'Updated!'}, {status: 200})
+        })
+        
+    }
                         // return successful update
-                        return Response.json({status: 200, message:'Updated!'}, {status: 200})
+                        // return Response.json({status: 200, message:'Updated!'}, {status: 200})
                     } catch (error) { // error updating
                         return Response.json({status: 404, message:'No request found!'+error.message}, {status: 200})
                     }
