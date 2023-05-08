@@ -51,52 +51,13 @@ export async function GET(request,{params}) {
                         connection.release();
     
                         // send the notification
-                        // send_notification('🙌 Your outing is approved and is ⏳ waiting for issue by the warden!', params.ids[9], params.ids[10]);
-
-var playerId = params.ids[9];
-var type = params.ids[10];
-    // send notification only if there is playerId for the user
-    if(playerId.length > 0){
-        var playerIds = []
-        playerIds.push(playerId)
-
-        var notification;
-        // notification object
-        if(type == 'Single'){
-            notification = {
-                contents: {
-                    'en' : '🙌 Your outing is approved and is ⏳',
-                },
-                // include_player_ids: ['playerId'],
-                include_player_ids: [playerId]
-            };
-        }
-        else {
-            notification = {
-                
-            contents: {
-                'en' : '🙌 Your outing is approved and is ⏳!',
-            },
-            include_player_ids: playerIds,
-        };
-        }
-
-        await client.createNotification(notification).then(res => {
-            // return Response.json({status: 200, message:'Updated!', data: res}, {status: 200})
-            console.log(res);
-            return Response.json({status: 2000, message:'Updated!'}, {status: 200})
-            // return 'Yes';
-        }).catch(e => {
-            // return 'No';
-            console.log(e);
-            return Response.json({status: 2001, message:'Updated!'}, {status: 200})
-        })
-        
-    }
-                        // return successful update
-                        // return Response.json({status: 200, message:'Updated!'}, {status: 200})
+                        const notificationResult = await send_notification('🙌 Your outing is approved and is ⏳ waiting for issue by the warden!', params.ids[9], params.ids[10]);
+                        
+                        // return the response
+                        return Response.json({status: 200,message: 'Updated!',notification: notificationResult,});
+  
                     } catch (error) { // error updating
-                        return Response.json({status: 404, message:'No request found!'+error.message}, {status: 200})
+                        return Response.json({status: 404, message:'No request found!'}, {status: 200})
                     }
                 }
                 else {
@@ -107,9 +68,10 @@ var type = params.ids[10];
                         connection.release();
     
                         // send the notification
-                        send_notification('🙌 Your outing is approved and is ⏳ waiting for issue by the warden!', params.ids[9], params.ids[10]);
+                        const notificationResult = await send_notification('🙌 Your outing is approved and is ⏳ waiting for issue by the warden!', params.ids[9], params.ids[10]);
+                        
                         // return successful update
-                        return Response.json({status: 200, message:'Updated!'}, {status: 200})
+                        return Response.json({status: 200, message:'Updated!',notification: notificationResult,}, {status: 200})
                     } catch (error) { // error updating
                         return Response.json({status: 404, message:'No request found!'+error.message}, {status: 200})
                     }
@@ -127,9 +89,10 @@ var type = params.ids[10];
                         connection.release();
     
                         // send the notification
-                        send_notification('✅ Your outing is issued! Scan checkout QR code at security.', params.ids[9], params.ids[10]);
+                        const notificationResult = await send_notification('✅ Your outing is issued! Scan checkout QR code at security.', params.ids[9], params.ids[10]);
+                        
                         // return successful update
-                        return Response.json({status: 200, message:'Updated!'}, {status: 200})
+                        return Response.json({status: 200, message:'Updated!',notification: notificationResult,}, {status: 200})
                     } catch (error) { // error updating
                         return Response.json({status: 404, message:'No request found!'}, {status: 200})
                     }
@@ -140,9 +103,10 @@ var type = params.ids[10];
                         connection.release();
     
                         // send the notification
-                        send_notification('✅ Your outing is issued! Scan checkout QR code at security.', params.ids[9], params.ids[10]);
+                        const notificationResult = await send_notification('✅ Your outing is issued! Scan checkout QR code at security.', params.ids[9], params.ids[10]);
+                        
                         // return successful update
-                        return Response.json({status: 200, message:'Updated!'}, {status: 200})
+                        return Response.json({status: 200, message:'Updated!',notification: notificationResult,}, {status: 200})
                     } catch (error) { // error updating
                         return Response.json({status: 404, message:'No request found!'}, {status: 200})
                     }
@@ -162,10 +126,10 @@ var type = params.ids[10];
                     }
                     else {
                         // send the notification
-                        send_notification('👋 You checked out of the campus', params.ids[5], 'Single');
+                        const notificationResult = await send_notification('👋 You checked out of the campus', params.ids[5], 'Single');
 
                         // return successful update
-                        return Response.json({status: 200, message:'Updated!'}, {status: 200})
+                        return Response.json({status: 200, message:'Updated!',notification: notificationResult,}, {status: 200})
                     }
                     
                 } catch (error) { // error updating
@@ -181,9 +145,10 @@ var type = params.ids[10];
                     connection.release();
                     
                     // send the notification
-                    send_notification('✅ You checked in to the campus', params.ids[5], 'Single');
+                    const notificationResult = await send_notification('✅ You checked in to the campus', params.ids[5], 'Single');
+                    
                     // return successful update
-                    return Response.json({status: 200, message:'Updated!'}, {status: 200})
+                    return Response.json({status: 200, message:'Updated!',notification: notificationResult,}, {status: 200})
                 } catch (error) { // error updating
                     return Response.json({status: 404, message:'No request found!'}, {status: 200})
                 }
@@ -232,43 +197,84 @@ var type = params.ids[10];
   // send the notification using onesignal.
   // use the playerIds of the users.
   // check if playerId length > 2
-   async function send_notification(message, playerId, type){
-    
-    // send notification only if there is playerId for the user
-    if(playerId.length > 0){
-        var playerIds = []
-        playerIds.push(playerId)
+  async function send_notification(message, playerId, type) {
 
+    return new Promise(async (resolve, reject) => {
+      // send notification only if there is playerId for the user
+      if (playerId.length > 0) {
+        var playerIds = [];
+        playerIds.push(playerId);
+  
         var notification;
         // notification object
-        if(type == 'Single'){
-            notification = {
-                contents: {
-                    'en' : message,
-                },
-                // include_player_ids: ['playerId'],
-                include_player_ids: [playerId]
-            };
-        }
-        else {
-            notification = {
-                
+        if (type == 'Single') {
+          notification = {
             contents: {
-                'en' : message,
+              'en': message,
+            },
+            // include_player_ids: ['playerId'],
+            // include_player_ids: ['90323-043'],
+            include_player_ids: [playerId],
+          };
+        } else {
+          notification = {
+            contents: {
+              'en': message,
             },
             include_player_ids: playerIds,
-        };
+          };
         }
+  
+        try {
+          // create notification
+          const notificationResult = await client.createNotification(notification);
+          
+          resolve(notificationResult);
 
-        await client.createNotification(notification).then(res => {
-            // return Response.json({status: 200, message:'Updated!', data: res}, {status: 200})
-            console.log(res);
-            // return 'Yes';
-        }).catch(e => {
-            // return 'No';
-            console.log(e);
-        })
-        
-    }
-    // return 'No';
+        } catch (error) {
+          
+          resolve(null);
+        }
+      } else {
+        resolve(null);
+      }
+    });
   }
+
+//   async function send_notification(message, playerId, type){
+    
+//     // send notification only if there is playerId for the user
+//     if(playerId.length > 0){
+//         var playerIds = []
+//         playerIds.push(playerId)
+
+//         var notification;
+//         // notification object
+//         if(type == 'Single'){
+//             notification = {
+//                 contents: {
+//                     'en' : message,
+//                 },
+//                 // include_player_ids: ['playerId'],
+//                 include_player_ids: [playerId]
+//             };
+//         }
+//         else {
+//             notification = {
+                
+//             contents: {
+//                 'en' : message,
+//             },
+//             include_player_ids: playerIds,
+//         };
+//         }
+
+//         await client.createNotification(notification).then(res => {
+//             console.log(res);
+//         }).catch(e => {
+//             console.log(e);
+//         })
+        
+        
+//     }
+//   }
