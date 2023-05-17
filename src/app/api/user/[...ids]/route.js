@@ -29,7 +29,7 @@ export async function GET(request,{params}) {
             }
             else if(params.ids[1] == 'U2'){
                 try {
-                    const [rows, fields] = await connection.execute('SELECT * FROM user_details WHERE collegeId = "'+params.ids[2]+'"');
+                    const [rows, fields] = await connection.execute('SELECT u.*,IFNULL(h.hostelName, "") AS hostelName FROM user_details u JOIN hostel h ON u.hostelsId=h.hostelsId WHERE collegeId = "'+params.ids[2]+'"');
                     connection.release();
                     // return successful update
 
