@@ -118,7 +118,7 @@ export async function GET(request,{params}) {
             // stage1, requestId, status, updatedOn
             else if(params.ids[1] == 'S3'){ 
                 try {
-                    const [rows, fields] = await connection.execute('UPDATE request SET isStudentOut = 1, requestStatus ="'+params.ids[3]+'", checkoutOn = "'+params.ids[4]+'" where requestId = "'+params.ids[2]+'"');
+                    const [rows, fields] = await connection.execute('UPDATE request SET isStudentOut = 1, requestStatus ="'+params.ids[3]+'", checkoutOn = "'+params.ids[4]+'" where requestId = "'+params.ids[2]+'" and isOpen = 1');
                     connection.release();
                     
                     if(rows.affectedRows == 0){
