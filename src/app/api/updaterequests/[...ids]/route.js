@@ -171,8 +171,18 @@ export async function GET(request,{params}) {
                 try {
                     const [rows, fields] = await connection.execute('UPDATE request SET isOpen = 0, requestStatus="Cancelled" where requestId = "'+params.ids[2]+'"');
                     connection.release();
-                    // return successful update
-                    return Response.json({status: 200, message:'Cancelled!'}, {status: 200})
+                    
+                    if(params.ids[3] != '-'){
+                        // send the notification
+                        const notificationResult = await send_notification('❌ You request is cancelled', params.ids[3], 'Single');
+                        
+                        // return successful update
+                        return Response.json({status: 200, message:'Cancelled!', notification: notificationResult}, {status: 200})
+                    }
+                    else {
+                        // return successful update
+                        return Response.json({status: 200, message:'Cancelled!'}, {status: 200})
+                    }
                 } catch (error) { // error updating
                     return Response.json({status: 404, message:'No request found!'}, {status: 200})
                 }
