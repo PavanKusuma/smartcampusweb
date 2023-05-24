@@ -1,7 +1,9 @@
 import pool from '../../db'
 import { Keyverify } from '../../secretverify';
 import nodemailer from 'nodemailer';
+const OneSignal = require('onesignal-node')
 
+const client = new OneSignal.Client(process.env.ONE_SIGNAL_APPID, process.env.ONE_SIGNAL_APIKEY)
 // this is used to verify the user and send OTP for authorizing into the system
 // returns the user data on success
 export async function GET(request,{params}) {
@@ -13,8 +15,10 @@ export async function GET(request,{params}) {
         // secure: false,
         service: 'gmail',
         auth: {
-          user: 'hello.helpmecode@gmail.com',
-          pass: 'mditmfjmflmihhnj',
+          user: 'smartcampus@svecw.edu.in',
+          pass: 'SVECW@2023',
+        //   user: 'hello.helpmecode@gmail.com',
+        //   pass: 'mditmfjmflmihhnj',
         },
       })
 
@@ -41,7 +45,8 @@ export async function GET(request,{params}) {
                     // send mail with defined transport object
                     let info = await transporter.sendMail({
                         name: 'Smart Campus',
-                        from: '"Smart campus" <hello.helpmecode@gmail.com>', // sender address
+                        from: '"Smart campus" <smartcampus@svecw.edu.in>', // sender address
+                        // from: '"Smart campus" <hello.helpmecode@gmail.com>', // sender address
                         to: rows[0].email, // list of receivers
                         subject: "OTP for your login", // Subject line
                         // text: "Hello world?", // plain text body
@@ -71,7 +76,7 @@ export async function GET(request,{params}) {
     }
     catch (err){
         // some error occured
-        return Response.json({status: 500, message:'Facing issues. Please try again!'}, {status: 200})
+        return Response.json({status: 500, message:'Facing issues. Please try again!'+err.message}, {status: 200})
     }
     
     

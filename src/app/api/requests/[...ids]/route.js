@@ -99,7 +99,14 @@ export async function GET(request,{params}) {
                     query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND requestType="3" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
                 }
                 else {
-                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND requestType!="3" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
+                    // we want to return all requests irrespective of official or general outing just for viewing
+                    // if user is asking for pending requests (approved), then only return what they can approve
+                    if(params.ids[2] == 'Approved'){
+                        query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND requestType!="3" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
+                    }
+                    else {
+                        query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
+                    }
                 }
 
                 const [rows, fields] = await connection.execute(query);
