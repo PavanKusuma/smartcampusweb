@@ -73,7 +73,7 @@ export async function GET(request,{params}) {
                 }
             }
             else if(params.ids[1] == 3){ // fetch data for specific branch and year – student
-                const [rows, fields] = await connection.execute('SELECT * from officialrequest WHERE branch = "All" or FIND_IN_SET("'+params.ids[3]+'", branch)>0 AND year="All" or FIND_IN_SET("'+params.ids[4]+'",year)>0 AND (oFrom >= "'+currentDate+'" OR oTo >= "'+currentDate+'") ORDER BY oFrom DESC');
+                const [rows, fields] = await connection.execute('SELECT * from officialrequest WHERE (branch = "All" or FIND_IN_SET("'+params.ids[3]+'", branch)>0) AND (year="All" or FIND_IN_SET("'+params.ids[4]+'",year)>0) AND (oFrom >= "'+currentDate+'" OR oTo >= "'+currentDate+'") ORDER BY oFrom DESC');
                 connection.release();
             
                 // check if user is found
