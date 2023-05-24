@@ -30,9 +30,9 @@ export async function GET(request,{params}) {
             if(params.ids[1] == 0){ // create official / blocked dates data
                 try {
                     // create query for insert
-                    const q = 'INSERT INTO officialrequest (oRequestId, oType, duration, oFrom, oTo, oBy,oByName, description, branch, year) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+                    const q = 'INSERT INTO officialrequest (oRequestId, oType, duration, oFrom, oTo, oBy,oByName, description, branch, year, createdOn) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
                     // create new request
-                    const [rows, fields] = await connection.execute(q, [ params.ids[2], params.ids[3], params.ids[4], params.ids[5], params.ids[6], params.ids[7], params.ids[8], params.ids[9], params.ids[10],params.ids[11] ]);
+                    const [rows, fields] = await connection.execute(q, [ params.ids[2], params.ids[3], params.ids[4], params.ids[5], params.ids[6], params.ids[7], params.ids[8], params.ids[9], params.ids[10], params.ids[11],params.ids[12] ]);
                     connection.release();
                     // return the user data
                     return Response.json({status: 200, message: params.ids[3]+' request submitted!'}, {status: 200})
@@ -42,7 +42,7 @@ export async function GET(request,{params}) {
                 }
             }
             else if(params.ids[1] == 1){ // fetch data for all branches – Super admin & Outing Issuer Admin & Outing Issuer
-                const [rows, fields] = await connection.execute('SELECT * from officialrequest WHERE (oFrom >= "'+currentDate+'" OR oTo >= "'+currentDate+'") ORDER BY oFrom DESC');
+                const [rows, fields] = await connection.execute('SELECT * from officialrequest WHERE (oFrom >= "'+currentDate+'" OR oTo >= "'+currentDate+'") ORDER BY createdOn DESC');
                 connection.release();
             
                 // check if user is found
