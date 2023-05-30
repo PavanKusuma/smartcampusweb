@@ -70,7 +70,9 @@ export async function GET(request,{params}) {
                 // verify what type of requests admin is asking
                 let query = '';
                 if(params.ids[6] == '3'){
-                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" AND requestType="3" ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3];
+                    // for the admin, removing the offset
+                    // loading all the results at a time so that search can be made inline
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" AND requestType="3" ORDER BY requestDate DESC';
                 }
                 else {
                     query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" AND requestType!="3"  ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3];
