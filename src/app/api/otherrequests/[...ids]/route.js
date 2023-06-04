@@ -19,7 +19,7 @@ export async function GET(request,{params}) {
             if(params.ids[1] == 'SuperAdmin'){
 
                 // get all types of request with respect to the status mentioned
-                query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
+                var query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
                 const [rows, fields] = await connection.execute(query);
                 connection.release();
             
@@ -38,7 +38,7 @@ export async function GET(request,{params}) {
             else if(params.ids[1] == 'Admin'){
 
                 // get all types of request with respect to the status mentioned
-                query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
+                var query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
                 const [rows, fields] = await connection.execute(query);
                 connection.release();
             
@@ -56,7 +56,7 @@ export async function GET(request,{params}) {
             // if OutingAdmin, get all requests that are approved by admins
             else if((params.ids[1] == 'OutingAdmin')){
 
-                query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
+                var query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
                 const [rows, fields] = await connection.execute(query);
                 connection.release();
             
