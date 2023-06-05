@@ -127,7 +127,7 @@ export async function GET(request,{params}) {
             }
             // if OutingIssuer, get only OFFICIAL requests that are approved by admin and that belong to issuer hostel
             else if(params.ids[1] == 'OutingIssuer'){
-                const [rows, fields] = await connection.execute('SELECT r.*,u.*, d.* FROM request r JOIN user u ON r.collegeId = u.collegeId JOIN user_details d ON r.collegeId = d.collegeId WHERE r.requestStatus = "'+params.ids[2]+'" AND r.requestType="3" AND d.hostelId = "'+params.ids[7]+'" ORDER BY r.approvedOn DESC LIMIT 20 OFFSET '+params.ids[3]);
+                const [rows, fields] = await connection.execute('SELECT r.*,u.*, d.* FROM request r JOIN user u ON r.collegeId = u.collegeId JOIN user_details d ON r.collegeId = d.collegeId WHERE r.requestStatus = "'+params.ids[2]+'" AND r.requestType="3" AND d.hostelId = "'+params.ids[6]+'" ORDER BY r.approvedOn DESC LIMIT 20 OFFSET '+params.ids[3]);
                 connection.release();
             
                 // check if user is found
