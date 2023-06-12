@@ -28,7 +28,8 @@ export async function GET(request,{params}) {
                     q = 'SELECT s.status AS requestStatus, COUNT(r.requestStatus) AS count FROM (SELECT "Submitted" AS status UNION SELECT "Approved" UNION SELECT "Issued" UNION SELECT "InOuting" UNION SELECT "Rejected" UNION SELECT "Cancelled" UNION SELECT "Returned") AS s LEFT JOIN request r ON s.status = r.requestStatus AND r.isOpen = 1 GROUP BY s.status UNION SELECT "InCampus" AS requestStatus, COUNT(*) AS COUNT FROM user WHERE type = "hostel"';
                 }
                 else {
-                    q = 'SELECT r.requestStatus, count(*) as count FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND u.branch="'+params.ids[2]+'" GROUP BY r.requestStatus';
+                    q = 'SELECT s.status AS requestStatus, COUNT(r.requestStatus) AS count FROM (SELECT "Submitted" AS status UNION SELECT "Approved" UNION SELECT "Issued" UNION SELECT "InOuting" UNION SELECT "Rejected" UNION SELECT "Cancelled" UNION SELECT "Returned") AS s LEFT JOIN request r ON s.status = r.requestStatus AND r.isOpen = 1 GROUP BY s.status UNION SELECT "InCampus" AS requestStatus, COUNT(*) AS COUNT FROM user WHERE type = "hostel" AND branch="'+params.ids[2]+'"';
+                    // q = 'SELECT r.requestStatus, count(*) as count FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND u.branch="'+params.ids[2]+'" GROUP BY r.requestStatus';
                 }
 
                 const [rows, fields] = await connection.execute(q);
