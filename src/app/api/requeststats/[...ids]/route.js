@@ -39,7 +39,7 @@ export async function GET(request,{params}) {
                 else  {
                     q = `SELECT
                             DATE_FORMAT(months.month, '%Y-%m') AS month,
-                            CONCAT(MONTHNAME(months.month), ' ', YEAR(months.month)) AS month_year,
+                            CONCAT(DATE_FORMAT(months.month, '%b'), '-', YEAR(months.month)) AS month_year,
                             COUNT(request.requestId) AS request_count
                         FROM
                             (
@@ -58,8 +58,31 @@ export async function GET(request,{params}) {
                         GROUP BY
                             months.month, month_year
                         ORDER BY
-                            months.month;
+                            months.month DESC;
                         `;
+                    // q = `SELECT
+                    //         DATE_FORMAT(months.month, '%Y-%m') AS month,
+                    //         CONCAT(MONTHNAME(months.month), ' ', YEAR(months.month)) AS month_year,
+                    //         COUNT(request.requestId) AS request_count
+                    //     FROM
+                    //         (
+                    //             SELECT DATE_FORMAT(DATE_SUB("`+params.ids[5]+`", INTERVAL n.n + m.m * 10 MONTH), '%Y-%m-01') AS month
+                    //             FROM
+                    //                 (SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL
+                    //                 SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS n
+                    //             CROSS JOIN
+                    //                 (SELECT 0 AS m UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL
+                    //                 SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS m
+                    //             WHERE
+                    //                 DATE_SUB("`+params.ids[5]+`", INTERVAL n.n + m.m * 10 MONTH) >= DATE_SUB(DATE_FORMAT("`+params.ids[5]+`", '%Y-%m-01'), INTERVAL 12 MONTH)
+                    //         ) AS months
+                    //     LEFT JOIN
+                    //         request ON DATE_FORMAT(request.requestDate, '%Y-%m') = DATE_FORMAT(months.month, '%Y-%m')
+                    //     GROUP BY
+                    //         months.month, month_year
+                    //     ORDER BY
+                    //         months.month;
+                    //     `;
                     
                 }
 
