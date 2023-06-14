@@ -3,7 +3,7 @@ import { Keyverify } from '../../secretverify';
 
 // get the requests based on the user role and timing
 // params used for this API
-// key, role, branch, status, – for other roles
+// key, role, branch, status, level – for other roles
 // key, role, collegeId – for student
 // branch value can be 'All' to get complete data
 
@@ -21,16 +21,42 @@ export async function GET(request,{params}) {
             // if SuperAdmin, get all the requests w.r.t status
             if(params.ids[1] == 'SuperAdmin' || params.ids[1] == 'Admin' || params.ids[1] == 'OutingAdmin' || params.ids[1] == 'OutingIssuer' ){
 
-                // check if the request is asking for complete data or for specific branch
                 let q = '';
-                if(params.ids[3] == 'All' && params.ids[1] != 'Admin'){
-                    // q = 'SELECT requestStatus, count(*) as count FROM request group by requestStatus';
-                    q = 'SELECT s.status AS requestStatus, COUNT(r.requestStatus) AS count FROM (SELECT "Submitted" AS status UNION SELECT "Approved" UNION SELECT "Issued" UNION SELECT "InOuting" UNION SELECT "Rejected" UNION SELECT "Cancelled" UNION SELECT "Returned") AS s LEFT JOIN request r ON s.status = r.requestStatus AND r.isOpen = 1 GROUP BY s.status UNION SELECT "InCampus" AS requestStatus, COUNT(*) AS COUNT FROM user WHERE type = "hostel"';
+                    
+                // check if the level of stats are basic or detailed
+                if(params.ids[4] == 1){
+                    
+                    // check if the request is asking for complete data or for specific branch
+                    if(params.ids[3] == 'All' && params.ids[1] != 'Admin'){
+                        // q = 'SELECT requestStatus, count(*) as count FROM request group by requestStatus';
+                        q = 'SELECT s.status AS requestStatus, COUNT(r.requestStatus) AS count FROM (SELECT "Submitted" AS status UNION SELECT "Approved" UNION SELECT "Issued" UNION SELECT "InOuting" UNION SELECT "Rejected" UNION SELECT "Cancelled" UNION SELECT "Returned") AS s LEFT JOIN request r ON s.status = r.requestStatus AND r.isOpen = 1 GROUP BY s.status UNION SELECT "InCampus" AS requestStatus, COUNT(*) AS COUNT FROM user WHERE type = "hostel"';
+                    }
+                    else {
+                        q = 'SELECT s.status AS requestStatus, COUNT(r.requestStatus) AS count FROM (SELECT "Submitted" AS status UNION SELECT "Approved" UNION SELECT "Issued" UNION SELECT "InOuting" UNION SELECT "Rejected" UNION SELECT "Cancelled" UNION SELECT "Returned") AS s LEFT JOIN request r ON s.status = r.requestStatus AND r.isOpen = 1 GROUP BY s.status UNION SELECT "InCampus" AS requestStatus, COUNT(*) AS COUNT FROM user WHERE type = "hostel" AND branch="'+params.ids[2]+'"';
+                        // q = 'SELECT r.requestStatus, count(*) as count FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND u.branch="'+params.ids[2]+'" GROUP BY r.requestStatus';
+                    }
                 }
-                else {
-                    q = 'SELECT s.status AS requestStatus, COUNT(r.requestStatus) AS count FROM (SELECT "Submitted" AS status UNION SELECT "Approved" UNION SELECT "Issued" UNION SELECT "InOuting" UNION SELECT "Rejected" UNION SELECT "Cancelled" UNION SELECT "Returned") AS s LEFT JOIN request r ON s.status = r.requestStatus AND r.isOpen = 1 GROUP BY s.status UNION SELECT "InCampus" AS requestStatus, COUNT(*) AS COUNT FROM user WHERE type = "hostel" AND branch="'+params.ids[2]+'"';
-                    // q = 'SELECT r.requestStatus, count(*) as count FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND u.branch="'+params.ids[2]+'" GROUP BY r.requestStatus';
+                else  {
+                    q = "SELECT" 
+                    "DATE_FORMAT(months.month, '%Y-%m') AS month,"
+                    "CONCAT(MONTHNAME(months.month), ' ', YEAR(months.month)) AS month_year,"
+                    "COUNT(request.requestId) AS request_count"
+                "FROM ("
+                    "SELECT DATE_FORMAT(DATE_SUB('2023-10-01', INTERVAL n.n + m.m * 10 MONTH), '%Y-%m-01') AS month"
+                       "FROM"
+                           "(SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL"
+                            " SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS n"
+                        "CROSS JOIN"
+                            "(SELECT 0 AS m UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL"
+                             "SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS m"
+                        "WHERE"
+                            "DATE_SUB('2023-10-01', INTERVAL n.n + m.m * 10 MONTH) >= DATE_SUB(DATE_FORMAT(NOW(), '%Y-%m-01'), INTERVAL 12 MONTH)"
+                    ") AS months"
+                "LEFT JOIN request ON DATE_FORMAT(request.requestDate, '%Y-%m') = DATE_FORMAT(months.month, '%Y-%m') GROUP BY months.month, month_year ORDER BY months.month"
+                ;
                 }
+
+                
 
                 const [rows, fields] = await connection.execute(q);
                 connection.release();
