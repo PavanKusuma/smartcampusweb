@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import pool from '../../db'
 import { Keyverify } from '../../secretverify';
 import nodemailer from 'nodemailer';
@@ -6,6 +7,8 @@ const OneSignal = require('onesignal-node')
 const client = new OneSignal.Client(process.env.ONE_SIGNAL_APPID, process.env.ONE_SIGNAL_APIKEY)
 // this is used to verify the user and send OTP for authorizing into the system
 // returns the user data on success
+
+// collegeId, deviceId, loginTime
 export async function GET(request,{params}) {
 
     // Send emails to each user with their respective OTP code
@@ -15,8 +18,10 @@ export async function GET(request,{params}) {
         // secure: false,
         service: 'gmail',
         auth: {
-          user: 'smartcampus@svecw.edu.in',
-          pass: 'SVECW@2023',
+          user: process.env.EMAIL,
+          pass: process.env.EMAIL_PWD,
+        //   user: 'smartcampus@svecw.edu.in',
+        //   pass: 'SVECW@2023',
         //   user: 'hello.helpmecode@gmail.com',
         //   pass: 'mditmfjmflmihhnj',
         },
@@ -54,6 +59,12 @@ export async function GET(request,{params}) {
                         // html: '<center><table><tr><td><p>Copy and paste below OTP to verify your login</p></td></tr> <tr><td><h1 style="background-color:#f5f5f5,text-align:center">'+params.ids[2]+'</h1></td></tr></table><br/></center>', // html body
                     });
                 }
+
+                // create query for insert
+                const q = 'INSERT INTO user_sessions (collegeId, deviceId, sessionToken, loginTime, isLoggedIn) VALUES ( ?, ?, ?, ?, ?)';
+                // create new request
+                const [rows, fields] = await connection.execute(q, [ params.ids[1], params.ids[3], randomUUID(), params.ids[4], 1]);
+                connection.release();
                 // console.log("Message sent: %s", info.messageId);
                 // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
 
