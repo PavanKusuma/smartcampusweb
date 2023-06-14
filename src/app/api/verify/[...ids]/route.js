@@ -40,7 +40,7 @@ export async function GET(request,{params}) {
      
             // search for user based on the provided collegeId
             const [rows, fields] = await connection.execute(q);
-            connection.release();
+            
             
             // check if user is found
             if(rows.length > 0){
@@ -61,9 +61,9 @@ export async function GET(request,{params}) {
                 }
 
                 // create query for insert
-                const q = 'INSERT INTO user_sessions (collegeId, deviceId, sessionToken, loginTime, isLoggedIn) VALUES ( ?, ?, ?, ?, ?)';
+                const q1 = 'INSERT INTO user_sessions (collegeId, deviceId, sessionToken, loginTime, isLoggedIn) VALUES ( ?, ?, ?, ?, ?)';
                 // create new request
-                const [rows, fields] = await connection.execute(q, [ params.ids[1], params.ids[3], randomUUID(), params.ids[4], 1]);
+                const [rows1, fields] = await connection.execute(q1, [ params.ids[1], params.ids[3], randomUUID(), params.ids[4], 1]);
                 connection.release();
                 // console.log("Message sent: %s", info.messageId);
                 // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
