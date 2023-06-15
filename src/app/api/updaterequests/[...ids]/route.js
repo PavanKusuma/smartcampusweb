@@ -15,6 +15,7 @@ const client = new OneSignal.Client(process.env.ONE_SIGNAL_APPID, process.env.ON
 // Stage2 –– To be Issed –– get the consentBy as well
 // Stage3 –– To be CheckOut –– get the playerId of student for check and checkIn to send notification
 // Stage4 –– To be CheckIn
+// Stage4.5 –– To be CheckIn *** LATE RETURN
 // Stage1.5 –– To be Rejected –– Move the request to closed by updating isOpen = 0
 // Stage0.5 –– To be Canceled –– Move the request to closed by updating isOpen = 0 and status to Canceled
 export async function GET(request,{params}) {
@@ -119,18 +120,28 @@ export async function GET(request,{params}) {
             else if(params.ids[1] == 'S3'){ 
                 try {
                     const [rows, fields] = await connection.execute('UPDATE request SET isStudentOut = 1, requestStatus ="'+params.ids[3]+'", checkoutOn = "'+params.ids[4]+'" where requestId = "'+params.ids[2]+'" and isOpen = 1');
-                    connection.release();
+                    
                     
                     if(rows.affectedRows == 0){
                         return Response.json({status: 403, message:'Your request is rejected!'}, {status: 200})
                     }
                     else {
+                        // check if the student parent phone number is present
+                        const [rows1, fields1] = await connection.execute('SELECT fatherPhoneNumber from user_details where collegeId = "'+params.ids[8]+'"');
+                        console.log(rows1[0].fatherPhoneNumber);
+                        
+                        if(rows1[0].fatherPhoneNumber.length > 3){
+                            // send SMS
+                            sendSMS('S3',params.ids[7],rows1[0].fatherPhoneNumber, params.ids[4]);
+                        }
+
                         // send the notification
                         const notificationResult = await send_notification('👋 You checked out of the campus', params.ids[5], 'Single');
 
                         // return successful update
                         return Response.json({status: 200, message:'Updated!',notification: notificationResult,}, {status: 200})
                     }
+                    connection.release();
                     
                 } catch (error) { // error updating
                     return Response.json({status: 404, message:'No request found!'}, {status: 200})
@@ -143,6 +154,15 @@ export async function GET(request,{params}) {
                 try {
                     const [rows, fields] = await connection.execute('UPDATE request SET isStudentOut = 0, requestStatus ="'+params.ids[3]+'", returnedOn="'+params.ids[4]+'" where requestId = "'+params.ids[2]+'"');
                     connection.release();
+
+                    // check if the student parent phone number is present
+                    const [rows1, fields1] = await connection.execute('SELECT fatherPhoneNumber from user_details where collegeId = "'+params.ids[8]+'"');
+                    console.log(rows1[0].fatherPhoneNumber);
+                    
+                    if(rows1[0].fatherPhoneNumber.length > 3){
+                        // send SMS
+                        sendSMS('S4',params.ids[7],rows1[0].fatherPhoneNumber, params.ids[4]);
+                    }
                     
                     // send the notification
                     const notificationResult = await send_notification('✅ You checked in to the campus', params.ids[5], 'Single');
@@ -203,6 +223,31 @@ export async function GET(request,{params}) {
         return Response.json({status: 500, message:'Facing issues. Please try again!'}, {status: 200})
     }
   }
+
+    // function to call the SMS API
+    async function sendSMS(type, name, number, date){
+
+        var query = '';
+
+        if(type == 'S3'){
+            query = "http://webprossms.webprosindia.com/submitsms.jsp?user=SVCEWB&key=c280f55d6bXX&mobile="+number+"&message=Dear Parent, your ward "+name+", has left the campus for outing at "+date+". SVECWB Hostels&senderid=SVECWB&accusage=1&entityid=1001168809218467265&tempid=1007626043853520503";
+        }
+        else if(type == 'S4'){
+            query = "http://webprossms.webprosindia.com/submitsms.jsp?user=SVCEWB&key=c280f55d6bXX&mobile="+number+"&message=Dear Parent, your ward "+name+" has returned to the campus from outing at "+date+". SVECWB Hostels&senderid=SVECWB&accusage=1&entityid=1001168809218467265&tempid=1007892539567152714";
+        }
+        else if(type == 'S4.5'){
+            query = "http://webprossms.webprosindia.com/submitsms.jsp?user=SVCEWB&key=c280f55d6bXX&mobile="+number+"&message=Dear Parent, your ward "+name+" has not returned to the campus after her outing from "+date+". SVECWB Hostels&senderid=SVECWB&accusage=1&entityid=1001168809218467265&tempid=1007149047352803219";
+        }
+        const result  = await fetch(query, {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+                  Accept: "application/json",
+              },
+            });
+              const queryResult = await result.text() // get data
+            //   console.log(queryResult);
+      }
   
   // send the notification using onesignal.
   // use the playerIds of the users.

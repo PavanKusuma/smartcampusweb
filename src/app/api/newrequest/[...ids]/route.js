@@ -5,11 +5,11 @@ import dayjs from 'dayjs'
 
 // create new outing request by the student
 // returns the data on success
-// key, requestId, requestType, oRequestId, collegeId, description, requestFrom, requestTo, duration, isAllowed, requestDate,
+// key, requestId, requestType, oRequestId, collegeId, description, requestFrom, requestTo, duration, isAllowed, requestDate, username, phoneNumber
 //////// based on the requestType create the request
 
 // requestType (1 – local outing, 2 – out-city outing, 3 – official outing)
-// key, requestId, requestType, oRequestId, collegeId, description, requestFrom, requestTo, duration, isAllowed, requestDate,
+// key, requestId, requestType, oRequestId, collegeId, description, requestFrom, requestTo, duration, isAllowed, requestDate, username, phoneNumber
 export async function GET(request,{params}) {
 
     // get the pool connection to db
@@ -32,6 +32,10 @@ export async function GET(request,{params}) {
                     // create new request
                     const [rows, fields] = await connection.execute(q, [ params.ids[1], params.ids[2], params.ids[3], params.ids[4], params.ids[5], params.ids[6], params.ids[7], params.ids[8], "Submitted", params.ids[10] ,  '-','-', null, '-', '-','-',null, '-', 1, 0, null, params.ids[9]]);
                     connection.release();
+
+                    // send SMS to parent
+                    sendSMS(params.ids[11], params.ids[12], dayjs(params.ids[6]).format('YYYY-MM-DD'), dayjs(params.ids[7]).format('YYYY-MM-DD'))
+
                     // return the user data
                     return Response.json({status: 200, message:'Request submitted!'}, {status: 200})
                 } catch (error) {
@@ -69,6 +73,20 @@ export async function GET(request,{params}) {
     }
     
     
+  }
+
+  // function to call the SMS API
+  async function sendSMS(name, number, from, to){
+
+    const result  = await fetch("http://webprossms.webprosindia.com/submitsms.jsp?user=SVCEWB&key=c280f55d6bXX&mobile="+number+"&message=Dear Parent, your ward, "+name+" has applied for outing from "+from+" to "+to+".  SVECWB Hostels&senderid=SVECWB&accusage=1&entityid=1001168809218467265&tempid=1007149047352803219", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+          },
+        });
+          const queryResult = await result.text() // get data
+          console.log(queryResult);
   }
   
 
