@@ -132,7 +132,7 @@ export async function GET(request,{params}) {
                         
                         if(rows1[0].fatherPhoneNumber.length > 3){
                             // send SMS
-                            sendSMS('S3',params.ids[7],rows1[0].fatherPhoneNumber, params.ids[4]);
+                            sendSMS('S3',params.ids[7],rows1[0].fatherPhoneNumber, dayjs(params.ids[4]).format('hh:mm A, DD-MM-YY'));
                         }
 
                         // send the notification
@@ -161,7 +161,7 @@ export async function GET(request,{params}) {
                     
                     if(rows1[0].fatherPhoneNumber.length > 3){
                         // send SMS
-                        sendSMS('S4',params.ids[7],rows1[0].fatherPhoneNumber, params.ids[4]);
+                        sendSMS('S4',params.ids[7],rows1[0].fatherPhoneNumber, dayjs(params.ids[4]).format('hh:mm A, DD-MM-YY'));
                     }
                     
                     // send the notification

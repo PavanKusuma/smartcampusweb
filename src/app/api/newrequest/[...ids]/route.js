@@ -34,7 +34,7 @@ export async function GET(request,{params}) {
                     connection.release();
 
                     // send SMS to parent
-                    sendSMS(params.ids[11], params.ids[12], dayjs(params.ids[6]).format('YYYY-MM-DD'), dayjs(params.ids[7]).format('YYYY-MM-DD'))
+                    sendSMS(params.ids[11], params.ids[12], dayjs(params.ids[6]).format('DD-MM-YY hh:mm A'), dayjs(params.ids[7]).format('YYYY-MM-DD'))
 
                     // return the user data
                     return Response.json({status: 200, message:'Request submitted!'}, {status: 200})
