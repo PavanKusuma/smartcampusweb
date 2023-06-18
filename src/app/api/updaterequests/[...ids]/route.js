@@ -116,7 +116,15 @@ export async function GET(request,{params}) {
                 
             }
             // else if(params.ids[4] == 'OutingAssistant'){
-            // stage1, requestId, status, updatedOn
+            // 0. Pass
+            // 1. stage
+            // 2. requestId
+            // 3. status
+            // 4. checkoutOn
+            // 5. playerId
+            // 6. single
+            // 7. username
+            // 8. collegeId
             else if(params.ids[1] == 'S3'){ 
                 try {
                     const [rows, fields] = await connection.execute('UPDATE request SET isStudentOut = 1, requestStatus ="'+params.ids[3]+'", checkoutOn = "'+params.ids[4]+'" where requestId = "'+params.ids[2]+'" and isOpen = 1');
@@ -128,11 +136,12 @@ export async function GET(request,{params}) {
                     else {
                         // check if the student parent phone number is present
                         const [rows1, fields1] = await connection.execute('SELECT fatherPhoneNumber from user_details where collegeId = "'+params.ids[8]+'"');
-                        console.log(rows1[0].fatherPhoneNumber);
                         
-                        if(rows1[0].fatherPhoneNumber.length > 3){
-                            // send SMS
-                            sendSMS('S3',params.ids[7],rows1[0].fatherPhoneNumber, dayjs(params.ids[4]).format('hh:mm A, DD-MM-YY'));
+                        if(rows1.length > 0){
+                            if(rows1[0].fatherPhoneNumber.length > 3){
+                                // send SMS
+                                sendSMS('S3',params.ids[7],rows1[0].fatherPhoneNumber, dayjs(params.ids[4]).format('hh:mm A, DD-MM-YY'));
+                            }
                         }
 
                         // send the notification
@@ -149,7 +158,15 @@ export async function GET(request,{params}) {
                 
             }
             // else if(params.ids[4] == 'OutingAssistant'){
-            // stage1, requestId, status, updatedOn
+            // 0. Pass
+            // 1. stage
+            // 2. requestId
+            // 3. status
+            // 4. returnedOn
+            // 5. playerId
+            // 6. single
+            // 7. username
+            // 8. collegeId
             else if(params.ids[1] == 'S4'){ 
                 try {
                     const [rows, fields] = await connection.execute('UPDATE request SET isStudentOut = 0, requestStatus ="'+params.ids[3]+'", returnedOn="'+params.ids[4]+'" where requestId = "'+params.ids[2]+'"');
@@ -157,11 +174,14 @@ export async function GET(request,{params}) {
 
                     // check if the student parent phone number is present
                     const [rows1, fields1] = await connection.execute('SELECT fatherPhoneNumber from user_details where collegeId = "'+params.ids[8]+'"');
-                    console.log(rows1[0].fatherPhoneNumber);
+                    // console.log(rows1[0].fatherPhoneNumber);
                     
-                    if(rows1[0].fatherPhoneNumber.length > 3){
-                        // send SMS
-                        sendSMS('S4',params.ids[7],rows1[0].fatherPhoneNumber, dayjs(params.ids[4]).format('hh:mm A, DD-MM-YY'));
+                    // check if there is father phone number for the student
+                    if(rows1.length > 0){
+                        if(rows1[0].fatherPhoneNumber.length > 3){
+                            // send SMS
+                            sendSMS('S4',params.ids[7],rows1[0].fatherPhoneNumber, dayjs(params.ids[4]).format('hh:mm A, DD-MM-YY'));
+                        }
                     }
                     
                     // send the notification
@@ -170,7 +190,7 @@ export async function GET(request,{params}) {
                     // return successful update
                     return Response.json({status: 200, message:'Updated!',notification: notificationResult,}, {status: 200})
                 } catch (error) { // error updating
-                    return Response.json({status: 404, message:'No request found!'}, {status: 200})
+                    return Response.json({status: 404, message:'No request found!'+error.message}, {status: 200})
                 }
                 
             }
