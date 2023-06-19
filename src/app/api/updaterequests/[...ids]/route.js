@@ -129,7 +129,8 @@ export async function GET(request,{params}) {
                 try {
                     const [rows, fields] = await connection.execute('UPDATE request SET isStudentOut = 1, requestStatus ="'+params.ids[3]+'", checkoutOn = "'+params.ids[4]+'" where requestId = "'+params.ids[2]+'" and isOpen = 1');
                     
-                    
+                    // check if the request is updated. 
+                    // It will not get updated incase Any Admin has cancelled the request before checkout
                     if(rows.affectedRows == 0){
                         return Response.json({status: 403, message:'Your request is rejected!'}, {status: 200})
                     }
