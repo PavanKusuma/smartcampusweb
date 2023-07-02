@@ -37,8 +37,12 @@ export async function GET(request,{params}) {
             // if Admin, get all requests w.r.t status and department
             else if(params.ids[1] == 'Admin'){
 
+                // remove the space between the words. Specially for "In outing".
+                const sanitizedParam = params.ids[2].replace(/\s/g, '');
+
                 // get all types of request with respect to the status mentioned
-                var query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
+                var query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+sanitizedParam+'" AND u.branch = "'+params.ids[5]+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
+                // var query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
                 const [rows, fields] = await connection.execute(query);
                 connection.release();
             
