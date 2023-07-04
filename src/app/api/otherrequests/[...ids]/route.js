@@ -18,8 +18,11 @@ export async function GET(request,{params}) {
             // if Admin, get all requests w.r.t status and department
             if(params.ids[1] == 'SuperAdmin'){
 
+                // remove the space between the words. Specially for "In outing".
+                const sanitizedParam = params.ids[2].replace(/\s/g, '');
+
                 // get all types of request with respect to the status mentioned
-                var query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
+                var query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+sanitizedParam+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
                 const [rows, fields] = await connection.execute(query);
                 connection.release();
             
@@ -60,7 +63,10 @@ export async function GET(request,{params}) {
             // if OutingAdmin, get all requests that are approved by admins
             else if((params.ids[1] == 'OutingAdmin')){
 
-                var query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
+                // remove the space between the words. Specially for "In outing".
+                const sanitizedParam = params.ids[2].replace(/\s/g, '');
+
+                var query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+sanitizedParam+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
                 const [rows, fields] = await connection.execute(query);
                 connection.release();
             
@@ -78,7 +84,10 @@ export async function GET(request,{params}) {
             // if OutingIssuer, get only OFFICIAL requests that are approved by admin and that belong to issuer hostel
             else if(params.ids[1] == 'OutingIssuer'){
 
-                const [rows, fields] = await connection.execute('SELECT r.*,u.*, d.* FROM request r JOIN user u ON r.collegeId = u.collegeId JOIN user_details d ON r.collegeId = d.collegeId WHERE r.requestStatus = "'+params.ids[2]+'" AND r.requestType="3" AND d.hostelId = "'+params.ids[6]+'" ORDER BY r.approvedOn DESC LIMIT 20 OFFSET '+params.ids[3]);
+                // remove the space between the words. Specially for "In outing".
+                const sanitizedParam = params.ids[2].replace(/\s/g, '');
+
+                const [rows, fields] = await connection.execute('SELECT r.*,u.*, d.* FROM request r JOIN user u ON r.collegeId = u.collegeId JOIN user_details d ON r.collegeId = d.collegeId WHERE r.requestStatus = "'+sanitizedParam+'" AND r.requestType="3" AND d.hostelId = "'+params.ids[6]+'" ORDER BY r.approvedOn DESC LIMIT 20 OFFSET '+params.ids[3]);
                 connection.release();
             
                 // check if user is found
@@ -94,7 +103,11 @@ export async function GET(request,{params}) {
             }
             // if OutingAssistant, get all requests that are issued by OutingIssuer
             else if(params.ids[1] == 'OutingAssistant'){
-                const [rows, fields] = await connection.execute('SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY issuedOn DESC LIMIT 20 OFFSET '+params.ids[3]);
+
+                // remove the space between the words. Specially for "In outing".
+                const sanitizedParam = params.ids[2].replace(/\s/g, '');
+                
+                const [rows, fields] = await connection.execute('SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+sanitizedParam+'" ORDER BY issuedOn DESC LIMIT 20 OFFSET '+params.ids[3]);
                 connection.release();
             
                 // check if user is found

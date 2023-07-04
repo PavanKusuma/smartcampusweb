@@ -17,7 +17,7 @@ const client = new OneSignal.Client(process.env.ONE_SIGNAL_APPID, process.env.ON
 // Stage4 –– To be CheckIn
 // Stage4.5 –– To be CheckIn *** LATE RETURN
 // Stage1.5 –– To be Rejected –– Move the request to closed by updating isOpen = 0
-// Stage0.5 –– To be Canceled –– Move the request to closed by updating isOpen = 0 and status to Canceled
+// Stage0.5 –– To be Canceled –– Move the request to closed by updating isOpen = 0 and status to Canceled – This can be done by Student or Admin
 export async function GET(request,{params}) {
 
     // get the pool connection to db
