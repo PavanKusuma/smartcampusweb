@@ -16,8 +16,8 @@ const client = new OneSignal.Client(process.env.ONE_SIGNAL_APPID, process.env.ON
 // Stage3 –– To be CheckOut –– get the playerId of student for check and checkIn to send notification
 // Stage4 –– To be CheckIn
 // Stage4.5 –– To be CheckIn *** LATE RETURN
-// Stage1.5 –– To be Rejected –– Move the request to closed by updating isOpen = 0
-// Stage0.5 –– To be Canceled –– Move the request to closed by updating isOpen = 0 and status to Canceled – This can be done by Student or Admin
+// Stage1.5 –– To be Rejected and move to closed –– by updating isOpen = 0
+// Stage0.5 –– To be Canceled –– Move the request to closed by updating isOpen = 0 and status to Canceled – This can be done by Student or Admin (Add extra comment to mention who did it)
 export async function GET(request,{params}) {
 
     // get the pool connection to db
@@ -26,10 +26,11 @@ export async function GET(request,{params}) {
     // check for the comment string incase if its empty
     let comment = '';
     if(params.ids[8] == '-'){
-        comment = '';
+        comment = '-';
     }
     else {
-        comment = '\n'+params.ids[8];
+        comment = params.ids[8]+'\n';
+        // comment = '\n'+params.ids[8];
     }
 
     // current date time for updating
@@ -48,7 +49,9 @@ export async function GET(request,{params}) {
                 if(params.ids[10] == 'Single'){
                     
                     try {
-                        const [rows, fields] = await connection.execute('UPDATE request SET approver ="'+params.ids[4]+'", approverName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", approvedOn ="'+params.ids[7]+'", comment = CONCAT(comment,"'+comment+'") where requestId = "'+params.ids[2]+'"');
+                        // const [rows, fields] = await connection.execute('UPDATE request SET approver ="'+params.ids[4]+'", approverName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", approvedOn ="'+params.ids[7]+'" where requestId = "'+params.ids[2]+'"');
+                        const [rows, fields] = await connection.execute('UPDATE request SET approver ="'+params.ids[4]+'", approverName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", approvedOn ="'+params.ids[7]+'", comment = CASE WHEN comment = "-" THEN REPLACE(comment,"-","'+comment+'") ELSE CONCAT(comment,"'+comment+'") END where requestId = "'+params.ids[2]+'"');
+                        
                         connection.release();
     
                         // send the notification
@@ -58,14 +61,14 @@ export async function GET(request,{params}) {
                         return Response.json({status: 200,message: 'Updated!',notification: notificationResult,});
   
                     } catch (error) { // error updating
-                        return Response.json({status: 404, message:'No request found!'}, {status: 200})
+                        return Response.json({status: 404, message:'No request found!'+error.message}, {status: 200})
                     }
                 }
                 else {
                     
                     try {
 
-                        const [rows, fields] = await connection.execute('UPDATE request SET approver ="'+params.ids[4]+'", approverName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", approvedOn ="'+params.ids[7]+'", comment = CONCAT(comment,"'+comment+'") where requestId IN ('+params.ids[2]+')');
+                        const [rows, fields] = await connection.execute('UPDATE request SET approver ="'+params.ids[4]+'", approverName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", approvedOn ="'+params.ids[7]+'", comment = CASE WHEN comment = "-" THEN REPLACE(comment,"-","'+comment+'") ELSE CONCAT(comment,"'+comment+'") END where requestId IN ('+params.ids[2]+')');
                         connection.release();
     
                         // send the notification
@@ -86,7 +89,7 @@ export async function GET(request,{params}) {
                 // check if the type of update request is bulk or single
                 if(params.ids[10] == 'Single'){
                     try {
-                        const [rows, fields] = await connection.execute('UPDATE request SET issuer ="'+params.ids[4]+'", issuerName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", issuedOn ="'+params.ids[7]+'", consentBy="'+params.ids[11]+'", comment = CONCAT(comment,"'+comment+'") where requestId = "'+params.ids[2]+'"');
+                        const [rows, fields] = await connection.execute('UPDATE request SET issuer ="'+params.ids[4]+'", issuerName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", issuedOn ="'+params.ids[7]+'", consentBy="'+params.ids[11]+'", comment = CASE WHEN comment = "-" THEN REPLACE(comment,"-","'+comment+'") ELSE CONCAT(comment,"'+comment+'") END where requestId = "'+params.ids[2]+'"');
                         connection.release();
     
                         // send the notification
@@ -100,7 +103,7 @@ export async function GET(request,{params}) {
                 }
                 else {
                     try {
-                        const [rows, fields] = await connection.execute('UPDATE request SET issuer ="'+params.ids[4]+'", issuerName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", issuedOn ="'+params.ids[7]+'", comment = CONCAT(comment,"'+comment+'") where requestId IN ('+params.ids[2]+')');
+                        const [rows, fields] = await connection.execute('UPDATE request SET issuer ="'+params.ids[4]+'", issuerName ="'+params.ids[3]+'", requestStatus ="'+params.ids[6]+'", issuedOn ="'+params.ids[7]+'", comment = CASE WHEN comment = "-" THEN REPLACE(comment,"-","'+comment+'") ELSE CONCAT(comment,"'+comment+'") END where requestId IN ('+params.ids[2]+')');
                         connection.release();
     
                         // send the notification
@@ -207,10 +210,18 @@ export async function GET(request,{params}) {
                 }
                 
             }
-            // this is when student cancels the request and it will be moved to closed.
+            // this is when student or admin cancels the request.
             else if(params.ids[1] == 'S0.5'){ 
                 try {
-                    const [rows, fields] = await connection.execute('UPDATE request SET isOpen = 0, requestStatus="Cancelled" where requestId = "'+params.ids[2]+'"');
+                    // check for the comment string incase if its empty
+                    let remark = '';
+                    if(params.ids[4] == '-'){
+                        remark = '-';
+                    }
+                    else {
+                        remark = params.ids[4]+'\n';
+                    }
+                    const [rows, fields] = await connection.execute('UPDATE request SET isOpen = 0, requestStatus="Cancelled", comment = CASE WHEN comment = "-" THEN REPLACE(comment,"-","'+remark+'") ELSE CONCAT(comment,"'+remark+'") END where requestId = "'+params.ids[2]+'"');
                     connection.release();
                     
                     if(params.ids[3] != '-'){
