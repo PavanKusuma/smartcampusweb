@@ -54,11 +54,20 @@ export async function GET(request,{params}) {
                         
                         connection.release();
     
-                        // send the notification
-                        const notificationResult = await send_notification('🙌 Your outing is approved and is ⏳ waiting for issue by the warden!', params.ids[9], params.ids[10]);
-                        
-                        // return the response
-                        return Response.json({status: 200,message: 'Updated!',notification: notificationResult,});
+                        if(params.ids[6] == 'Approved'){
+                            // send the notification
+                            const notificationResult = await send_notification('🙌 Your outing is approved and is ⏳ waiting for issue by the warden!', params.ids[9], params.ids[10]);
+                            
+                            // return the response
+                            return Response.json({status: 200,message: 'Updated!',notification: notificationResult,});
+                        }
+                        else {
+                            // send the notification
+                            const notificationResult = await send_notification('❌ Your outing is rejected!', params.ids[9], params.ids[10]);
+                            
+                            // return the response
+                            return Response.json({status: 200,message: 'Updated!',notification: notificationResult,});
+                        }
   
                     } catch (error) { // error updating
                         return Response.json({status: 404, message:'No request found!'+error.message}, {status: 200})
