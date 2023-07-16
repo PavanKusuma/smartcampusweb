@@ -1,73 +1,90 @@
 import pool from '../../db'
 import { Keyverify } from '../../secretverify';
-var mysql = require('mysql2')
-import dayjs from 'dayjs'
 
-// create new visitor pass request by the student
-// returns the data on success
-// key, vRequestId, collegeId, description, visitOn, vStatus, count, foodCount
-//////// request will contain the details of the visitors (name, phoneNumber, relation)
-
-// key, requestId, requestType, oRequestId, collegeId, description, requestFrom, requestTo, duration, isAllowed, requestDate, username, phoneNumber
+// get the requests based on the user role and timing
+// params used for this API
+// key, role, status, offset, collegeId
 export async function GET(request,{params}) {
 
     // get the pool connection to db
     const connection = await pool.getConnection();
-
-    // current date time for updating
-    // var currentDate =  dayjs(new Date(Date.now())).format('YYYY-MM-DD HH:mm:ss');
 
     try{
 
         // authorize secret key
         if(await Keyverify(params.ids[0])){
 
-                try {
-                    // create visitor request
-                    const q = 'INSERT INTO visitorrequest (vRequestId, collegeId, visitOn, vStatus, isOpen, description, checkin, checkout, count, comments, foodCount, requestDate, approver, approvedName, approvedOn) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )';
-                    // create new request
-                    const [rows, fields] = await connection.execute(q, [ params.ids[1], params.ids[2], params.ids[3], "Submitted", 1, params.ids[4], null, null, params.ids[5], "-", params.ids[6], params.ids[7], "-","-",null]);
-                    
-                    // check if the request is created and add the visitors list
-                    if(rows.affectedRows == false){
-                        return Response.json({status: 404, message:'No request created!'}, {status: 200})
-                    }
-                    else {
-                        // create visitors
-                        const q1 = 'INSERT INTO visitors (vRequestId, name, phoneNumber, relation) VALUES ( ?, ?, ?, ?)';
-                        
-                        // get the visitorsData
-                        const visitorsDataArray = JSON.parse(params.ids[8]);
+            // check for the user role
+            // if SuperAdmin, get all the requests w.r.t status
+            if(params.ids[1] == 'Student'){
 
-                        // iterate through the visitors data and create each visitor
-                        console.log('Received JSON Array:');
-                        visitorsDataArray.forEach(async (obj, index) => {
-
-                            console.log(`Object ${index + 1}:`, obj);
-
-                            // create
-                            const [rows1, fields] = await connection.execute(q1, [ params.ids[1], params.ids[2], params.ids[3], params.ids[4]]);
-                            
-                            // if(rows1.length > 0){
-                            //     if(rows1[0].fatherPhoneNumber.length > 3){
-                            //         // send SMS
-                            //         sendSMS('S3',params.ids[7],rows1[0].fatherPhoneNumber, dayjs(params.ids[4]).format('hh:mm A, DD-MM-YY'));
-                            //     }
-                            // }
-                        });
-                        connection.release();
-
-                        // send the notification
-                        const notificationResult = await send_notification('👋 You checked out of the campus', params.ids[5], 'Single');
-
-                        // return successful update
-                        return Response.json({status: 200, message:'Updated!',notification: notificationResult,}, {status: 200})
-                    }
-                    
-                    
-                } catch (error) { // error updating
-                    return Response.json({status: 404, message:'Error creating request. Please try again later!'+error.message}, {status: 200})
+                let query = '';
+                // check what type of requests to be shown
+                // if status is Submitted, that means student is looking for recent request
+                if(params.ids[2] == 'Submitted'){
+                    query = 'SELECT p.*,v.* FROM visitorpass p JOIN visitors v WHERE p.vRequestId = v.vRequestId AND p.collegeId = "'+params.ids[4]+'" AND isOpen = 1 ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3];
                 }
+                // if not student is looking for requests from the past
+                else {
+                    query = 'SELECT p.*,v.* FROM visitorpass p JOIN visitors v WHERE p.vRequestId = v.vRequestId AND p.collegeId = "'+params.ids[4]+'" AND isOpen = 0 ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3];
+                }
+
+                const [rows, fields] = await connection.execute(query);
+                connection.release();
+
+                // check if user is found
+                if(rows.length > 0){
+                    // return the requests data
+                    return Response.json({status: 200, message:'Data found!', data: rows}, {status: 200})
+
+                }
+                else {
+                    // user doesn't exist in the system
+                    return Response.json({status: 404, message:'No new requests!'}, {status: 200})
+                }
+            }
+
+            // check for the user role
+            // if SuperAdmin, get all the requests w.r.t status
+            else if(params.ids[1] == 'SuperAdmin' || params.ids[1] == 'OutingAdmin'){
+                const [rows, fields] = await connection.execute('SELECT p.*,v.* FROM visitorpass p JOIN visitors v WHERE p.vRequestId = v.vRequestId AND vStatus = "'+params.ids[2]+'" ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3]);
+                connection.release();
+            
+                // check if user is found
+                if(rows.length > 0){
+                    // return the requests data
+                    return Response.json({status: 200, message:'Data found!', data: rows}, {status: 200})
+
+                }
+                else {
+                    // user doesn't exist in the system
+                    return Response.json({status: 404, message:'No new requests!'}, {status: 200})
+                }
+            }
+            
+            // if OutingAssistant, get all requests that are issued by OutingAdmin or SuperAdmin
+            else if(params.ids[1] == 'OutingAssistant'){
+                const [rows, fields] = await connection.execute('SELECT p.*,v.* FROM visitorpass p JOIN visitors v WHERE p.vRequestId = v.vRequestId AND requestStatus = "'+params.ids[2]+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3]);
+                connection.release();
+            
+                // check if user is found
+                if(rows.length > 0){
+                    // return the requests data
+                    return Response.json({status: 200, message:'Data found!', data: rows}, {status: 200})
+
+                }
+                else {
+                    // user doesn't exist in the system
+                    return Response.json({status: 404, message:'No new requests!'}, {status: 200})
+                }
+            }
+            else{
+                // wrong role
+                return Response.json({status: 401, message:'Unauthorized'}, {status: 200})
+            }
+
+            // search for user based on the provided collegeId
+            // const [rows, fields] = await connection.execute('SELECT * FROM request where isOpen = 1 and collegeId = "'+params.ids[2]+'" ORDER BY requestDate LIMIT 5 OFFSET '+params.ids[3]);
             
         }
         else {
@@ -82,19 +99,4 @@ export async function GET(request,{params}) {
     
     
   }
-
-  // function to call the SMS API
-  async function sendSMS(name, number, from, to){
-
-    const result  = await fetch("http://webprossms.webprosindia.com/submitsms.jsp?user=SVCEWB&key=c280f55d6bXX&mobile="+number+"&message=Dear Parent, your ward, "+name+" has applied for outing from "+from+" to "+to+".  SVECWB Hostels&senderid=SVECWB&accusage=1&entityid=1001168809218467265&tempid=1007149047352803219", {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-          },
-        });
-          const queryResult = await result.text() // get data
-          console.log(queryResult);
-  }
   
-
