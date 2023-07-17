@@ -47,7 +47,8 @@ export async function GET(request,{params}) {
             // check for the user role
             // if SuperAdmin, get all the requests w.r.t status
             else if(params.ids[1] == 'SuperAdmin' || params.ids[1] == 'OutingAdmin'){
-                const [rows, fields] = await connection.execute('SELECT p.*,v.* FROM visitorpass p JOIN visitors v WHERE p.vRequestId = v.vRequestId AND vStatus = "'+params.ids[2]+'" ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3]);
+                const [rows, fields] = await connection.execute('SELECT p.*, v.*, ud.* FROM visitorpass p JOIN visitors v ON p.vRequestId = v.vRequestId JOIN user_details ud ON p.collegeId = ud.collegeId WHERE p.vStatus =  "'+params.ids[2]+'" ORDER BY p.requestDate DESC LIMIT 20 OFFSET  '+params.ids[3]);
+                // const [rows, fields] = await connection.execute('SELECT p.*,v.* FROM visitorpass p JOIN visitors v WHERE p.vRequestId = v.vRequestId AND vStatus = "'+params.ids[2]+'" ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3]);
                 connection.release();
             
                 // check if user is found

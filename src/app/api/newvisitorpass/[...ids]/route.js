@@ -5,10 +5,10 @@ import dayjs from 'dayjs'
 
 // create new visitor pass request by the student
 // returns the data on success
-// key, vRequestId, collegeId, description, visitOn, vStatus, count, foodCount
+// key, vRequestId, collegeId, description, visitOn, vStatus, count, foodCount, visitors, isAllowed
 //////// request will contain the details of the visitors (name, phoneNumber, relation)
 
-// key, requestId, collegeId, visitOn, description, count, foodCount, requestDate
+// key, requestId, collegeId, visitOn, description, count, foodCount, requestDate, visitors, isAllowed
 // list of visitors
 export async function GET(request,{params}) {
 
@@ -25,9 +25,9 @@ export async function GET(request,{params}) {
 
                 try {
                     // create visitor request
-                    const q = 'INSERT INTO visitorpass (vRequestId, collegeId, visitOn, vStatus, isOpen, description, checkin, checkout, count, comment, foodCount, requestDate, approver, approvedName, approvedOn) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )';
+                    const q = 'INSERT INTO visitorpass (vRequestId, collegeId, visitOn, vStatus, isOpen, description, checkin, checkout, count, comment, foodCount, requestDate, approver, approvedName, approvedOn, isAllowed) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )';
                     // create new request
-                    const [rows, fields] = await connection.execute(q, [ params.ids[1], params.ids[2], params.ids[3], "Submitted", 1, params.ids[4], null, null, params.ids[5], "-", params.ids[6], params.ids[7], "-","-",null]);
+                    const [rows, fields] = await connection.execute(q, [ params.ids[1], params.ids[2], params.ids[3], "Submitted", 1, params.ids[4], null, null, params.ids[5], "-", params.ids[6], params.ids[7], "-","-",null, params.ids[9]]);
                     
                     // check if the request is created and add the visitors list
                     if(rows.affectedRows == false){
