@@ -90,18 +90,35 @@ export async function GET(request,{params}) {
             
             // if OutingAssistant, get all requests that are issued by OutingAdmin or SuperAdmin
             else if(params.ids[1] == 'OutingAssistant'){
-                const [rows, fields] = await connection.execute('SELECT p.*,v.* FROM visitorpass p JOIN visitors v WHERE p.vRequestId = v.vRequestId AND p.collegeId = "'+params.ids[2]+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3]);
-                connection.release();
-            
-                // check if user is found
-                if(rows.length > 0){
-                    // return the requests data
-                    return Response.json({status: 200, message:'Data found!', data: rows}, {status: 200})
+                // const [rows, fields] = await connection.execute('SELECT p.*,v.* FROM visitorpass p JOIN visitors v WHERE p.vRequestId = v.vRequestId AND p.collegeId = "'+params.ids[2]+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3]);
+                // connection.release();
 
-                }
-                else {
-                    // user doesn't exist in the system
-                    return Response.json({status: 404, message:'No new requests!'}, {status: 200})
+
+                // First Query: Get visitorrequests and matching user information
+                const [rows, fields] = await connection.execute('SELECT p.*, u.* FROM visitorpass p JOIN user u ON p.collegeId = u.collegeId WHERE p.collegeId = ? ORDER BY p.requestDate DESC LIMIT 20 OFFSET ?', [params.ids[2], params.ids[3]]);
+            
+                // Check if requests are found
+                if (rows.length > 0) {
+                // Use each request to get visitors of it
+                const requestsData = await Promise.all(
+                    rows.map(async (row) => {
+                    const [visitors, visitorFields] = await connection.execute('SELECT v.* FROM visitors v WHERE v.vRequestId = ?',[row.vRequestId]);
+            
+                    // Add visitors data to the current row
+                    return { ...row, visitors };
+                    })
+                );
+                connection.release();
+
+                // Return the requests data
+                return Response.json({
+                    status: 200,
+                    message: 'Data found!',
+                    data: requestsData,
+                });
+                } else {
+                // No new requests found
+                return Response.json({ status: 404, message: 'No new requests!' });
                 }
             }
             else{
