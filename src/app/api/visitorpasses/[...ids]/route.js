@@ -95,7 +95,7 @@ export async function GET(request,{params}) {
 
 
                 // First Query: Get visitorrequests and matching user information
-                const [rows, fields] = await connection.execute('SELECT p.*, u.* FROM visitorpass p JOIN user u ON p.collegeId = u.collegeId WHERE p.collegeId = ? ORDER BY p.requestDate DESC LIMIT 20 OFFSET ?', [params.ids[2], params.ids[3]]);
+                const [rows, fields] = await connection.execute('SELECT p.*, u.* FROM visitorpass p JOIN user u ON p.collegeId = u.collegeId WHERE p.isOpen = 1 AND p.collegeId = ? ORDER BY p.requestDate DESC LIMIT 20 OFFSET ?', [params.ids[2], params.ids[3]]);
             
                 // Check if requests are found
                 if (rows.length > 0) {
