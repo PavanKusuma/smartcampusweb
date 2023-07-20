@@ -47,20 +47,60 @@ export async function GET(request,{params}) {
             // check for the user role
             // if SuperAdmin, get all the requests w.r.t status
             else if(params.ids[1] == 'SuperAdmin' || params.ids[1] == 'OutingAdmin'){
-                const [rows, fields] = await connection.execute('SELECT p.*, v.*, u.* FROM visitorpass p JOIN visitors v ON p.vRequestId = v.vRequestId JOIN user u ON p.collegeId = u.collegeId WHERE p.vStatus =  "'+params.ids[2]+'" ORDER BY p.requestDate DESC LIMIT 20 OFFSET  '+params.ids[3]);
-                // const [rows, fields] = await connection.execute('SELECT p.*,v.* FROM visitorpass p JOIN visitors v WHERE p.vRequestId = v.vRequestId AND vStatus = "'+params.ids[2]+'" ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3]);
-                connection.release();
+                // const [rows, fields] = await connection.execute('SELECT p.*, v.*, u.* FROM visitorpass p JOIN visitors v ON p.vRequestId = v.vRequestId JOIN user u ON p.collegeId = u.collegeId WHERE p.vStatus =  "'+params.ids[2]+'" ORDER BY p.requestDate DESC LIMIT 20 OFFSET  '+params.ids[3]);
+                // connection.release();
             
-                // check if user is found
-                if(rows.length > 0){
-                    // return the requests data
-                    return Response.json({status: 200, message:'Data found!', data: rows}, {status: 200})
+                // // check if user is found
+                // if(rows.length > 0){
+                //     // return the requests data
+                //     return Response.json({status: 200, message:'Data found!', data: rows}, {status: 200})
 
-                }
-                else {
-                    // user doesn't exist in the system
-                    return Response.json({status: 404, message:'No new requests!'}, {status: 200})
-                }
+                // }
+                // else {
+                //     // user doesn't exist in the system
+                //     return Response.json({status: 404, message:'No new requests!'}, {status: 200})
+                // }
+
+                // First Query: Get visitorrequests and matching user information
+try {
+    const [rows, fields] = await connection.execute(
+      'SELECT p.*, u.* FROM visitorpass p JOIN user u ON p.collegeId = u.collegeId WHERE p.vStatus = ? ORDER BY p.requestDate DESC LIMIT 20 OFFSET ?',
+      [params.ids[2], params.ids[3]]
+    );
+  
+    // Check if data is found
+    if (rows.length > 0) {
+      // Process each row to get visitors for each visitorrequest
+      const requestsData = await Promise.all(
+        rows.map(async (row) => {
+          const [visitors, visitorFields] = await connection.execute(
+            'SELECT v.* FROM visitors v WHERE v.vRequestId = ?',
+            [row.vRequestId]
+          );
+  
+          // Add visitors data to the current row
+          return { ...row, visitors };
+        })
+      );
+  
+      // Return the requests data
+      return Response.json({
+        status: 200,
+        message: 'Data found!',
+        data: requestsData,
+      });
+    } else {
+      // No new requests found
+      return Response.json({ status: 404, message: 'No new requests!' });
+    }
+  } catch (error) {
+    // Handle error if any
+    console.error('Error: ', error);
+    return Response.status(500).json({ message: 'Internal Server Error' });
+  } finally {
+    connection.release();
+  }
+  
             }
             
             // if OutingAssistant, get all requests that are issued by OutingAdmin or SuperAdmin
