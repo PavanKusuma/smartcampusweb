@@ -25,7 +25,7 @@ export async function GET(request,{params}) {
 
                 try {
                     // create visitor request
-                    const q = 'INSERT INTO visitorpass (vRequestId, collegeId, visitOn, vStatus, isOpen, description, checkin, checkout, count, comment, foodCount, requestDate, approver, approvedName, approvedOn, isAllowed) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )';
+                    const q = 'INSERT INTO visitorpass (vRequestId, collegeId, visitOn, vStatus, isOpen, description, checkin, checkout, count, comment, foodCount, requestDate, approver, approverName, approvedOn, isAllowed) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )';
                     // create new request
                     const [rows, fields] = await connection.execute(q, [ params.ids[1], params.ids[2], params.ids[3], "Submitted", 1, params.ids[4], null, null, params.ids[5], "-", params.ids[6], params.ids[7], "-","-",null, params.ids[9]]);
                     
