@@ -22,7 +22,7 @@ export async function GET(request,{params}) {
             // search for user based on the provided collegeId
             const [rows, fields] = await connection.execute(q);
 
-            if(rows.profileUpdated == 1){
+            if(rows[0].profileUpdated == 1){
 
                 // check for the updated app version
                 if(params.ids[1] == '1.0.8'){
