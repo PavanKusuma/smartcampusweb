@@ -45,34 +45,41 @@ export async function GET(request,{params}) {
             // check if user is found
             if(rows.length > 0){
 
-                // check if email is present
-                if(rows[0].email.length > 2){
-                    // send mail with defined transport object
-                    let info = await transporter.sendMail({
-                        name: 'Smart Campus',
-                        from: '"Smart campus" <smartcampus@svecw.edu.in>', // sender address
-                        // from: '"Smart campus" <hello.helpmecode@gmail.com>', // sender address
-                        to: rows[0].email, // list of receivers
-                        subject: "OTP for your login", // Subject line
-                        // text: "Hello world?", // plain text body
-                        html: '<center><table style="text-align: center;"><tr><td><h1 style="color:#333;font-size:20px">Login to Smart Campus</h1></td></tr><tr><td><p>Copy and paste below OTP to verify your login</p></td></tr><tbody><tr><td><h1 style="background-color: #f5f5f5;text-align: center;padding: 10px;">'+params.ids[2]+'</h1></td></tr> <tr><td><p>Smart Campus, a smart assistant to you at your campus.</p></td></tr></tbody></table><br></center>', // html body
-                        // html: '<center><table><tr><td><p>Copy and paste below OTP to verify your login</p></td></tr> <tr><td><h1 style="background-color:#f5f5f5,text-align:center">'+params.ids[2]+'</h1></td></tr></table><br/></center>', // html body
-                    });
+                if(rows[0].profileUpdated == 1){
+                    
+                    // check if email is present
+                    if(rows[0].email.length > 2){
+                        // send mail with defined transport object
+                        let info = await transporter.sendMail({
+                            name: 'Smart Campus',
+                            from: '"Smart campus" <smartcampus@svecw.edu.in>', // sender address
+                            // from: '"Smart campus" <hello.helpmecode@gmail.com>', // sender address
+                            to: rows[0].email, // list of receivers
+                            subject: "OTP for your login", // Subject line
+                            // text: "Hello world?", // plain text body
+                            html: '<center><table style="text-align: center;"><tr><td><h1 style="color:#333;font-size:20px">Login to Smart Campus</h1></td></tr><tr><td><p>Copy and paste below OTP to verify your login</p></td></tr><tbody><tr><td><h1 style="background-color: #f5f5f5;text-align: center;padding: 10px;">'+params.ids[2]+'</h1></td></tr> <tr><td><p>Smart Campus, a smart assistant to you at your campus.</p></td></tr></tbody></table><br></center>', // html body
+                            // html: '<center><table><tr><td><p>Copy and paste below OTP to verify your login</p></td></tr> <tr><td><h1 style="background-color:#f5f5f5,text-align:center">'+params.ids[2]+'</h1></td></tr></table><br/></center>', // html body
+                        });
+                    }
+
+                    // create query for insert
+                    const q1 = 'INSERT INTO user_sessions (collegeId, deviceId, sessionToken, isLoggedIn) VALUES ( ?, ?, ?, ?)';
+                    // create new request
+                    const [rows1, fields] = await connection.execute(q1, [ params.ids[1], params.ids[3], randomUUID(), 1]);
+                    connection.release();
+                    // console.log("Message sent: %s", info.messageId);
+                    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+
+                    // Preview only available when sending through an Ethereal account
+                    // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+
+                    // return the user data
+                    return Response.json({status: 200, message:'User found!', data: rows[0]}, {status: 200})
                 }
-
-                // create query for insert
-                const q1 = 'INSERT INTO user_sessions (collegeId, deviceId, sessionToken, isLoggedIn) VALUES ( ?, ?, ?, ?)';
-                // create new request
-                const [rows1, fields] = await connection.execute(q1, [ params.ids[1], params.ids[3], randomUUID(), 1]);
-                connection.release();
-                // console.log("Message sent: %s", info.messageId);
-                // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-
-                // Preview only available when sending through an Ethereal account
-                // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-
-                // return the user data
-                return Response.json({status: 200, message:'User found!', data: rows[0]}, {status: 200})
+                else {
+                    // wrong secret key
+                    return Response.json({status: 402, message:'Your access is revoked by your campus!'}, {status: 200})
+                }
 
             }
             else {
