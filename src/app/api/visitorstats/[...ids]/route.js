@@ -22,7 +22,7 @@ export async function GET(request,{params}) {
             if(params.ids[1] == 'SuperAdmin' || params.ids[1] == 'OutingAdmin' ){
 
                 let q = '';
-                q = 'SELECT status, IFNULL(status_count,0) AS count FROM (SELECT "Submitted" AS status UNION ALL SELECT "Approved" UNION ALL SELECT "Checkin" UNION ALL SELECT "Checkout" UNION ALL SELECT "Rejected" UNION ALL SELECT "Cancelled") AS statuses LEFT JOIN (SELECT vStatus, COUNT(*) AS status_count FROM visitorpass GROUP BY vStatus) AS status_counts ON statuses.status = status_counts.vStatus';
+                q = 'SELECT status as requestStatus, IFNULL(status_count,0) AS count FROM (SELECT "Submitted" AS status UNION ALL SELECT "Approved" UNION ALL SELECT "Checkin" UNION ALL SELECT "Checkout" UNION ALL SELECT "Rejected" UNION ALL SELECT "Cancelled") AS statuses LEFT JOIN (SELECT vStatus, COUNT(*) AS status_count FROM visitorpass GROUP BY vStatus) AS status_counts ON statuses.status = status_counts.vStatus';
                 // q = 'SELECT COUNT(*) as VISITORCOUNT from visitorpass WHERE vStatus = "Checkin"';
 
                 const [rows, fields] = await connection.execute(q);
