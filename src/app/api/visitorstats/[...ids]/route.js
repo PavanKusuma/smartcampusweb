@@ -22,7 +22,8 @@ export async function GET(request,{params}) {
             if(params.ids[1] == 'SuperAdmin' || params.ids[1] == 'OutingAdmin' ){
 
                 let q = '';
-                q = 'SELECT COUNT(*) as VISITORCOUNT from visitorpass WHERE vStatus = "Checkin"';
+                q = 'SELECT status, IFNULL(status_count,0) AS count FROM (SELECT "Submitted" AS status UNION ALL SELECT "Approved" UNION ALL SELECT "Checkin" UNION ALL SELECT "Checkout" UNION ALL SELECT "Rejected" UNION ALL SELECT "Cancelled") AS statuses LEFT JOIN (SELECT vStatus, COUNT(*) AS status_count FROM visitorpass GROUP BY vStatus) AS status_counts ON statuses.status = status_counts.vStatus';
+                // q = 'SELECT COUNT(*) as VISITORCOUNT from visitorpass WHERE vStatus = "Checkin"';
 
                 const [rows, fields] = await connection.execute(q);
                 connection.release();
@@ -30,7 +31,7 @@ export async function GET(request,{params}) {
                 // check if user is found
                 if(rows.length > 0){
                     // return the requests data
-                    return Response.json({status: 200, message:'Data found!', data: rows[0]}, {status: 200})
+                    return Response.json({status: 200, message:'Data found!', data: rows}, {status: 200})
 
                 }
                 else {
