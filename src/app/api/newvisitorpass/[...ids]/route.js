@@ -48,6 +48,9 @@ export async function GET(request,{params}) {
                         });
                         connection.release();
 
+                        // send SMS to parent
+                        sendSMS(params.ids[10], params.ids[11], dayjs(params.ids[3]).format('DD-MM-YY hh:mm A'), params.ids[9]);
+
                         // return successful update
                         return Response.json({status: 200, message:'Updated!',}, {status: 200})
                     }
@@ -72,9 +75,17 @@ export async function GET(request,{params}) {
   }
 
   // function to call the SMS API
-  async function sendSMS(name, number, from, to){
+  async function sendSMS(name, number, visitOn, isAllowed){
+    var url = "";
+    var name1 = name + " has applied";
 
-    const result  = await fetch("http://webprossms.webprosindia.com/submitsms.jsp?user=SVCEWB&key=c280f55d6bXX&mobile="+number+"&message=Dear Parent, your ward, "+name+" has applied for outing from "+from+" to "+to+".  SVECWB Hostels&senderid=SVECWB&accusage=1&entityid=1001168809218467265&tempid=1007149047352803219", {
+    if(isAllowed == 1){
+        url = "http://webprossms.webprosindia.com/submitsms.jsp?user=SVCEWB&key=c280f55d6bXX&mobile="+number+"&message=Dear Parent, your ward, "+name1+" member visitor pass for "+visitOn+", parents not included.  SVECWB Hostels&senderid=SVECWB&accusage=1&entityid=1001168809218467265&tempid=1007484333121191024";
+    }
+    else {
+        url = "http://webprossms.webprosindia.com/submitsms.jsp?user=SVCEWB&key=c280f55d6bXX&mobile="+number+"&message=Dear Parent, your ward, "+name1+" member visitor pass for "+visitOn+".  SVECWB Hostels&senderid=SVECWB&accusage=1&entityid=1001168809218467265&tempid=1007081800825766218";
+    }
+    const result  = await fetch(url, {
           method: "POST",
           headers: {
               "Content-Type": "application/json",
