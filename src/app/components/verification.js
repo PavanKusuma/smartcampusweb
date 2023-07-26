@@ -9,10 +9,12 @@ import Biscuits from 'universal-cookie'
 import styles from '../page.module.css'
 import { useRouter } from 'next/navigation'
 const biscuits = new Biscuits
+import dayjs from 'dayjs'
 
 // declare the apis of this page
   const verifyUser = async (pass, id) => 
-    fetch("/api/verify/"+pass+"/"+id, {
+  
+    fetch("/api/verify/"+pass+"/"+id+"/"+Math.floor(1000 + Math.random() * 9000)+"/"+generateDeviceID()+"/"+dayjs(new Date(Date.now())).format('YYYY-MM-DD HH:mm:ss'), {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -20,6 +22,11 @@ const biscuits = new Biscuits
         },
     });
    
+    // Function to generate a random string
+    function generateDeviceID() {
+        return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    }
+
 // verification using college Id
 // In future, based on the type of the user verification can be succeded
 // If the user is found in the database, OTP will be sent for the user mobile number based on the user type
@@ -242,9 +249,11 @@ function verifyOTP(){
           :
         <div className={styles.titlecard}>
             <div className={styles.section_one}>
-            <div ><img src="/sc_logo1.svg" style={{height:'66px', width:'220px', float:'left'}}/></div>
-            
-            
+            <div ><img src="/sc_logo2.png" style={{height:'80px', width:'80px', float:'left'}}/></div>
+            {/* <div ><img src="/sc_logo_2.svg" style={{height:'66px', width:'220px', float:'left'}}/></div> */}
+            <br/>
+            <div>Smart Campus</div>
+            <br/>
             {/* prompt the user for college Id
             and verify if it exists in the sytem */}
             <div>

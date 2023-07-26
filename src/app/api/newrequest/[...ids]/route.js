@@ -87,7 +87,7 @@ export async function GET(request,{params}) {
           },
         });
           const queryResult = await result.text() // get data
-          console.log(queryResult);
+        //   console.log(queryResult);
   }
   
 

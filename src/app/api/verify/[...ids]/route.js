@@ -8,7 +8,7 @@ const client = new OneSignal.Client(process.env.ONE_SIGNAL_APPID, process.env.ON
 // this is used to verify the user and send OTP for authorizing into the system
 // returns the user data on success
 
-// collegeId, deviceId, loginTime
+// pass, collegeId, OTP, deviceId, loginTime
 export async function GET(request,{params}) {
 
     // Send emails to each user with their respective OTP code
@@ -20,10 +20,6 @@ export async function GET(request,{params}) {
         auth: {
           user: process.env.EMAIL,
           pass: process.env.EMAIL_PWD,
-        //   user: 'smartcampus@svecw.edu.in',
-        //   pass: 'SVECW@2023',
-        //   user: 'hello.helpmecode@gmail.com',
-        //   pass: 'mditmfjmflmihhnj',
         },
       })
 
@@ -40,7 +36,6 @@ export async function GET(request,{params}) {
      
             // search for user based on the provided collegeId
             const [rows, fields] = await connection.execute(q);
-            
             
             // check if user is found
             if(rows.length > 0){

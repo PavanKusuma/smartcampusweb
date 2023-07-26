@@ -47,7 +47,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 
           <div className={`${styles.bottombar} ${inter.className} ${styles.text3}`} style={{display: 'flex', flexDirection:'column'}}> 
-          Made with 💙 to support campuses
+          Made with 💙 to empower campuses
           <br/>
             
           </div>
