@@ -8,6 +8,7 @@ import { Keyverify } from '../../secretverify';
 // U2 – get user details
 // U3 – Search users – by CollegeId
 // U4 – Search users – by Username
+// U5 – Search user requests(active) – by CollegeId
 export async function GET(request,{params}) {
 
     // get the pool connection to db
@@ -29,6 +30,7 @@ export async function GET(request,{params}) {
                     return Response.json({status: 404, message:'No user found!'}, {status: 200})
                 }
             }
+            // get secondary details of the user
             else if(params.ids[1] == 'U2'){
                 try {
                     const [rows, fields] = await connection.execute('SELECT u.*,IFNULL(h.hostelName, "") AS hostelName FROM user_details u JOIN hostel h ON u.hostelId=h.hostelId WHERE collegeId = "'+params.ids[2]+'"');
@@ -49,6 +51,7 @@ export async function GET(request,{params}) {
                     return Response.json({status: 404, message:'No user found!'}, {status: 200})
                 }
             }
+            // search for user details by "collegeId"
             else if(params.ids[1] == 'U3'){
                 try {
                     // let q = 'SELECT * FROM user WHERE collegeId LIKE "%'+params.ids[2]+'%"';
@@ -72,6 +75,7 @@ export async function GET(request,{params}) {
                     return Response.json({status: 404, message:'No user found!'}, {status: 200})
                 }
             }
+            // search for user details by "username"
             else if(params.ids[1] == 'U4'){
                 try {
                     // let q = 'SELECT * FROM user WHERE collegeId LIKE "%'+params.ids[2]+'%"';
@@ -85,6 +89,33 @@ export async function GET(request,{params}) {
                     if(rows.length > 0){
                         // return the requests data
                         return Response.json({status: 200, data: rows, message:'Details found!'}, {status: 200})
+
+                    }
+                    else {
+                        // user doesn't exist in the system
+                        return Response.json({status: 201, message:'No data found!'}, {status: 200})
+                    }
+                } catch (error) { // error updating
+                    return Response.json({status: 404, message:'No user found!'}, {status: 200})
+                }
+            }
+            // search for user requests that are active by "collegeId"
+            else if(params.ids[1] == 'U5'){
+                try {
+                    // get outing requests
+                    let q = 'SELECT * from request where collegeId = "'+params.ids[2]+'" AND isOpen = 1';
+                    const [rows, fields] = await connection.execute(q);
+                    // get visitor passes
+                    let q1 = 'SELECT * from visitorpass where collegeId = "'+params.ids[2]+'" AND isOpen = 1';
+                    const [rows1, fields1] = await connection.execute(q1);
+
+                    connection.release();
+                    // return successful update
+
+                    // check if data is found
+                    if(rows.length > 0 || rows1.length > 0){
+                        // return the data
+                        return Response.json({status: 200, outing: rows, visitorpass: rows1, message:'Details found!'})
 
                     }
                     else {

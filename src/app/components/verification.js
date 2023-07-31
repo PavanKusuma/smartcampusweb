@@ -12,9 +12,9 @@ const biscuits = new Biscuits
 import dayjs from 'dayjs'
 
 // declare the apis of this page
-  const verifyUser = async (pass, id) => 
+  const verifyUser = async (pass, id, otp) => 
   
-    fetch("/api/verify/"+pass+"/"+id+"/"+Math.floor(1000 + Math.random() * 9000)+"/"+generateDeviceID()+"/"+dayjs(new Date(Date.now())).format('YYYY-MM-DD HH:mm:ss'), {
+    fetch("/api/verify/"+pass+"/"+id+"/"+otp+"/"+generateDeviceID()+"/"+dayjs(new Date(Date.now())).format('YYYY-MM-DD HH:mm:ss'), {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -42,6 +42,7 @@ export default function Vertification() {
 
     const [username, setUsername] = useState('');
     const [phone, setPhone] = useState('');
+    const [email, setEmail] = useState('');
     const [userFound, setuserFound] = useState(false);
     const [errorMsg, seterrorMsg] = useState('');
 
@@ -51,6 +52,9 @@ export default function Vertification() {
 
     const [infoMsg, setinfoMsg] = useState(false);
     const [user, setUser] = useState();
+
+    // this is to save the jsonResult for verification
+    const [queryResult, setQueryResult] = useState(); 
 
     useEffect(()=>{
         // Retrieve the cookie
@@ -74,50 +78,55 @@ async function loginHere(){
 
     // check for the input
     if(document.getElementById('collegeId').value.length > 0){
+
+        var otp = Math.floor(1000 + Math.random() * 9000);
+        setOTP(otp);
+        console.log(otp);
+
+        // show the loading.
+        setuserFound(true);
+        setotpSent(false);
         
         // call the api using secret key and collegeId provided
-        const result  = await verifyUser(process.env.NEXT_PUBLIC_API_PASS, document.getElementById('collegeId').value)
-        const queryResult = await result.json() // get data
+        const result  = await verifyUser(process.env.NEXT_PUBLIC_API_PASS, document.getElementById('collegeId').value, otp)
+        const resultData = await result.json() // get data
+        setQueryResult(resultData); // store data
+        
         
         // check if query result status is 200
-        if(queryResult.status == 200) {
+        // if 200, that means, user is found and OTP is sent
+        if(resultData.status == 200) {
+            
             // set the state variables with the user data
-            setuserFound(true)
-            setUser(queryResult.data)
-            setUsername(queryResult.data.username)
-            setPhone(queryResult.data.phoneNumber)
+            setUser(resultData.data)
+            setUsername(resultData.data.username)
+            setEmail(resultData.data.email)
+            setPhone(resultData.data.phoneNumber)
 
             // save the data to local cookie
-            let jsonString = JSON.stringify(queryResult.data)
-            biscuits.set('sc_user_detail', encodeURIComponent(jsonString), {path: '/', expires: new Date(Date.now() + 300000)})
+            // let jsonString = JSON.stringify(queryResult.data)
+            // biscuits.set('sc_user_detail', encodeURIComponent(jsonString), {path: '/', expires: new Date(Date.now() + 300000)})
             // document.cookie = "sc_user_detail="+encodeURIComponent(jsonString)+ "; expires=" + new Date(Date.now() + 300000).toUTCString() + "; path=/";
 
             // Retrieve the cookie
             // let cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)sc_user_detail\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-            let cookieValue = biscuits.get('sc_user_detail')
-            const obj = JSON.parse(decodeURIComponent(cookieValue))
-            // console.log("This is from cookie"+obj.username)
-
-
+            // let cookieValue = biscuits.get('sc_user_detail')
+            // const obj = JSON.parse(decodeURIComponent(cookieValue))
+            
             // call the OTP api
             // const otpResult = sendOTP()
 
-
-
-            var val = Math.floor(1000 + Math.random() * 9000);
-            console.log("OTP : "+val)
-            // generate OTP
-            setOTP(val)
-
-            // if OTP is sent, prompt the user to enter OTP
+            // As OTP is already sent, show the OTP prompt text field
             if(true){
+                // otp sent
                 setotpSent(true)
-
             }
         }
-        else if(queryResult.state == 404) {
+        else if(resultData.state == 404) {
             setuserFound(false)
             setinfoMsg(true)
+            // otp sent
+            setotpSent(false)
         }
         
     }
@@ -138,56 +147,56 @@ function clearCookies(){
      // clearing the state variable
      setUsername(''),setPhone(''),setuserFound(false),seterrorMsg(''),setotpSent(false),setverifyOtpMsg(''),setOTP(),setinfoMsg(false),setUser()
      
-  }
+}
 
 
-function sendOTP(){
-    console.log("Phone : "+phone)
-    if(phone.length > 0){
+// function sendOTP(){
+//     console.log("Phone : "+phone)
+//     if(phone.length > 0){
   
-      var val = Math.floor(1000 + Math.random() * 9000);
-      console.log("OTP : "+val)
-      // generate OTP
-      setOTP(val)
+//       var val = Math.floor(1000 + Math.random() * 9000);
+//       console.log("OTP : "+val)
+//       // generate OTP
+//       setOTP(val)
       
 
-      // call the API
+//       // call the API
 
-      // verify the result
-        return true
+//       // verify the result
+//         return true
 
-      // send OTP request
-    //   fetch(withQuery('/api/user/sendotp', 
-    //     {
-    //         phoneNumber: this.state.phone,
-    //         // phoneNumber: this.refs.phonenumber.value,
-    //         otp: val,
-    //     }),
-    //     {
-    //         method: 'GET',
-    //         headers: {'Content-Type': 'application/json'},
+//       // send OTP request
+//     //   fetch(withQuery('/api/user/sendotp', 
+//     //     {
+//     //         phoneNumber: this.state.phone,
+//     //         // phoneNumber: this.refs.phonenumber.value,
+//     //         otp: val,
+//     //     }),
+//     //     {
+//     //         method: 'GET',
+//     //         headers: {'Content-Type': 'application/json'},
             
-    //     })
-    //   .then(res => res.json())
-    //   .then(data => this.setState({data}, () => {
-    //     // console.log(`Customers fetched`, data)
-    //     // console.log(`Customers fetched`, this.state.otpNumber)
-    //     // save new number
-    //     cookies.set('phone', this.state.phone, {path: '/'})
-    //     if(data.status == 200) {
-    //       this.setState({otpMsg: 'OTP sent!', otpSent: true})
-    //     }
-    //     else {
-    //       // retry sending OTP again
-    //     }
-    //   })
-    // );
+//     //     })
+//     //   .then(res => res.json())
+//     //   .then(data => this.setState({data}, () => {
+//     //     // console.log(`Customers fetched`, data)
+//     //     // console.log(`Customers fetched`, this.state.otpNumber)
+//     //     // save new number
+//     //     cookies.set('phone', this.state.phone, {path: '/'})
+//     //     if(data.status == 200) {
+//     //       this.setState({otpMsg: 'OTP sent!', otpSent: true})
+//     //     }
+//     //     else {
+//     //       // retry sending OTP again
+//     //     }
+//     //   })
+//     // );
   
-    }
-    else {
-      return false
-    }
-  }
+//     }
+//     else {
+//       return false
+//     }
+//   }
   
   
 function verifyOTP(){
@@ -198,6 +207,11 @@ function verifyOTP(){
         if(document.getElementById('otp').value == otp){
            
             setverifyOtpMsg('OTP verified! Redirecting you to dashboard...')
+            
+            // save the data to local cookie
+            let jsonString = JSON.stringify(queryResult.data)
+            biscuits.set('sc_user_detail', encodeURIComponent(jsonString), {path: '/', expires: new Date(Date.now() + 300000)})
+            
             // navigate to dashboard
             router.push('/dashboard')
         }
@@ -252,7 +266,7 @@ function verifyOTP(){
             <div ><img src="/sc_logo2.png" style={{height:'80px', width:'80px', float:'left'}}/></div>
             {/* <div ><img src="/sc_logo_2.svg" style={{height:'66px', width:'220px', float:'left'}}/></div> */}
             <br/>
-            <div>Smart Campus</div>
+            <h1>Smart Campus</h1>
             <br/>
             {/* prompt the user for college Id
             and verify if it exists in the sytem */}
@@ -261,7 +275,7 @@ function verifyOTP(){
                 <div className={styles.card_block1}>
             
                     <p className={`${inter.className} ${styles.text2}`}>Your college registered Id </p><br/>
-                    <input id="collegeId"className={`${styles.textInput} ${inter.className} ${styles.text2}`} placeholder=""/>
+                    <input id="collegeId" className={`${inter.className} ${styles.text2} ${styles.textInput}`} placeholder=""/>
                     <br/><br/>
                     <button id="submit" onClick={loginHere.bind(this)} className={`${inter.className} ${styles.text2} ${styles.primarybtn}`}>Sign in</button>
                     <br/>
@@ -307,7 +321,8 @@ function verifyOTP(){
                     <div className={styles.horizontalsection}>
                         {/* <Loader className={`${styles.icon} ${styles.load}`} /> */}
                         <SpinnerGap className={`${styles.icon} ${styles.load}`} />
-                        <p className={`${inter.className} ${styles.text3}`}>Sending OTP to {username}...</p> 
+                        <p className={`${inter.className} ${styles.text3}`}>Sending OTP ...</p> 
+                        {/* <p className={`${inter.className} ${styles.text3}`}>Sending OTP to {username}...</p>  */}
                     </div>
                 </div>
                 :''}
@@ -319,7 +334,7 @@ function verifyOTP(){
                 {(otpSent) ?
                 <div className={styles.card_block1}>
                     <p className={`${inter.className} ${styles.text3}`}>Verify your mobile</p>
-                    <p className={`${inter.className} ${styles.text2}`}>Please enter the verification code sent to {phone.slice(0, 4).padEnd(phone.length, '*')}</p>
+                    <p className={`${inter.className} ${styles.text2}`}>Please enter the verification code sent to {phone.slice(0, 4).padEnd(phone.length, '*')} or {email.slice(0, 4).padEnd(email.length, '*')}</p>
                     <br/>
                     <input id="otp" className={`${styles.input_one} ${inter.className} ${styles.text3}`} placeholder="OTP" maxLength="4" style={{letterSpacing:30}} />
                     <br/>

@@ -30,8 +30,7 @@ import BlockDatesBtn from '../../components/blockdatesbtn'
             Accept: "application/json",
         },
     });
-    
-    
+   
 
 // pass state variable and the method to update state variable
 export default function Dashboard() {
@@ -160,6 +159,16 @@ export default function Dashboard() {
         setTDuration(!t_duration)
     }
 
+    // clear cookies or logout
+    function clearCookies(){
+
+        //  document.cookie = "";
+        biscuits.remove('sc_user_detail')
+
+        // clearing the state variable
+        setUser()
+        
+    }
     
   return (
     

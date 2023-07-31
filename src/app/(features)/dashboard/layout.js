@@ -2,6 +2,9 @@
 import { Inter } from 'next/font/google'
 import styles from '../../../app/page.module.css'
 import Image from 'next/image'
+import Biscuits from 'universal-cookie'
+const biscuits = new Biscuits
+import { useRouter } from 'next/navigation'
 import { useState } from 'react';
 
 const inter = Inter({ subsets: ['latin'] })
@@ -20,6 +23,18 @@ const inter = Inter({ subsets: ['latin'] })
     //     console.log(tabName);
     //   }
 
+    // create a router for auto navigation
+    const router = useRouter();
+
+    // clear cookies or logout and navigate to verification
+    function clearCookies(){
+
+      //  document.cookie = "";
+      biscuits.remove('sc_user_detail')
+      router.push('/')
+      
+  }
+
     return (
 
 
@@ -32,7 +47,7 @@ const inter = Inter({ subsets: ['latin'] })
               {/* <h3>Smart Campus</h3> */}
             </div>
             <div>
-              <h3>PK</h3>
+              <h3 onClick={clearCookies.bind(this)} >PK</h3>
               {/* <ProfileBtn show={false} /> */}
             </div>
           </div>

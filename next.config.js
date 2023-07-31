@@ -7,6 +7,9 @@ const nextConfig = {
   },
   externals: {
     'supports-color': 'supports-color'
+  },
+  compiler: {
+    styledComponents: true
   }
 }
 

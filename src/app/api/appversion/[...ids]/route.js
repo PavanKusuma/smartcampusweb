@@ -1,11 +1,8 @@
 import pool from '../../db'
 import { Keyverify } from '../../secretverify';
 
-// get the requests based on the user role and timing
 // params used for this API
-// key, role, branch, status, level, date – for other roles
-// key, role, collegeId – for student
-// branch value can be 'All' to get complete data
+// key, collegeId
 
 export async function GET(request,{params}) {
 
