@@ -182,26 +182,82 @@ export async function GET(request,{params}) {
             // 5. collegeId
             else if(params.ids[1] == 'S22'){ 
                 try {
-                    const [rows, fields] = await connection.execute('UPDATE visitorpass SET vStatus ="'+params.ids[3]+'", checkout="'+params.ids[4]+'" where vRequestId = "'+params.ids[2]+'"');
+                    let q = `UPDATE visitorpass
+                            SET
+                                checkin = CASE
+                                    WHEN vStatus = 'Approved' THEN "`+params.ids[2]+`"
+                                    ELSE checkin
+                                END,
+                                checkout = CASE
+                                    WHEN vStatus = 'Checkin' THEN "`+params.ids[2]+`"
+                                    ELSE checkout
+                                END,
+                                vStatus = CASE
+                                    WHEN vStatus = 'Approved' THEN 'Checkin'
+                                    WHEN vStatus = 'Checkin' THEN 'Checkout'
+                                    ELSE vStatus
+                                END
+                            WHERE
+                        collegeId = "`+params.ids[5]+`" AND isOpen = 1;`;
+
+                    const [rows, fields] = await connection.execute(q);
                     connection.release();
 
-                    // check if the student parent phone number is present
-                    const [rows1, fields1] = await connection.execute('SELECT fatherPhoneNumber from user_details where collegeId = "'+params.ids[8]+'"');
-                    // console.log(rows1[0].fatherPhoneNumber);
-                    
-                    // check if there is father phone number for the student
-                    if(rows1.length > 0){
-                        if(rows1[0].fatherPhoneNumber.length > 3){
-                            // send SMS
-                            sendSMS('S3',params.ids[7],rows1[0].fatherPhoneNumber, dayjs(params.ids[4]).format('hh:mm A, DD-MM-YY'));
-                        }
+                    // check if the request is updated. 
+                    // It will not get updated incase Any Admin has cancelled the request before checkout
+                    if(rows.changedRows == 0){
+                        return Response.json({status: 403, message:'No active request!'}, {status: 200})
                     }
-                    
-                    // send the notification
-                    const notificationResult = await send_notification('✅ Your visitors checked out of the campus', params.ids[5], 'Single');
-                    
-                    // return successful update
-                    return Response.json({status: 200, message:'Updated!',notification: notificationResult,}, {status: 200})
+                    else {
+                        // check if the student parent phone number is present
+                        // const [rows1, fields1] = await connection.execute('SELECT fatherPhoneNumber from user_details where collegeId = "'+params.ids[5]+'"');
+                        
+                        // Select query to retrieve the updated requestStatus
+                        // this helps us to understand if the student is 'checking out' or 'checking in'
+                        const selectQuery = `SELECT vStatus FROM visitorpass WHERE collegeId = "`+params.ids[5]+`" AND isOpen = 1`;
+                        const [rows2, fields] = await connection.execute(selectQuery);
+                        
+                        // get the updated vStatus
+                        const updatedRequestStatus = rows2[0].vStatus;
+
+                        var msg = '';
+                        var notificationResult;
+                        
+
+                        // based on the updated requestStatus, send the messaging to parents
+                        if(updatedRequestStatus == 'Checkin'){
+
+                            // check if parent details are present to send SMS
+                            msg = 'Checkin Successful!';
+                            // check if there is father phone number for the student
+                            // if(rows1.length > 0){
+                            //     if(rows1[0].fatherPhoneNumber.length > 3){
+                            //         // send SMS
+                            //         sendSMS('S2',params.ids[7],rows1[0].fatherPhoneNumber, dayjs(params.ids[2]).format('hh:mm A, DD-MM-YY'));
+                            //     }
+                            // }
+                            // send the notification
+                            notificationResult = await send_notification('👋 Your visitors checked in to the campuss', params.ids[3], 'Single');
+                        }
+                        else if(updatedRequestStatus == 'Checkout'){
+
+                            // check if parent details are present to send SMS
+                            msg = 'Checkout Successful!';
+                            // check if there is father phone number for the student
+                            // if(rows1.length > 0){
+                            //     if(rows1[0].fatherPhoneNumber.length > 3){
+                            //         // send SMS
+                            //         sendSMS('S3',params.ids[7],rows1[0].fatherPhoneNumber, dayjs(params.ids[2]).format('hh:mm A, DD-MM-YY'));
+                            //     }
+                            // }
+                            // send the notification
+                            notificationResult = await send_notification('✅ Your visitors checked out of the campus', params.ids[3], 'Single');
+                        }
+                        
+                        // return successful update
+                        return Response.json({status: 200, message:msg, notification: notificationResult,}, {status: 200})
+                    }
+
                 } catch (error) { // error updating
                     return Response.json({status: 404, message:'No request found!'+error.message}, {status: 200})
                 }

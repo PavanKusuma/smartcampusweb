@@ -185,17 +185,12 @@ export async function GET(request,{params}) {
             // 2. Checkin – isStudentOut = 0, status = Returned, returnedOn = date, stage = S4
             else if(params.ids[1] == 'S33'){ 
                 try {
-                    q = `UPDATE request
+                    let q = `UPDATE request
                             SET
                                 isStudentOut = CASE
                                     WHEN requestStatus = 'Issued' THEN 1
                                     WHEN requestStatus = 'InOuting' THEN 0
                                     ELSE isStudentOut
-                                END,
-                                requestStatus = CASE
-                                    WHEN requestStatus = 'Issued' THEN 'InOuting'
-                                    WHEN requestStatus = 'InOuting' THEN 'Returned'
-                                    ELSE requestStatus
                                 END,
                                 checkoutOn = CASE
                                     WHEN requestStatus = 'Issued' THEN "`+params.ids[2]+`"
@@ -204,6 +199,11 @@ export async function GET(request,{params}) {
                                 returnedOn = CASE
                                     WHEN requestStatus = 'InOuting' THEN "`+params.ids[2]+`"
                                     ELSE returnedOn
+                                END,
+                                requestStatus = CASE
+                                    WHEN requestStatus = 'Issued' THEN 'InOuting'
+                                    WHEN requestStatus = 'InOuting' THEN 'Returned'
+                                    ELSE requestStatus
                                 END
                             WHERE
                         collegeId = "`+params.ids[5]+`" AND isOpen = 1;`;
@@ -213,46 +213,69 @@ export async function GET(request,{params}) {
                     
                     // check if the request is updated. 
                     // It will not get updated incase Any Admin has cancelled the request before checkout
-                    if(rows.affectedRows == 0){
-                        return Response.json({status: 403, message:'No request found!'}, {status: 200})
+                    if(rows.changedRows == 0){
+                        return Response.json({status: 403, message:'No active request!'}, {status: 200})
                     }
                     else {
                         // check if the student parent phone number is present
                         const [rows1, fields1] = await connection.execute('SELECT fatherPhoneNumber from user_details where collegeId = "'+params.ids[5]+'"');
                         
-                        // check if parent details are present to send SMS
-                        if(rows1.length > 0){
-                            if(rows1[0].fatherPhoneNumber.length > 3){
-                                // send SMS
-                                sendSMS('S3',params.ids[4],rows1[0].fatherPhoneNumber, dayjs(params.ids[2]).format('hh:mm A, DD-MM-YY'));
-                            }
-                        }
-
                         // Select query to retrieve the updated requestStatus
                         // this helps us to understand if the student is 'checking out' or 'checking in'
                         const selectQuery = `SELECT requestStatus FROM request WHERE collegeId = "`+params.ids[5]+`" AND isOpen = 1`;
-                        const [rows, fields] = await connection.execute(selectQuery);
+                        const [rows2, fields] = await connection.execute(selectQuery);
+                        
+                        // get the updated requestStatus
+                        const updatedRequestStatus = rows2[0].requestStatus;
 
-                        const updatedRequestStatus = rows[0].requestStatus;
-                        console.log("Updated Request Status:", updatedRequestStatus);
+                        var msg = '';
+                        var notificationResult;
 
+                        // based on the updated requestStatus, send the messaging to parents
                         if(updatedRequestStatus == 'InOuting'){
+
+                            // check if parent details are present to send SMS
+                            msg = 'Checkout Successful!';
+                            if(rows1.length > 0){
+                                if(rows1[0].fatherPhoneNumber.length > 3){
+                                    // send SMS
+                                    sendSMS('S3',params.ids[4],rows1[0].fatherPhoneNumber, dayjs(params.ids[2]).format('hh:mm A, DD-MM-YY'));
+                                }
+                            }
                             // send the notification
-                            const notificationResult = await send_notification('👋 You checked out of the campus', params.ids[3], 'Single');
+                            notificationResult = await send_notification('👋 You checked out of the campus', params.ids[3], 'Single');
+                            
+                            // return successful update
+                            // return Response.json({status: 200, message:'Checkout Successful!'}, {status: 200})
                         }
-                        else {
+                        else if(updatedRequestStatus == 'Returned'){
+
+                            // check if parent details are present to send SMS
+                            msg = 'Checkin Successful!';
+                            if(rows1.length > 0){
+                                if(rows1[0].fatherPhoneNumber.length > 3){
+                                    // send SMS
+                                    sendSMS('S4',params.ids[4],rows1[0].fatherPhoneNumber, dayjs(params.ids[2]).format('hh:mm A, DD-MM-YY'));
+                                }
+                            }
+                            
                             // send the notification
-                            const notificationResult = await send_notification('✅ You checked in to the campus', params.ids[3], 'Single');
+                            notificationResult = await send_notification('✅ You checked in to the campus', params.ids[3], 'Single');
+
+                            // return successful update
+                            // return Response.json({status: 200, message:'Checkin Successful!'}, {status: 200})
                         }
 
                         
                         // return successful update
-                        return Response.json({status: 200, message:'Updated!',notification: notificationResult,}, {status: 200})
+                        // return Response.json({status: 200, message:msg}, {status: 200})
+                        // return Response.json({status: 200, message:'Updated!'}, {status: 200})
+                        return Response.json({status: 200, message:msg, notification: notificationResult,}, {status: 200})
                     }
                     connection.release();
                     
                 } catch (error) { // error updating
-                    return Response.json({status: 404, message:'No request found!'}, {status: 200})
+                    return Response.json({status: 404, message:'No request found!'+error}, {status: 200})
                 }
                 
             }
