@@ -109,21 +109,42 @@ export async function GET(request,{params}) {
                     let q1 = 'SELECT * from visitorpass where collegeId = "'+params.ids[2]+'" AND isOpen = 1';
                     const [rows1, fields1] = await connection.execute(q1);
 
-                    connection.release();
+                    // Check if requests are found
+                    if (rows1.length > 0) {
+                        
+                        // Use each request to get visitors of it
+                        const requestsData = await Promise.all(
+                            rows1.map(async (row) => {
+                            const [visitors, visitorFields] = await connection.execute('SELECT v.* FROM visitors v WHERE v.vRequestId = ?',[row.vRequestId]);
+                            
+                            // Add visitors data to the current row
+                            return { ...row, visitors };
+                            })
+                        );
+                        connection.release();
+
+                        // Return the requests data
+                        return Response.json({status: 200, outing: rows, visitorpass: requestsData, message:'Details found!'})
+                    } else {
+                        // Return the requests data
+                        return Response.json({status: 200, outing: rows, visitorpass: rows1, message:'Details found!'})
+                    }
+
+                    // connection.release();
                     // return successful update
 
                     // check if data is found
-                    if(rows.length > 0 || rows1.length > 0){
-                        // return the data
-                        return Response.json({status: 200, outing: rows, visitorpass: rows1, message:'Details found!'})
+                    // if(rows.length > 0 || rows1.length > 0){
+                    //     // return the data
+                    //     return Response.json({status: 200, outing: rows, visitorpass: rows1, message:'Details found!'})
 
-                    }
-                    else {
-                        // user doesn't exist in the system
-                        return Response.json({status: 201, message:'No data found!'}, {status: 200})
-                    }
+                    // }
+                    // else {
+                    //     // user doesn't exist in the system
+                    //     return Response.json({status: 201, message:'No data found!'}, {status: 200})
+                    // }
                 } catch (error) { // error updating
-                    return Response.json({status: 404, message:'No user found!'}, {status: 200})
+                    return Response.json({status: 404, message:'No user found!'+error}, {status: 200})
                 }
             }
             else {
