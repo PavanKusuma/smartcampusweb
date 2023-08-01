@@ -18,6 +18,9 @@ const client = new OneSignal.Client(process.env.ONE_SIGNAL_APPID, process.env.ON
 // Stage4.5 –– To be CheckIn *** LATE RETURN
 // Stage1.5 –– To be Rejected and move to closed –– by updating isOpen = 0
 // Stage0.5 –– To be Canceled –– Move the request to closed by updating isOpen = 0 and status to Canceled – This can be done by Student or Admin (Add extra comment to mention who did it)
+
+// Stage33 –– This is the stage to verify at security
+
 export async function GET(request,{params}) {
 
     // get the pool connection to db
@@ -160,6 +163,89 @@ export async function GET(request,{params}) {
                         // send the notification
                         const notificationResult = await send_notification('👋 You checked out of the campus', params.ids[5], 'Single');
 
+                        // return successful update
+                        return Response.json({status: 200, message:'Updated!',notification: notificationResult,}, {status: 200})
+                    }
+                    connection.release();
+                    
+                } catch (error) { // error updating
+                    return Response.json({status: 404, message:'No request found!'}, {status: 200})
+                }
+                
+            }
+            // else if(params.ids[4] == 'OutingAssistant'){
+            // 0. Pass
+            // 1. stage
+            // 2. dateInstance
+            // 3. playerId
+            // 4. username
+            // 5. collegeId
+
+            // 1. Checkout – isStudentOut = 1, status = InOuting, checkoutdate = date, stage = S3
+            // 2. Checkin – isStudentOut = 0, status = Returned, returnedOn = date, stage = S4
+            else if(params.ids[1] == 'S33'){ 
+                try {
+                    q = `UPDATE request
+                            SET
+                                isStudentOut = CASE
+                                    WHEN requestStatus = 'Issued' THEN 1
+                                    WHEN requestStatus = 'InOuting' THEN 0
+                                    ELSE isStudentOut
+                                END,
+                                requestStatus = CASE
+                                    WHEN requestStatus = 'Issued' THEN 'InOuting'
+                                    WHEN requestStatus = 'InOuting' THEN 'Returned'
+                                    ELSE requestStatus
+                                END,
+                                checkoutOn = CASE
+                                    WHEN requestStatus = 'Issued' THEN "`+params.ids[2]+`"
+                                    ELSE checkoutOn
+                                END,
+                                returnedOn = CASE
+                                    WHEN requestStatus = 'InOuting' THEN "`+params.ids[2]+`"
+                                    ELSE returnedOn
+                                END
+                            WHERE
+                        collegeId = "`+params.ids[5]+`" AND isOpen = 1;`;
+
+                    const [rows, fields] = await connection.execute(q);
+                    connection.release();
+                    
+                    // check if the request is updated. 
+                    // It will not get updated incase Any Admin has cancelled the request before checkout
+                    if(rows.affectedRows == 0){
+                        return Response.json({status: 403, message:'No request found!'}, {status: 200})
+                    }
+                    else {
+                        // check if the student parent phone number is present
+                        const [rows1, fields1] = await connection.execute('SELECT fatherPhoneNumber from user_details where collegeId = "'+params.ids[5]+'"');
+                        
+                        // check if parent details are present to send SMS
+                        if(rows1.length > 0){
+                            if(rows1[0].fatherPhoneNumber.length > 3){
+                                // send SMS
+                                sendSMS('S3',params.ids[4],rows1[0].fatherPhoneNumber, dayjs(params.ids[2]).format('hh:mm A, DD-MM-YY'));
+                            }
+                        }
+
+                        // Select query to retrieve the updated requestStatus
+                        // this helps us to understand if the student is 'checking out' or 'checking in'
+                        const selectQuery = `SELECT requestStatus FROM request WHERE collegeId = "`+params.ids[5]+`" AND isOpen = 1`;
+                        const [rows, fields] = await connection.execute(selectQuery);
+
+                        const updatedRequestStatus = rows[0].requestStatus;
+                        console.log("Updated Request Status:", updatedRequestStatus);
+
+                        if(updatedRequestStatus == 'InOuting'){
+                            // send the notification
+                            const notificationResult = await send_notification('👋 You checked out of the campus', params.ids[3], 'Single');
+                        }
+                        else {
+                            // send the notification
+                            const notificationResult = await send_notification('✅ You checked in to the campus', params.ids[3], 'Single');
+                        }
+
+                        
                         // return successful update
                         return Response.json({status: 200, message:'Updated!',notification: notificationResult,}, {status: 200})
                     }

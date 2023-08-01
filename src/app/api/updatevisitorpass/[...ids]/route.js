@@ -16,6 +16,9 @@ const client = new OneSignal.Client(process.env.ONE_SIGNAL_APPID, process.env.ON
 // Stage3 –– To be CheckOut
 // Stage1.5 –– To be Rejected and move to closed –– by updating isOpen = 0
 // Stage0.5 –– To be Canceled –– Move the request to closed by updating isOpen = 0 and status to Canceled – This can be done by Student or Admin (Add extra comment to mention who did it)
+
+// Stage22 –– This is the stage to verify at security
+
 export async function GET(request,{params}) {
 
     // get the pool connection to db
@@ -144,6 +147,40 @@ export async function GET(request,{params}) {
             // 7. username
             // 8. collegeId
             else if(params.ids[1] == 'S3'){ 
+                try {
+                    const [rows, fields] = await connection.execute('UPDATE visitorpass SET vStatus ="'+params.ids[3]+'", checkout="'+params.ids[4]+'" where vRequestId = "'+params.ids[2]+'"');
+                    connection.release();
+
+                    // check if the student parent phone number is present
+                    const [rows1, fields1] = await connection.execute('SELECT fatherPhoneNumber from user_details where collegeId = "'+params.ids[8]+'"');
+                    // console.log(rows1[0].fatherPhoneNumber);
+                    
+                    // check if there is father phone number for the student
+                    if(rows1.length > 0){
+                        if(rows1[0].fatherPhoneNumber.length > 3){
+                            // send SMS
+                            sendSMS('S3',params.ids[7],rows1[0].fatherPhoneNumber, dayjs(params.ids[4]).format('hh:mm A, DD-MM-YY'));
+                        }
+                    }
+                    
+                    // send the notification
+                    const notificationResult = await send_notification('✅ Your visitors checked out of the campus', params.ids[5], 'Single');
+                    
+                    // return successful update
+                    return Response.json({status: 200, message:'Updated!',notification: notificationResult,}, {status: 200})
+                } catch (error) { // error updating
+                    return Response.json({status: 404, message:'No request found!'+error.message}, {status: 200})
+                }
+                
+            }
+            // else if(params.ids[4] == 'OutingAssistant'){
+            // 0. Pass
+            // 1. stage
+            // 2. dateInstance
+            // 3. playerId
+            // 4. username
+            // 5. collegeId
+            else if(params.ids[1] == 'S22'){ 
                 try {
                     const [rows, fields] = await connection.execute('UPDATE visitorpass SET vStatus ="'+params.ids[3]+'", checkout="'+params.ids[4]+'" where vRequestId = "'+params.ids[2]+'"');
                     connection.release();
