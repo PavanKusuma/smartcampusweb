@@ -11,6 +11,7 @@
   "dependencies": {
     "dayjs": "^1.11.7",
     "debug": "^4.3.4",
+    "firebase": "^10.1.0",
     "lru-cache": "^7.14.1",
     "mysql": "^2.18.1",
     "mysql2": "^3.2.0",
@@ -21,6 +22,7 @@
     "react": "18.2.0",
     "react-datepicker": "^4.11.0",
     "react-dom": "18.2.0",
+    "react-webcam": "^7.1.1",
     "supports-color": "^9.3.1",
     "twilio": "^4.9.0",
     "universal-cookie": "^4.0.4"

@@ -1,6 +1,7 @@
 'use client'
 
-import Dashboard from '../(features)/dashboard/page'
+import Registration from '../(features)/registration/page'
+// import Dashboard from '../(features)/dashboard/page'
 import { Inter } from 'next/font/google'
 import { SpinnerGap } from 'phosphor-react'
 import { useEffect, useState } from 'react'
@@ -64,7 +65,8 @@ export default function Vertification() {
             const obj = JSON.parse(decodeURIComponent(cookieValue))
             console.log("This is from cookie"+obj.username)
             setSession(true)
-            router.push('/dashboard')
+            // router.push('/dashboard')
+            router.push('/registration')
         }
         else{
             setSession(false)
@@ -210,10 +212,13 @@ function verifyOTP(){
             
             // save the data to local cookie
             let jsonString = JSON.stringify(queryResult.data)
-            biscuits.set('sc_user_detail', encodeURIComponent(jsonString), {path: '/', expires: new Date(Date.now() + 300000)})
+            biscuits.set('sc_user_detail', encodeURIComponent(jsonString), {path: '/', expires: new Date(Date.now() + 1800000)})
             
             // navigate to dashboard
-            router.push('/dashboard')
+            // router.push('/dashboard')
+            
+            // temporarily showing registration
+            router.push('/registration')
         }
         else{
             setverifyOtpMsg('Invalid OTP!')
@@ -259,7 +264,8 @@ function verifyOTP(){
     <div>
         
         {(session) ? 
-          <Dashboard />
+          <Registration />
+        //   <Dashboard />
           :
         <div className={styles.titlecard}>
             <div className={styles.section_one}>
