@@ -184,6 +184,7 @@ export async function GET(request,{params}) {
             // 1. Checkout – isStudentOut = 1, status = InOuting, checkoutdate = date, stage = S3
             // 2. Checkin – isStudentOut = 0, status = Returned, returnedOn = date, stage = S4
             else if(params.ids[1] == 'S33'){ 
+
                 try {
                     let q = `UPDATE request
                             SET
@@ -206,15 +207,22 @@ export async function GET(request,{params}) {
                                     ELSE requestStatus
                                 END
                             WHERE
-                        collegeId = "`+params.ids[5]+`" AND isOpen = 1;`;
+                        collegeId = "`+params.ids[5]+`" AND isOpen = 1
+                        AND (requestStatus!='InOuting' OR (requestStatus = 'InOuting' AND TIMESTAMPDIFF(MINUTE, checkoutOn, "`+params.ids[2]+`") >30));` ;
 
                     const [rows, fields] = await connection.execute(q);
                     connection.release();
-                    
+                    // console.log("Changed :"+ rows.changedRows);
+                    // console.log("Affected :"+ rows.affectedRows);
                     // check if the request is updated. 
                     // It will not get updated incase Any Admin has cancelled the request before checkout
-                    if(rows.changedRows == 0){
+                    if(rows.changedRows == 0 && rows.affectedRows == 0){
+                        
                         return Response.json({status: 403, message:'No active request!'}, {status: 200})
+                    }
+                    else if(rows.changedRows == 0 && rows.affectedRows == 1){
+                        
+                        return Response.json({status: 401, message:'Try again later!'}, {status: 200})
                     }
                     else {
                         // check if the student parent phone number is present
@@ -370,7 +378,7 @@ export async function GET(request,{params}) {
     }
     catch (err){
         // some error occured
-        return Response.json({status: 500, message:'Facing issues. Please try again!'}, {status: 200})
+        return Response.json({status: 500, message:'Facing issues. Please try again!'+err.message}, {status: 200})
     }
   }
 
