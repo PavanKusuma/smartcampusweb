@@ -212,7 +212,7 @@ function verifyOTP(){
             
             // save the data to local cookie
             let jsonString = JSON.stringify(queryResult.data)
-            biscuits.set('sc_user_detail', encodeURIComponent(jsonString), {path: '/', expires: new Date(Date.now() + 1800000)})
+            biscuits.set('sc_user_detail', encodeURIComponent(jsonString), {path: '/', expires: new Date(Date.now() + 10800000)})
             
             // navigate to dashboard
             // router.push('/dashboard')
@@ -270,9 +270,10 @@ function verifyOTP(){
         <div className={styles.titlecard}>
             <div className={styles.section_one}>
             <div ><img src="/sc_logo2.png" style={{height:'80px', width:'80px', float:'left'}}/></div>
-            {/* <div ><img src="/sc_logo_2.svg" style={{height:'66px', width:'220px', float:'left'}}/></div> */}
             <br/>
             <h1>Smart Campus</h1>
+            <div ><img src="/svecw_sc_logo.svg" style={{height:'46px', width:'220px', float:'left'}}/></div>
+            
             <br/>
             {/* prompt the user for college Id
             and verify if it exists in the sytem */}

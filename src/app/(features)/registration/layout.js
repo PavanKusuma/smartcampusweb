@@ -44,10 +44,12 @@ const inter = Inter({ subsets: ['latin'] })
           <div className={styles.topbar}>
             <div className={styles.horizontalsection}>
               <Image src="/sc_logo1.svg" alt="Smart Campus" width={160} height={40} priority />
+              <span style={{color: '#CCCCCC'}}>|</span>
+              <Image src="/svecw_sc_logo.svg" alt="Smart Campus" width={90} height={40} priority />
               {/* <h3>Smart Campus</h3> */}
             </div>
             <div>
-              <h3 onClick={clearCookies.bind(this)} >PK</h3>
+              <p onClick={clearCookies.bind(this)} style={{cursor:'pointer'}} className={`${inter.className} ${styles.text3}`}>Logout</p>
               {/* <ProfileBtn show={false} /> */}
             </div>
           </div>

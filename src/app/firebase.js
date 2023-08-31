@@ -18,7 +18,7 @@ const firebaseConfig = {
 const firebase = initializeApp(firebaseConfig);
 
 // Initialize Cloud Storage and get a reference to the service
-// const storage = getStorage(app);
+const storage = getStorage(firebase, "gs://smartcampusimages-1.appspot.com");
 
 // Initialize Firebase
 // firebase.initializeApp(firebaseConfig)
