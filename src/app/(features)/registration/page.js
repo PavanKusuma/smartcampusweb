@@ -545,30 +545,15 @@ async function submitHere(){
             setCapturedGuardianImage(false);
             setCapturedGuardian2Image(false);
 
-            // save the data to local cookie
-            // let jsonString = JSON.stringify(queryResult.data)
-            // biscuits.set('sc_user_detail', encodeURIComponent(jsonString), {path: '/', expires: new Date(Date.now() + 300000)})
-            // document.cookie = "sc_user_detail="+encodeURIComponent(jsonString)+ "; expires=" + new Date(Date.now() + 300000).toUTCString() + "; path=/";
-
-            // Retrieve the cookie
-            // let cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)sc_user_detail\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-            // let cookieValue = biscuits.get('sc_user_detail')
-            // const obj = JSON.parse(decodeURIComponent(cookieValue))
-            
-            // call the OTP api
-            // const otpResult = sendOTP()
-
-            // As OTP is already sent, show the OTP prompt text field
+            // Success
             alert('✅ Submitted!')
+            window.location.reload();
             
         }
         else if(resultData.state == 404) {
             // setuserFound(false)
             // setinfoMsg(true)
         }
-
-        setStudentName(false);
-        setStudentNameValue(null);
         
     }
     else {
