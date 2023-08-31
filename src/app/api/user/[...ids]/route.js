@@ -178,8 +178,11 @@ export async function GET(request,{params}) {
             else if(params.ids[1] == 'U7'){
                 try {
                     // let q = 'SELECT * FROM user WHERE collegeId LIKE "%'+params.ids[2]+'%"';
-                    console.log(params.ids[3]);
-                    let q = 'UPDATE user SET mediaCount=1, userImage= "'+params.ids[3]+'" WHERE collegeId = "'+params.ids[2]+'"';
+                    // console.log(params.ids[2]);
+                    
+                    let i = "https://firebasestorage.googleapis.com/v0/b/smartcampusimages-1.appspot.com/o/"+params.ids[2]+".jpeg?alt=media";
+
+                    let q = `UPDATE user SET mediaCount = 1, userImage = '${i}' WHERE collegeId = '${params.ids[2]}'`;
                     const [rows, fields] = await connection.execute(q);
                     connection.release();
                     // return successful update
@@ -195,7 +198,7 @@ export async function GET(request,{params}) {
                         return Response.json({status: 201, message:'No Student found!'}, {status: 200})
                     }
                 } catch (error) { // error updating
-                    return Response.json({status: 404, message:'No Student found!'}, {status: 200})
+                    return Response.json({status: 404, message:'No Student found!'+error.message}, {status: 200})
                 }
             }
             else {

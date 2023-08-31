@@ -39,9 +39,9 @@ fetch("/api/user/"+pass+"/U6/"+id+"/0", {
 });
 
 // declare the apis of this page
-const submitUser = async (pass, id, userImage) => 
+const submitUser = async (pass, id) => 
   
-fetch("/api/user/"+pass+"/U7/"+id+"/"+encodeURIComponent(userImage), {
+fetch("/api/user/"+pass+"/U7/"+id, {
     method: "GET",
     headers: {
         "Content-Type": "application/json",
@@ -535,7 +535,7 @@ async function submitHere(){
         console.log(id);
         // call the api using secret key and collegeId provided
         // const result  = await submitUser(process.env.NEXT_PUBLIC_API_PASS,id, "https://firebasestorage.googleapis.com/v0/b/smartcampusimages-1.appspot.com/o/"+id+".jpeg?alt=media")
-        const result  = await submitUser(process.env.NEXT_PUBLIC_API_PASS,id, `https://firebasestorage.googleapis.com/v0/b/smartcampusimages-1.appspot.com/o/${id}.jpeg?alt=media`)
+        const result  = await submitUser(process.env.NEXT_PUBLIC_API_PASS,id)
         // const result  = await submitUser(process.env.NEXT_PUBLIC_API_PASS,id, encodeURIComponent(`https://firebasestorage.googleapis.com/v0/b/smartcampusimages-1.appspot.com/o/${id}.jpeg?alt=media`))
         const resultData = await result.json() // get data
         
