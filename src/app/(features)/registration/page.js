@@ -559,6 +559,7 @@ async function submitHere(){
             // const otpResult = sendOTP()
 
             // As OTP is already sent, show the OTP prompt text field
+            alert('✅ Submitted!')
             
         }
         else if(resultData.state == 404) {
@@ -663,7 +664,7 @@ async function submitHere(){
 
                                         <p className={`${inter.className} ${styles.text3_heading}`}>Details:</p>
                                         
-                                        <div className={`${inter.className} ${styles.horizontalsection}`} style={{gap:'20px', alignItems: 'flex-start'}}>
+                                        <div className={`${inter.className} ${styles.verticalsection}`} style={{gap:'20px', alignItems: 'flex-start'}}>
                                             {/* Student image capture */}
                                             <div>Student
                                             {/* {studentName ? <div className={`${inter.className} ${styles.text1}`}>{studentNameValue}</div> :  */}
@@ -684,9 +685,19 @@ async function submitHere(){
                         
                                                     </div>
                                                 :
-                                                <div><button onClick={startStudentCapture} className={`${inter.className} ${styles.secondarybtn}`}>Open camera</button></div>
+                                                capturedImage ? 
+                                                    <div>
+                                                        <img src={capturedImage} alt="Captured" />
+                                                        <p>✅ Captured</p>
+                                                        <button onClick={() => reTake('Student')} className={`${inter.className} ${styles.secondarybtn}`}>Retake</button>
+                                                        </div>
+                                                        :
+                                                    <div>
+                                                        <button onClick={startStudentCapture} className={`${inter.className} ${styles.secondarybtn}`}>Open camera</button>
+                                                    </div>
                                                 }
-                                                
+
+                                               
                                             </div>
                                              
                                             
@@ -706,6 +717,8 @@ async function submitHere(){
                                                             height={200}
                                                             audio={false}
                                                             ref={webcamRef}
+                                                            videoConstraints={videoConstraints}
+                                                            mirrored={facingMode === 'environment'}
                                                             screenshotFormat="image/jpeg"
                                                         />
                                                         <button onClick={captureFather} className={`${inter.className} ${styles.primarybtn}`} >Capture</button> &nbsp;&nbsp;
@@ -713,6 +726,13 @@ async function submitHere(){
                         
                                                     </div>
                                                 :
+                                                capturedFatherImage ? 
+                                                    <div>
+                                                        <img src={capturedFatherImage} alt="Captured" />
+                                                        <p>✅ Captured</p>
+                                                        <button onClick={() => reTake('Father')} className={`${inter.className} ${styles.secondarybtn}`}>Retake</button>
+                                                        </div>
+                                                        :
                                                 <div><button onClick={startFatherCapture} className={`${inter.className} ${styles.secondarybtn}`}>Open camera</button></div>}
                                             </div>
                                             
@@ -732,6 +752,8 @@ async function submitHere(){
                                                             height={200}
                                                             audio={false}
                                                             ref={webcamRef}
+                                                            videoConstraints={videoConstraints}
+                                                            mirrored={facingMode === 'environment'}
                                                             screenshotFormat="image/jpeg"
                                                         />
                                                         <button onClick={captureMother} className={`${inter.className} ${styles.primarybtn}`} >Capture</button> &nbsp;&nbsp;
@@ -739,6 +761,13 @@ async function submitHere(){
                         
                                                     </div>
                                                 :
+                                                capturedMotherImage ? 
+                                                    <div>
+                                                        <img src={capturedMotherImage} alt="Captured" />
+                                                        <p>✅ Captured</p>
+                                                        <button onClick={() => reTake('Mother')} className={`${inter.className} ${styles.secondarybtn}`}>Retake</button>
+                                                        </div>
+                                                        :
                                                 <div><button onClick={startMotherCapture} className={`${inter.className} ${styles.secondarybtn}`}>Open camera</button></div>}
                                             </div>
                                             
@@ -758,6 +787,8 @@ async function submitHere(){
                                                             height={200}
                                                             audio={false}
                                                             ref={webcamRef}
+                                                            videoConstraints={videoConstraints}
+                                                            mirrored={facingMode === 'environment'}
                                                             screenshotFormat="image/jpeg"
                                                         />
                                                         <button onClick={captureGuardian1} className={`${inter.className} ${styles.primarybtn}`} >Capture</button> &nbsp;&nbsp;
@@ -765,6 +796,13 @@ async function submitHere(){
                         
                                                     </div>
                                                 :
+                                                capturedGuardianImage ? 
+                                                    <div>
+                                                        <img src={capturedGuardianImage} alt="Captured" />
+                                                        <p>✅ Captured</p>
+                                                        <button onClick={() => reTake('Guardian')} className={`${inter.className} ${styles.secondarybtn}`}>Retake</button>
+                                                        </div>
+                                                        :
                                                 <div><button onClick={startGuardianCapture} className={`${inter.className} ${styles.secondarybtn}`}>Open camera</button></div>}
                                             </div>
                                             
@@ -784,6 +822,8 @@ async function submitHere(){
                                                             height={200}
                                                             audio={false}
                                                             ref={webcamRef}
+                                                            videoConstraints={videoConstraints}
+                                                            mirrored={facingMode === 'environment'}
                                                             screenshotFormat="image/jpeg"
                                                         />
                                                         <button onClick={captureGuardian2} className={`${inter.className} ${styles.primarybtn}`} >Capture</button> &nbsp;&nbsp;
@@ -791,6 +831,13 @@ async function submitHere(){
                         
                                                     </div>
                                                 :
+                                                capturedGuardian2Image ? 
+                                                    <div>
+                                                        <img src={capturedGuardian2Image} alt="Captured" />
+                                                        <p>✅ Captured</p>
+                                                        <button onClick={() => reTake('Guardian2')} className={`${inter.className} ${styles.secondarybtn}`}>Retake</button>
+                                                        </div>
+                                                        :
                                                 <div><button onClick={startGuardian2Capture} className={`${inter.className} ${styles.secondarybtn}`}>Open camera</button></div>}
                                             </div>
 
@@ -845,7 +892,7 @@ async function submitHere(){
                             {/* <ImageComponent imageUrl={imageUrl} /> */}
                     </div>
                 </div>
-                <div className={styles.horizontalsection}>
+                {/* <div className={styles.horizontalsection}>
                         {capturedImage ? 
                         <div>
                                 <img src={capturedImage} alt="Captured" />
@@ -892,7 +939,7 @@ async function submitHere(){
                                 }
 
 
-                            </div>
+                            </div> */}
                 <div className={`${inter.className} ${styles.text3}`}>Only submit after capturing images.</div>
                 <button id="submit" onClick={submitHere.bind(this)} className={`${inter.className} ${styles.text2} ${styles.primarybtn}`}>Submit</button>
             {/* )} */}
