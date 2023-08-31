@@ -178,7 +178,7 @@ export async function GET(request,{params}) {
             else if(params.ids[1] == 'U7'){
                 try {
                     // let q = 'SELECT * FROM user WHERE collegeId LIKE "%'+params.ids[2]+'%"';
-                    // console.log(q);
+                    console.log(params.ids[3]);
                     let q = 'UPDATE user SET mediaCount=1, userImage= "'+params.ids[3]+'" WHERE collegeId = "'+params.ids[2]+'"';
                     const [rows, fields] = await connection.execute(q);
                     connection.release();

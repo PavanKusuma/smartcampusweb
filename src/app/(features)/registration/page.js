@@ -41,7 +41,7 @@ fetch("/api/user/"+pass+"/U6/"+id+"/0", {
 // declare the apis of this page
 const submitUser = async (pass, id, userImage) => 
   
-fetch("/api/user/"+pass+"/U7/"+id+"/"+userImage, {
+fetch("/api/user/"+pass+"/U7/"+id+"/"+encodeURIComponent(userImage), {
     method: "GET",
     headers: {
         "Content-Type": "application/json",
@@ -84,6 +84,7 @@ export default function Registration() {
     // user state and requests variable
     const [user, setUser] = useState();
     const [inputError, setInputError] = useState(false);
+    const [searching, setSearching] = useState(false);
     const [studentName, setStudentName] = useState(false);
     const [studentImage, setStudentImage] = useState(false);
     const [fatherImage, setFatherImage] = useState(false);
@@ -452,6 +453,8 @@ setImageUrl(downloadURL);
     async function getData(){
         if(document.getElementById('userObjectId').value.length > 0){
 
+            setSearching(true);
+
         const result  = await checkUser(process.env.NEXT_PUBLIC_API_PASS, document.getElementById('userObjectId').value)
         const queryResult = await result.json() // get data
 
@@ -470,24 +473,29 @@ setImageUrl(downloadURL);
             else {
                 console.log('No Data ')
                 alert('No user found!');
-                setDataFound(false)
+                
             }
+
+            setSearching(false);
         }
         else if(queryResult.status == 401) {
             console.log('Not Authorized ')
             alert('No user found!');
-            setDataFound(false)
+            
+            setSearching(false);
         }
         else if(queryResult.status == 404) {
             console.log('Not more data')
             alert('No user found!');
-            setDataFound(false)
+            
+            setSearching(false);
         }
         else {
             console.log('Yes the do!');
             alert('No user found!');
             // router.push('/')
-            setDataFound(false)
+            
+            setSearching(false);
         }
     
     }
@@ -526,7 +534,9 @@ async function submitHere(){
         var id = document.getElementById('userObjectId').value;
         console.log(id);
         // call the api using secret key and collegeId provided
-        const result  = await submitUser(process.env.NEXT_PUBLIC_API_PASS,id, encodeURIComponent(`https://firebasestorage.googleapis.com/v0/b/smartcampusimages-1.appspot.com/o/${id}.jpeg?alt=media`))
+        // const result  = await submitUser(process.env.NEXT_PUBLIC_API_PASS,id, "https://firebasestorage.googleapis.com/v0/b/smartcampusimages-1.appspot.com/o/"+id+".jpeg?alt=media")
+        const result  = await submitUser(process.env.NEXT_PUBLIC_API_PASS,id, `https://firebasestorage.googleapis.com/v0/b/smartcampusimages-1.appspot.com/o/${id}.jpeg?alt=media`)
+        // const result  = await submitUser(process.env.NEXT_PUBLIC_API_PASS,id, encodeURIComponent(`https://firebasestorage.googleapis.com/v0/b/smartcampusimages-1.appspot.com/o/${id}.jpeg?alt=media`))
         const resultData = await result.json() // get data
         
         // check if query result status is 200
@@ -631,6 +641,11 @@ async function submitHere(){
                             <div className={`${inter.className}`} style={{display:'flex',flexWrap:'wrap',alignItems:'center',gap:'8px'}}>
                                 <input id="userObjectId" className={`${inter.className} ${styles.text2} ${styles.textInput}`} placeholder="Unique user ID"/>
                                 <button onClick={getData.bind(this)} className={`${inter.className} ${styles.primarybtn}`} >Find</button>
+                                
+                                {searching ? <div className={styles.horizontalsection}>
+                                    <SpinnerGap className={`${styles.icon} ${styles.load}`} />
+                                    <p className={`${inter.className} ${styles.text3}`}>Finding User ...</p> 
+                                </div> : ''}
                                 {studentName ? <div className={`${inter.className} ${styles.text1}`}>{studentNameValue}</div> : ''}
                             </div>
                             <br/>
