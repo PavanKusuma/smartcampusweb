@@ -175,8 +175,11 @@ export default function Registration() {
 
     const videoRef = useRef(null);
     const [stream, setStream] = useState(null);
-
-
+    const [facingMode, setFacingMode] = useState('environment');
+    const videoConstraints = {
+        facingMode: facingMode,
+      };
+    
     const startCapture = async () => {
         try {
         const userMedia = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -672,6 +675,8 @@ async function submitHere(){
                                                             height={200}
                                                             audio={false}
                                                             ref={webcamRef}
+                                                            videoConstraints={videoConstraints}
+                                                            mirrored={facingMode === 'environment'}
                                                             screenshotFormat="image/jpeg"
                                                         />
                                                         <button onClick={captureStudent} className={`${inter.className} ${styles.primarybtn}`} >Capture</button> &nbsp;&nbsp;
