@@ -154,7 +154,7 @@ export async function GET(request,{params}) {
                 try {
                     // let q = 'SELECT * FROM user WHERE collegeId LIKE "%'+params.ids[2]+'%"';
                     // console.log(q);
-                    let q = 'SELECT * FROM user WHERE role = "Student" AND profileUpdated=1 AND collegeId = "'+params.ids[2]+'" LIMIT 1 OFFSET '+params.ids[3];
+                    let q = 'SELECT * FROM user WHERE role = "Student" AND profileUpdated=0 AND collegeId = "'+params.ids[2]+'" LIMIT 1 OFFSET '+params.ids[3];
                     const [rows, fields] = await connection.execute(q);
                     connection.release();
                     // return successful update

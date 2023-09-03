@@ -473,6 +473,8 @@ setImageUrl(downloadURL);
             else {
                 console.log('No Data ')
                 alert('No user found!');
+                setStudentName(false);
+                setStudentNameValue('')
                 
             }
 
@@ -483,12 +485,16 @@ setImageUrl(downloadURL);
             alert('No user found!');
             
             setSearching(false);
+            setStudentName(false);
+                setStudentNameValue('')
         }
         else if(queryResult.status == 404) {
             console.log('Not more data')
             alert('No user found!');
             
             setSearching(false);
+            setStudentName(false);
+                setStudentNameValue('')
         }
         else {
             console.log('Yes the do!');
@@ -496,6 +502,8 @@ setImageUrl(downloadURL);
             // router.push('/')
             
             setSearching(false);
+            setStudentName(false);
+                setStudentNameValue('')
         }
     
     }
