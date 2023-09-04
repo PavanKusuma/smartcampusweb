@@ -207,22 +207,26 @@ export async function GET(request,{params}) {
                     // let q = `SELECT *,( SELECT COUNT(*)
                     //  FROM user 
                     //  WHERE mediaCount = 1 AND profileUpdated = 0) AS user_count FROM user WHERE mediaCount = 1 AND profileUpdated = 0 LIMIT 10 OFFSET `+params.ids[2];
-                    let q1 = `SELECT COUNT(*) AS user_count
+                    let q1 = `SELECT COUNT(*) AS registered
                      FROM user 
-                     WHERE mediaCount = 1 AND profileUpdated = 0`;
-                    let q2 = `SELECT *
+                     WHERE profileUpdated = 0`;
+                    let q2 = `SELECT COUNT(*) AS user_count
+                    FROM user 
+                    WHERE mediaCount = 1 AND profileUpdated = 0`;
+                    let q3 = `SELECT *
                      FROM user 
-                     WHERE mediaCount = 1 AND profileUpdated = 0 ORDER BY userObjectId ASC LIMIT 10 OFFSET `+params.ids[2];
+                     WHERE (mediaCount = 1 OR mediaCount = 0) AND profileUpdated = 0 ORDER BY (mediaCount = 1) DESC, CAST(userObjectId AS SIGNED) ASC LIMIT 10 OFFSET `+params.ids[2];
                     
                     const [rows, fields] = await connection.execute(q1);
                     const [rows1, fields1] = await connection.execute(q2);
+                    const [rows2, fields2] = await connection.execute(q3);
                     connection.release();
                     // return successful update
 
                     // check if user is found
-                    if(rows1.length > 0){
+                    if(rows2.length > 0){
                         // return the requests data
-                        return Response.json({status: 200, count: rows[0].user_count, data: rows1, message:'Details found!'}, {status: 200})
+                        return Response.json({status: 200, registered: rows[0].registered, count: rows1[0].user_count, data: rows2, message:'Details found!'}, {status: 200})
 
                     }
                     else {

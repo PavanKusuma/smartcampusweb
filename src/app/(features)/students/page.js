@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Check, Info, SpinnerGap, X } from 'phosphor-react'
 import React, { useCallback, useEffect, useState, useRef } from 'react'
+import { useInView } from "react-intersection-observer";
 const inter = Inter({ subsets: ['latin'] })
 import styles from '../../../app/page.module.css'
 import Biscuits from 'universal-cookie'
@@ -56,9 +57,15 @@ export default function Registration() {
     // user state and requests variable
     const [user, setUser] = useState();
     const [offset, setOffset] = useState(0);
+    const [completed, setCompleted] = useState(false);
     const [totalStudents, setTotalStudents] = useState(0);
+    const [registeredStudents, setRegisteredStudents] = useState(0);
+    const [studentsList, setStudentsList] = useState();
+    const [dataFound, setDataFound] = useState(true); // use to declare 0 rows
     const [inputError, setInputError] = useState(false);
     const [searching, setSearching] = useState(false);
+    const { ref, inView } = useInView();
+
     const [studentName, setStudentName] = useState(false);
     const [studentImage, setStudentImage] = useState(false);
     const [fatherImage, setFatherImage] = useState(false);
@@ -72,7 +79,6 @@ export default function Registration() {
     const [capturedMotherImage, setCapturedMotherImage] = useState(null);
     const [capturedGuardianImage, setCapturedGuardianImage] = useState(null);
     const [capturedGuardian2Image, setCapturedGuardian2Image] = useState(null);
-    const [dataFound, setDataFound] = useState(true); // use to declare 0 rows
     
     // this is choose from different statuses for viewing data – In tabs
     const [viewByStatus, setViewByStatus] = useState('');
@@ -108,8 +114,13 @@ export default function Registration() {
 
                 // set the user state variable
                 setUser(obj)
-                getData();
                 
+                if(!completed){
+                    getData();
+                }
+                else {
+                    console.log("DONE READING");
+                }
                 
                 // get the requests data if doesnot exist
                 // if(!requests){
@@ -141,13 +152,17 @@ export default function Registration() {
                 console.log('Not found')
                 router.push('/')
             }
+
+            // if (inView) {
+            //     console.log("YO YO YO!");
+            //   }
     // });
     // This code will run whenever capturedStudentImage changes
     // console.log('capturedStudentImage'); // Updated value
     // console.log(capturedStudentImage); // Updated value
 
 
-    },[capturedStudentImage]);
+    },[capturedStudentImage, inView]);
 
     const videoRef = useRef(null);
     const [stream, setStream] = useState(null);
@@ -169,10 +184,11 @@ export default function Registration() {
     async function getData(){
         
         setSearching(true);
+        setOffset(offset+10); // update the offset for every call
 
         const result  = await getUsers(process.env.NEXT_PUBLIC_API_PASS, offset)
         const queryResult = await result.json() // get data
-console.log(queryResult);
+
         // check for the status
         if(queryResult.status == 200){
 
@@ -180,46 +196,45 @@ console.log(queryResult);
             if(queryResult.data.length > 0){
 
                 // set the state
-                // setRequests(queryResult.data)
-                // console.log(queryResult.data[0].username);
+                // total students
                 setTotalStudents(queryResult.count);
-                // setStudentName(true);
-                // setStudentNameValue(queryResult.data[0].username)
+                setRegisteredStudents(queryResult.registered);
+
+                // check if students are present and accordingly add students list
+                if(studentsList==null){
+                   setStudentsList(queryResult.data)
+                }
+                else {
+                    setStudentsList((studentsList) => [...studentsList, ...queryResult.data]);
+                }
+                // set data found
+                setDataFound(true);
             }
             else {
-                console.log('No Data ')
-                alert('No user found!');
-                setStudentName(false);
-                setStudentNameValue('')
                 
+                setDataFound(false);
             }
 
             setSearching(false);
+            setCompleted(false);
         }
         else if(queryResult.status == 401) {
-            console.log('Not Authorized ')
-            alert('No user found!');
             
             setSearching(false);
-            setStudentName(false);
-                setStudentNameValue('')
+            setDataFound(false);
+            setCompleted(true);
         }
         else if(queryResult.status == 404) {
-            console.log('Not more data')
-            alert('No user found!');
             
             setSearching(false);
-            setStudentName(false);
-                setStudentNameValue('')
+            setDataFound(false);
+            setCompleted(true);
         }
-        else {
-            console.log('Yes the do!');
-            alert('No user found!');
-            // router.push('/')
+        else if(queryResult.status == 201) {
             
             setSearching(false);
-            setStudentName(false);
-                setStudentNameValue('')
+            setDataFound(false);
+            setCompleted(true);
         }
     
 }
@@ -303,7 +318,7 @@ async function submitHere(){
             
             <h1 className={inter.className}>Students</h1><br/>
               <p className={`${inter.className} ${styles.headingtext2}`}>
-              List of students from Campus database.
+              Newly registered students.
               </p>
              
               <br />
@@ -338,17 +353,32 @@ async function submitHere(){
                     <div className={styles.projectsection}>
                        
                             <div className={styles.verticalsection}>
-                            <p className={`${inter.className} ${styles.text3_heading}`}>Students:</p>
-                            <div className={`${inter.className}`} style={{display:'flex',flexWrap:'wrap',alignItems:'center',gap:'8px'}}>
-                                {/* <input id="userObjectId" className={`${inter.className} ${styles.text2} ${styles.textInput}`} placeholder="Unique user ID"/> */}
-                                {/* <button onClick={getData.bind(this)} className={`${inter.className} ${styles.primarybtn}`} >Find</button> */}
+                            <p className={`${inter.className} ${styles.text3_heading}`}>Students</p>
+                           <div className={styles.horizontalsection}>
+                           <p className={`${inter.className} ${styles.text3_heading}`}>Total:</p>
+                                <div className={`${inter.className}`} style={{display:'flex',flexWrap:'wrap',alignItems:'center',gap:'8px'}}>
+                                    {/* <input id="userObjectId" className={`${inter.className} ${styles.text2} ${styles.textInput}`} placeholder="Unique user ID"/> */}
+                                    {/* <button onClick={getData.bind(this)} className={`${inter.className} ${styles.primarybtn}`} >Find</button> */}
+                                    
+                                    {searching ? <div className={styles.horizontalsection}>
+                                        <SpinnerGap className={`${styles.icon} ${styles.load}`} />
+                                        <p className={`${inter.className} ${styles.text3}`}>Loading ...</p> 
+                                    </div> : ''}
+                                    {/* <div className={`${inter.className} ${styles.text1}`}>{totalStudents}</div>  */}
+                                    <h1>{registeredStudents}</h1>
+                                </div>
                                 
-                                {searching ? <div className={styles.horizontalsection}>
-                                    <SpinnerGap className={`${styles.icon} ${styles.load}`} />
-                                    <p className={`${inter.className} ${styles.text3}`}>Gettings students ...</p> 
-                                </div> : ''}
-                                {/* <div className={`${inter.className} ${styles.text1}`}>{totalStudents}</div>  */}
-                                <h1>{totalStudents}</h1>
+                                <div className={`${inter.className}`} style={{display:'flex',flexWrap:'wrap',alignItems:'center',gap:'8px'}}>
+                                    {/* <input id="userObjectId" className={`${inter.className} ${styles.text2} ${styles.textInput}`} placeholder="Unique user ID"/> */}
+                                    {/* <button onClick={getData.bind(this)} className={`${inter.className} ${styles.primarybtn}`} >Find</button> */}
+                                    <p className={`${inter.className} ${styles.text3_heading}`}>Registered:</p>
+                                    {searching ? <div className={styles.horizontalsection}>
+                                        <SpinnerGap className={`${styles.icon} ${styles.load}`} />
+                                        <p className={`${inter.className} ${styles.text3}`}>Loading ...</p> 
+                                    </div> : ''}
+                                    {/* <div className={`${inter.className} ${styles.text1}`}>{totalStudents}</div>  */}
+                                    <h1>{totalStudents}</h1>
+                                </div>
                             </div>
                             <br/>
                             {/* <button id="submit" onClick={loginHere.bind(this)} className={`${inter.className} ${styles.text2} ${styles.primarybtn}`}>Sign in</button> */}
@@ -356,12 +386,92 @@ async function submitHere(){
                                 {inputError ? <div className={`${styles.error} ${inter.className} ${styles.text2}`}>Enter valid ID to proceed</div>
                                     :''}
                             
+
+                            {(!studentsList) ? 
+                            ((!dataFound) ? 
+                                <div className={styles.horizontalsection}>
+                                    <Check className={styles.icon} />
+                                    <p className={`${inter.className} ${styles.text3}`}>No students yet!</p> 
+                                </div>
+                                : 
+                                <div className={styles.horizontalsection}>
+                                    {/* <Loader className={`${styles.icon} ${styles.load}`} /> */}
+                                    <SpinnerGap className={`${styles.icon} ${styles.load}`} />
+                                    <p className={`${inter.className} ${styles.text3}`}>Gettings students ...</p> 
+                                </div>)
+                                : 
+                            <div className={styles.titlecard}>
+                            {studentsList.map(studentItem => (
+
+                                
+                                            <div className={styles.verticalsection} key={studentItem.collegeId} >
+                                                {/* <p className={`${inter.className} ${styles.text2}`} dangerouslySetInnerHTML={{ __html: project.description.replace(/\n/g, '<br>') }}></p> */}
+                                                {/* <p className={`${inter.className} ${styles.text2}`}>{project.description.replace(/\n/g, '\n')}</p> */}
+                                                
+                                                
+                                                <div  className={styles.card_block2}>
+
+                                                    {/* <p className={(studentItem.requestType=='studentItem' ? 'requestItem_chip' : 'outing_chip')}>{studentItem.requestType}</p> */}
+
+                                                       <div className={styles.horizontalsection}> 
+
+
+                                                       {(studentItem.mediaCount == 1) ?
+                                                        <ImageComponent imageUrl={studentItem.userImage} id={studentItem.collegeId}/>
+                                                            :
+                                                            <div className={`${styles.abbrevationBG}`}>
+                                                                <p className={`${inter.className} ${styles.text2}`}>{abbreviateName(studentItem.username)}</p>
+                                                            </div>
+                                                        }
+                                                        
+                                                        <div>
+                                                            <p className={`${inter.className} ${styles.text2}`}>{studentItem.collegeId}</p>
+                                                            <p className={`${inter.className} ${styles.text1}`}>{studentItem.username}</p>
+                                                        </div>
+                                                        </div>
+                                                        
+                                                        {/* <div>
+                                                            <p className={`${inter.className} ${styles.text3_heading}`}>Name:</p>
+                                                            <p className={`${inter.className} ${styles.text1}`}>{studentItem.username}</p>
+                                                        </div> */}
+                                                        {/* <br/> */}
+
+                                                        {/* <div>
+                                                            <p className={`${inter.className} ${styles.text3_heading}`}>Photo status: </p>
+                                                            <p className={`${inter.className} ${styles.text2}`}>Hello date
+                                                                <br/><span className={`${inter.className} ${styles.text3}`}>{studentItem.mediaCount} updated</span>
+                                                            </p>
+                                                        </div> */}
+                                                        
+                                                        {/* <br/> */}
+                                                       
+
+                                    </div>
+                            
+                       
+                       
+                    </div>
+                    
+                
+            ))}
+            <br/>
+            {(!completed) ?
+                <div ref={ref} className={styles.horizontalsection}>
+                    <SpinnerGap className={`${styles.icon} ${styles.load}`} />
+                    <p className={`${inter.className} ${styles.text3}`}>Loading ...</p> 
+                </div>
+                :
+                ''
+            }
+        </div>
+        
+         }
                                 {/* <p className={`${inter.className} ${styles.text2}`} dangerouslySetInnerHTML={{ __html: project.description.replace(/\n/g, '<br>') }}></p> */}
                                 {/* <p className={`${inter.className} ${styles.text2}`}>{project.description.replace(/\n/g, '\n')}</p> */}
                                 
                                 
                                 
-                                    {/* <p className={(requestItem.requestType=='requestItem' ? 'requestItem_chip' : 'outing_chip')}>{requestItem.requestType}</p> */}
+                                    {/* <p className={(studentItem.requestType=='studentItem' ? 'requestItem_chip' : 'outing_chip')}>{studentItem.requestType}</p> */}
                                         
 
                                         {/* <p className={`${inter.className} ${styles.text3_heading}`}>Details:</p>
@@ -387,7 +497,6 @@ async function submitHere(){
                             
                        
                     </div>
-                    <br/>
                     
                     
                     {/* <Image
@@ -421,11 +530,22 @@ async function submitHere(){
 
 
 
-    function ImageComponent({ imageUrl }) {
+    function ImageComponent({ imageUrl, id }) {
         return (
           <div>
             {/* Replace 'imageUrl' with the actual URL of the image */}
-            <img src={imageUrl} alt="Downloaded Image" />
+            <img key={id} src={imageUrl} alt="Downloaded Image" width={'50px'} height={'50px'} style={{objectFit:'cover',backgroundColor:'#F5F5F5',borderRadius:'50%'}}/>
           </div>
         );
+      }
+
+      function abbreviateName(name) {
+        const words = name.split(' ');
+        if (words.length >= 2) {
+          return `${words[0][0]}${words[1][0]}`;
+        } else if (words.length === 1) {
+          return `${words[0][0]}${words[0][1]}`;
+        } else {
+          return 'Invalid Name';
+        }
       }
