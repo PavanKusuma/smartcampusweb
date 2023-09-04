@@ -201,6 +201,38 @@ export async function GET(request,{params}) {
                     return Response.json({status: 404, message:'No Student found!'+error.message}, {status: 200})
                 }
             }
+            // get user details by who are freshly registered
+            else if(params.ids[1] == 'U8'){
+                try {
+                    // let q = `SELECT *,( SELECT COUNT(*)
+                    //  FROM user 
+                    //  WHERE mediaCount = 1 AND profileUpdated = 0) AS user_count FROM user WHERE mediaCount = 1 AND profileUpdated = 0 LIMIT 10 OFFSET `+params.ids[2];
+                    let q1 = `SELECT COUNT(*) AS user_count
+                     FROM user 
+                     WHERE mediaCount = 1 AND profileUpdated = 0`;
+                    let q2 = `SELECT *
+                     FROM user 
+                     WHERE mediaCount = 1 AND profileUpdated = 0 ORDER BY userObjectId ASC LIMIT 10 OFFSET `+params.ids[2];
+                    
+                    const [rows, fields] = await connection.execute(q1);
+                    const [rows1, fields1] = await connection.execute(q2);
+                    connection.release();
+                    // return successful update
+
+                    // check if user is found
+                    if(rows1.length > 0){
+                        // return the requests data
+                        return Response.json({status: 200, count: rows[0].user_count, data: rows1, message:'Details found!'}, {status: 200})
+
+                    }
+                    else {
+                        // user doesn't exist in the system
+                        return Response.json({status: 201, message:'No Student found!'}, {status: 200})
+                    }
+                } catch (error) { // error updating
+                    return Response.json({status: 404, message:'No Student found!'+error.message}, {status: 200})
+                }
+            }
             else {
                 return Response.json({status: 404, message:'No Student found!'}, {status: 200})
             }
