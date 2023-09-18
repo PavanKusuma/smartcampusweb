@@ -5,7 +5,7 @@ import { Check, Info, SpinnerGap, X } from 'phosphor-react'
 import React, { useCallback, useEffect, useState, useRef } from 'react'
 import { useInView } from "react-intersection-observer";
 const inter = Inter({ subsets: ['latin'] })
-import styles from '../../../app/page.module.css'
+import styles from '../../../../app/page.module.css'
 import Biscuits from 'universal-cookie'
 const biscuits = new Biscuits
 import dayjs from 'dayjs'
@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation'
 // import ImageWithShimmer from '../../components/imagewithshimmer'
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 // const storage = getStorage();
-import firebase from '../../firebase';
+import firebase from '../../../../app/firebase';
 
 const storage = getStorage(firebase, "gs://smartcampusimages-1.appspot.com");
 
@@ -42,7 +42,7 @@ fetch("/api/user/"+pass+"/U8/"+offset, {
 export default function SearchStudents() {
 
     // variable to store the active tab
-    const [selectedTab, setSelectedTab] = useState('Search');
+    const [selectedTab, setSelectedTab] = useState('Outing');
     function handleTabChange(tabName) {
         setSelectedTab(tabName)
         console.log(tabName);
@@ -302,23 +302,17 @@ async function submitHere(){
     
               
 
-        //   <div className={styles.maindivcenter} style={{height:'90vh', contentVisibility:'auto',padding: '0px 24px'}}>
+          <div className={styles.maindivcenter} style={{height:'90vh', contentVisibility:'auto',padding: '0px 24px'}}>
             
-
-        //     <div style={{height:'10vh',display:'flex',flexDirection:'column',justifyContent:'center'}}>
-        //         <h2 className={inter.className}>Student 360</h2>
-        //         <div className={`${styles.menuItems} ${inter.className}`}>
-        //             <div className={`${styles.menuItem} ${selectedTab === 'Search' ? styles.menuItem_selected : ''}`} onClick={() => handleTabChange('Search')}>Search student</div>
-        //             <div className={`${styles.menuItem} ${selectedTab === 'Add student' ? styles.menuItem_selected : ''}`} onClick={() => handleTabChange('Add student')}>Add student</div>
-                
-        //         </div>
-                
-        //     </div>
-
-            
+            <div style={{height:'10vh',display:'flex',flexDirection:'column',justifyContent:'center'}}>
+                <h1 className={inter.className}>Students search</h1>
+                <p className={`${inter.className} ${styles.text3}`}>
+                Newly registered students.
+                </p>
+            </div>
           
          
-        <div className={styles.titlecard} style={{height:'78vh',flexDirection:'row'}}>
+        <div className={styles.titlecard} style={{height:'80vh',flexDirection:'row'}}>
 
                 <div className={styles.carddatasection} key={1234} style={{height:'100%',overflow:'scroll'}}>
                        
@@ -518,7 +512,7 @@ async function submitHere(){
                
                 
         </div>
-    
+    </div>
     
     
   );

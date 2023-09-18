@@ -6,15 +6,14 @@ import Image from 'next/image'
 import { Check, Info, SpinnerGap, X } from 'phosphor-react'
 import React, { useCallback, useEffect, useState, useRef } from 'react'
 const inter = Inter({ subsets: ['latin'] })
-import styles from '../../../app/page.module.css'
+import styles from '../../../../../app/page.module.css'
 import Biscuits from 'universal-cookie'
 const biscuits = new Biscuits
 import dayjs from 'dayjs'
 import { useRouter } from 'next/navigation'
-import ImageWithShimmer from '../../components/imagewithshimmer'
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 // const storage = getStorage();
-import firebase from '../../../app/firebase';
+import firebase from '../../../../firebase';
 import Webcam from 'react-webcam';
 
 const storage = getStorage(firebase, "gs://smartcampusimages-1.appspot.com");
@@ -70,13 +69,6 @@ fetch("/api/user/"+pass+"/U7/"+id, {
 
 // pass state variable and the method to update state variable
 export default function Registration() {
-
-    // variable to store the active tab
-    const [selectedTab, setSelectedTab] = useState('Outing');
-    function handleTabChange(tabName) {
-        setSelectedTab(tabName)
-        console.log(tabName);
-      }
 
     // create a router for auto navigation
     const router = useRouter();
@@ -595,55 +587,24 @@ async function submitHere(){
     
   return (
     
-     <div>
-
-        {/* <div className={`${styles.menuItems} ${inter.className}`}>
-            <div className={`${styles.menuItem} ${selectedTab === 'Outing' ? styles.menuItem_selected : ''}`} onClick={() => handleTabChange('Outing')}>Outing</div>
-            <div className={`${styles.menuItem} ${selectedTab === 'Students' ? styles.menuItem_selected : ''}`} onClick={() => handleTabChange('Students')}>Students</div>
-            <div className={`${styles.menuItem} ${selectedTab === 'Circulars' ? styles.menuItem_selected : ''}`} onClick={() => handleTabChange('Circulars')}>Circulars</div>
-        </div>
-         */}
-        <div style={{border: '0.5px solid #E5E7EB', width:'100vw'}}></div>
-              
-
-          <div className={styles.maindivcenter}>
-            
-            <h1 className={inter.className}>Student Registration</h1><br/>
-              <p className={`${inter.className} ${styles.headingtext2}`}>
-              Fill in the fields and submit to update student details into Campus database.
-              </p>
-             
-              <br />
-            {/* <div>{children}</div> */}
-            {/* <ProjectsList /> */}
-            {/* <ProjectsList allProjects={allProjects}/> */}
-            <br />
-            {/* <MoreBtn projects={projects}/> */}
-            {/* <MoreBtn skip={skip} projects={projects}/> */}
-          
-
-      
-
-        {/* check if data is not – API return 0 rows */}
     
-    {/* if data is getting fetched, show the loading */}
-    {/* {(!requests) ? 
-    ((!dataFound) ?  */}
-        {/* <div className={styles.horizontalsection}>
-            <Check className={styles.icon} />
-            <p className={`${inter.className} ${styles.text3}`}>No requests yet!</p> 
-        </div> */}
-        {/* <div className={styles.horizontalsection}>
-            <SpinnerGap className={`${styles.icon} ${styles.load}`} />
-            <p className={`${inter.className} ${styles.text3}`}>Loading...</p> 
-        </div> */}
-        {/* ) */}
-         
-        <div className={styles.titlecard}>
+    
 
-                <div className={styles.carddatasection} key={1234}>
-                    <div className={styles.projectsection}>
-                       
+    // <div className={styles.maindivcenter} style={{height:'90vh', contentVisibility:'auto',padding: '0px 24px'}}>
+            
+    //         <div style={{height:'10vh',display:'flex',flexDirection:'column',justifyContent:'center'}}>
+    //             <h1 className={inter.className}>Students registration</h1>
+    //             <p className={`${inter.className} ${styles.text3}`}>
+    //             Fill in the fields and submit to update student details into Campus database.
+    //             </p>
+    //         </div>
+          
+          <div className={styles.verticalsection} style={{height:'80vh',gap:'8px'}}>
+
+            <div className={styles.horizontalsection} style={{height:'100%', width:'100%'}}>
+
+                <div className={styles.carddatasection} key={1234} style={{height:'100%',overflow:'scroll',alignItems:'flex-start'}}>
+                  
                             <div className={styles.verticalsection}>
                             <p className={`${inter.className} ${styles.text3_heading}`}>Student details:</p>
                             <div className={`${inter.className}`} style={{display:'flex',flexWrap:'wrap',alignItems:'center',gap:'8px'}}>
@@ -852,11 +813,15 @@ async function submitHere(){
                                             
                                         </div>
 
-                                        
+                                        <br/>
+                                        <br/>
+
+                                        <div className={`${inter.className} ${styles.text3}`}>Only submit after capturing images.</div>
+                                        <button id="submit" onClick={submitHere.bind(this)} className={`${inter.className} ${styles.text2} ${styles.primarybtn}`}>Submit</button>
                                     </div>
                             
                        
-                    </div>
+                    
                     <br/>
                     
                     
@@ -900,62 +865,17 @@ async function submitHere(){
                             {/* <ImageComponent imageUrl={imageUrl} /> */}
                     </div>
                 </div>
-                {/* <div className={styles.horizontalsection}>
-                        {capturedImage ? 
-                        <div>
-                                <img src={capturedImage} alt="Captured" />
-                                <button onClick={() => reTake('Student')} className={`${inter.className} ${styles.secondarybtn}`}>Retake</button>
-                                </div>
-                                :
-                                <br/>
-                                }
-                        
-                        {capturedFatherImage ? 
-                        <div>
-                                <img src={capturedFatherImage} alt="Captured" />
-                                <button onClick={() => reTake('Father')} className={`${inter.className} ${styles.secondarybtn}`}>Retake</button>
-                                </div>
-                                :
-                                <br/>
-                                }
-
-                        {capturedMotherImage ? 
-                        <div>
-                                <img src={capturedMotherImage} alt="Captured" />
-                                <button onClick={() => reTake('Mother')} className={`${inter.className} ${styles.secondarybtn}`}>Retake</button>
-                                </div>
-                                :
-                                <br/>
-                                }
-
-                        {capturedGuardianImage ? 
-                        <div>
-                                <img src={capturedGuardianImage} alt="Captured" />
-                                <button onClick={() => reTake('Guardian')} className={`${inter.className} ${styles.secondarybtn}`}>Retake</button>
-                                </div>
-                                :
-                                <br/>
-                                }
-
-                        {capturedGuardian2Image ? 
-                        <div>
-                                <img src={capturedGuardian2Image} alt="Captured" />
-                                <button onClick={() => reTake('Guardian2')} className={`${inter.className} ${styles.secondarybtn}`}>Retake</button>
-                                </div>
-                                :
-                                <br/>
-                                }
 
 
-                            </div> */}
-                <div className={`${inter.className} ${styles.text3}`}>Only submit after capturing images.</div>
-                <button id="submit" onClick={submitHere.bind(this)} className={`${inter.className} ${styles.text2} ${styles.primarybtn}`}>Submit</button>
+
+                
+                
+                
             {/* )} */}
         </div>
-        {/* } */}
-    <br/>
-    </div>
-    </div>
+        </div>
+       
+    
     
     
   );

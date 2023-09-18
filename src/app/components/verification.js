@@ -1,7 +1,7 @@
 'use client'
 
-import Registration from '../(features)/registration/page'
-// import Dashboard from '../(features)/dashboard/page'
+import Registration from '../(features)/(campus)/registration/form/page'
+import Dashboard from '../(features)/(campus)/dashboard/page'
 import { Inter } from 'next/font/google'
 import { SpinnerGap } from 'phosphor-react'
 import { useEffect, useState } from 'react'
@@ -66,7 +66,7 @@ export default function Vertification() {
             console.log("This is from cookie"+obj.username)
             setSession(true)
             // router.push('/dashboard')
-            router.push('/registration')
+            router.push('/dashboard')
         }
         else{
             setSession(false)
@@ -218,7 +218,7 @@ function verifyOTP(){
             // router.push('/dashboard')
             
             // temporarily showing registration
-            router.push('/registration')
+            router.push('/dashboard')
         }
         else{
             setverifyOtpMsg('Invalid OTP!')
@@ -264,8 +264,8 @@ function verifyOTP(){
     <div>
         
         {(session) ? 
-          <Registration />
-        //   <Dashboard />
+        //   <Registration />
+          <Dashboard />
           :
         <div className={styles.titlecard}>
             <div className={styles.section_one}>

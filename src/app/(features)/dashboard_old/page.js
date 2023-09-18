@@ -33,7 +33,7 @@ import BlockDatesBtn from '../../components/blockdatesbtn'
    
 
 // pass state variable and the method to update state variable
-export default function Dashboard() {
+export default function DashboardOld() {
 
     // variable to store the active tab
     const [selectedTab, setSelectedTab] = useState('Outing');

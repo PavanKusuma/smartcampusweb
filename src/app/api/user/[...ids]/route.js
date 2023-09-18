@@ -237,6 +237,171 @@ export async function GET(request,{params}) {
                     return Response.json({status: 404, message:'No Student found!'+error.message}, {status: 200})
                 }
             }
+            // create/update user basic details by "collegeId"
+            // admin can update from Student360
+            else if(params.ids[1] == 'U9'){
+                try {
+
+                    // get the list of things to update
+                    const jsonObject = JSON.parse(params.ids[3]);
+                    var updateString = '';
+
+                    // parse through the list of things to update and form a string
+                    for (const key in jsonObject) {
+                        if (jsonObject.hasOwnProperty(key)) {
+                          const value = jsonObject[key];
+                          
+                            if(updateString.length == 0){
+                                updateString = `${key}='${value}'`;
+                            }
+                            else {
+                                updateString = updateString + `,${key}='${value}'`;
+                            }
+                        }
+                      }
+                      
+                    console.log(`UPDATE user SET ${updateString} WHERE collegeId = '${params.ids[2]}'`);
+                    let q = `UPDATE user SET ${updateString} WHERE collegeId = '${params.ids[2]}'`;
+                    
+                    const [rows, fields] = await connection.execute(q);
+                    connection.release();
+                    // return successful update
+
+                    // check if user is found
+                    if(rows.affectedRows > 0){
+                        // return the requests data
+                        return Response.json({status: 200, data: rows, message:'Details found!'}, {status: 200})
+
+                    }
+                    else {
+                        // user doesn't exist in the system
+                        return Response.json({status: 201, message:'No Student found!'}, {status: 200})
+                    }
+                } catch (error) { // error updating
+                    return Response.json({status: 404, message:'No Student found!'+error.message}, {status: 200})
+                }
+            }
+            // UPDATE user parent details by "collegeId"
+            // admin can update from Student360
+            // this update happens via key value pairs
+            else if(params.ids[1] == 'U10'){
+                try {
+
+                    // get the list of things to update
+                    const jsonObject = JSON.parse(params.ids[3]);
+                    var updateString = '';
+
+                    // parse through the list of things to update and form a string
+                    for (const key in jsonObject) {
+                        if (jsonObject.hasOwnProperty(key)) {
+                          const value = jsonObject[key];
+                          
+                            if(updateString.length == 0){
+                                updateString = `${key}='${value}'`;
+                            }
+                            else {
+                                updateString = updateString + `,${key}='${value}'`;
+                            }
+                        }
+                      }
+                      
+                    console.log(`UPDATE user_details SET ${updateString} WHERE collegeId = '${params.ids[2]}'`);
+                    let q = `UPDATE user_details SET ${updateString} WHERE collegeId = '${params.ids[2]}'`;
+                    
+                    const [rows, fields] = await connection.execute(q);
+                    connection.release();
+                    // return successful update
+
+                    // check if user is found
+                    if(rows.affectedRows > 0){
+                        // return the requests data
+                        return Response.json({status: 200, data: rows, message:'Details found!'}, {status: 200})
+
+                    }
+                    else {
+                        // user doesn't exist in the system
+                        return Response.json({status: 201, message:'No Student found!'}, {status: 200})
+                    }
+                } catch (error) { // error updating
+                    return Response.json({status: 404, message:'No Student found!'+error.message}, {status: 200})
+                }
+            }
+            // CREATE user basic and parent details
+            // admin can CREATE from Student360
+            // this update happens via key value pairs
+            else if(params.ids[1] == 'U11'){
+                try {
+
+                    // get the list of things to update
+                    const userObject = JSON.parse(params.ids[2]);
+                    const userDetailObject = JSON.parse(params.ids[3]);
+                    // var updateString = '';
+                    var userKeys = '', userValues = '', userDetailKeys = '', userDetailValues = '';
+
+                    // parse through the list of things to update and form a string
+                    // userObject
+                    for (const key in userObject) {
+                        if (userObject.hasOwnProperty(key)) {
+                          const value = userObject[key];
+                          
+                            if(userKeys.length == 0){
+                                // updateString = `${key}='${value}'`;
+                                userKeys = `${key}`;
+                                userValues = `'${value}'`;
+
+                            }
+                            else {
+                                // updateString = updateString + `,${key}='${value}'`;
+                                userKeys = userKeys + `,${key}`;
+                                userValues = userValues + `,'${value}'`;
+                            }
+                        }
+                      }
+                    // parse through the list of things to update and form a string
+                    // userDetailObject
+                    for (const key in userDetailObject) {
+                        if (userDetailObject.hasOwnProperty(key)) {
+                          const value = userDetailObject[key];
+                          
+                            if(userDetailKeys.length == 0){
+                                // updateString = `${key}='${value}'`;
+                                userDetailKeys = `${key}`;
+                                userDetailValues = `'${value}'`;
+
+                            }
+                            else {
+                                // updateString = updateString + `,${key}='${value}'`;
+                                userDetailKeys = userDetailKeys + `,${key}`;
+                                userDetailValues = userDetailValues + `,'${value}'`;
+                            }
+                        }
+                      }
+                      
+                    console.log(`INSERT INTO user (${userKeys}) VALUES (${userValues})`);
+                    console.log(`INSERT INTO user (${userDetailKeys}) VALUES (${userDetailValues})`);
+
+                    let p = `INSERT INTO user (${userKeys}) VALUES (${userValues})`;
+                    let q = `INSERT INTO user_details (${userDetailKeys}) VALUES (${userDetailValues})`;
+                    
+                    const [rows, fields] = await connection.execute(p);
+                    const [rows1, fields1] = await connection.execute(q);
+                    connection.release();
+                    // return successful update
+
+                    // check if user is found
+                    if(rows.affectedRows > 0 && rows1.affectedRows > 0){
+                        // return the requests data
+                        return Response.json({status: 200, data: rows, data1: rows1, message:'Details found!'}, {status: 200})
+
+                    }
+                    else {
+                        // user doesn't exist in the system
+                        return Response.json({status: 201, message:'No Student found!'}, {status: 200})
+                    }
+                } catch (error) { // error updating
+                    return Response.json({status: 404, message:'No Student found!'+error.message}, {status: 200})
+                }
+            }
             else {
                 return Response.json({status: 404, message:'No Student found!'}, {status: 200})
             }
