@@ -21,6 +21,8 @@ const inter = Inter({ subsets: ['latin'] })
 
     // // variable to store the active tab
     const [selectedTab, setSelectedTab] = useState('Dashboard');
+    const [userData, setUserData] = useState();
+    const [role, setRole] = useState();
     // function handleTabChange(tabName){
     //     setSelectedTab(tabName);
     //     console.log(tabName);
@@ -39,17 +41,58 @@ const inter = Inter({ subsets: ['latin'] })
   }
 
   // this will ask you to stop before reloading
-  // useEffect(() => {
-  //   const handleBeforeUnload = (event) => {
-  //     event.returnValue = 'ok ok';
-  //   };
+  useEffect(() => {
 
-  //   window.addEventListener('beforeunload', handleBeforeUnload);
 
-  //   return () => {
-  //     window.removeEventListener('beforeunload', handleBeforeUnload);
-  //   }
-  // }, []);
+    let cookieValue = biscuits.get('sc_user_detail')
+    if(cookieValue){
+        const obj = JSON.parse(decodeURIComponent(cookieValue)) // get the cookie data
+console.log('Hello');
+setUserData(obj);
+setRole(obj.role);
+console.log(obj.username);
+        // set the user state variable
+        
+        // get the requests data if doesnot exist
+        // if(!requests){
+
+        //     // set the view by status based on the role
+        //     if(obj.role == 'Student'){
+        //         console.log('Student');
+        //         setViewByStatus('Returned')
+        //         getData(obj.role, 'Returned', obj.collegeId, obj.branch);
+        //     }
+        //     else if(obj.role == 'SuperAdmin' || obj.role == 'Admin'){
+        //         console.log('SuperAdmin');
+        //         setViewByStatus('Submitted')
+        //         getData(obj.role, 'Submitted', obj.collegeId, obj.branch);
+        //     }
+        //     else if(obj.role == 'OutingAdmin' || obj.role == 'OutingIssuer'){
+        //         console.log('OutingAdmin');
+        //         setViewByStatus('Approved')
+        //         getData(obj.role, 'Approved', obj.collegeId, obj.branch);
+        //     }
+        //     else if(obj.role == 'OutingAssistant'){
+        //         console.log('OutingAssistant');
+        //         setViewByStatus('Issued')
+        //         getData(obj.role, 'Issued', obj.collegeId, obj.branch);
+        //     }   
+        // }
+    }
+    else{
+        router.push('/')
+    }
+
+    // const handleBeforeUnload = (event) => {
+    //   event.returnValue = 'ok ok';
+    // };
+
+    // window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // return () => {
+    //   window.removeEventListener('beforeunload', handleBeforeUnload);
+    // }
+  }, []);
 
     
     // Navigation
@@ -62,6 +105,11 @@ const inter = Inter({ subsets: ['latin'] })
       // biscuits.set('selectedTab', 'Student 360', {path: '/', expires: new Date(Date.now() + 10800000)})
       setSelectedTab('Student 360')
       router.push('/student360/search')
+    }
+    function navigateOuting(){
+      // biscuits.set('selectedTab', 'Student 360', {path: '/', expires: new Date(Date.now() + 10800000)})
+      setSelectedTab('Outing')
+      router.push('/outing')
     }
     function navigateRegistration(){
       // biscuits.set('selectedTab', 'Registration', {path: '/', expires: new Date(Date.now() + 10800000)})
@@ -95,16 +143,30 @@ const inter = Inter({ subsets: ['latin'] })
         </div>
 
       <div className={styles.mainlayoutsection} style={{height:'94vh',gap:'0px'}}>
-          <div style={{padding:'24px 12px 24px 20px',height: '100%',borderRight: '1px solid #efefef',width:'15%', display:'flex',flexDirection:'column',gap:'16px'}}>
-            
-            <div className={`${styles.horizontalsection} ${inter.className} ${selectedTab == 'Dashboard' ? styles.leftMenuItem_selected : styles.leftMenuItem} `} onClick={navigateDashboard.bind(this)} style={{cursor:'pointer'}}><Monitor className={styles.menuicon}/> Dashboard</div>
-            <div className={`${styles.horizontalsection} ${inter.className} ${selectedTab == 'Student 360' ? styles.leftMenuItem_selected : styles.leftMenuItem} `} onClick={navigateStudents.bind(this)} style={{cursor:'pointer'}}><UserFocus className={styles.menuicon}/> Student 360</div>
-            {/* <div className={`${styles.horizontalsection} ${inter.className} ${styles.text2}`} style={{cursor:'pointer'}}><ArrowSquareOut className={styles.menuicon} style={{backgroundColor: '#26379b'}}/> Outing</div>
-            <div className={`${styles.horizontalsection} ${inter.className} ${styles.text2}`} style={{cursor:'pointer'}}><PresentationChart className={styles.menuicon} style={{backgroundColor: '#26379b'}}/> Reports</div> */}
-            <div className={`${styles.horizontalsection} ${inter.className} ${selectedTab == 'Registration' ? styles.leftMenuItem_selected : styles.leftMenuItem} `} onClick={navigateRegistration.bind(this)} style={{cursor:'pointer'}}><UserPlus className={styles.menuicon}/> Registration</div>
-            {/* <div className={`${styles.horizontalsection} ${inter.className} ${selectedTab == 'Registration' ? styles.text1 : styles.text2}`} onClick={navigateRegistration.bind(this)} style={{cursor:'pointer'}}><IdentificationBadge className={styles.menuicon} style={{backgroundColor: '#26379b'}}/> Visitor pass</div> */}
-            {/* <div className={`${styles.horizontalsection} ${inter.className} ${styles.text2}`} ><CalendarCheck className={styles.menuicon} /> Control campus outing</div> */}
-          </div>
+
+        {(role != 'Student') ? 
+            <div style={{padding:'24px 12px 24px 20px',height: '100%',borderRight: '1px solid #efefef',width:'15%', display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
+              
+              <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
+                <div className={`${styles.horizontalsection} ${inter.className} ${selectedTab == 'Dashboard' ? styles.leftMenuItem_selected : styles.leftMenuItem} `} onClick={navigateDashboard.bind(this)} style={{cursor:'pointer'}}><Monitor className={styles.menuicon}/> Dashboard</div>
+                <div className={`${styles.horizontalsection} ${inter.className} ${selectedTab == 'Student 360' ? styles.leftMenuItem_selected : styles.leftMenuItem} `} onClick={navigateStudents.bind(this)} style={{cursor:'pointer'}}><UserFocus className={styles.menuicon}/> Student 360</div>
+                <div className={`${styles.horizontalsection} ${inter.className} ${selectedTab == 'Outing' ? styles.leftMenuItem_selected : styles.leftMenuItem} `} onClick={navigateOuting.bind(this)} style={{cursor:'pointer'}}><ArrowSquareOut className={styles.menuicon}/> Outing</div>
+                {/* <div className={`${styles.horizontalsection} ${inter.className} ${styles.text2}`} style={{cursor:'pointer'}}><ArrowSquareOut className={styles.menuicon} style={{backgroundColor: '#26379b'}}/> Outing</div>
+                <div className={`${styles.horizontalsection} ${inter.className} ${styles.text2}`} style={{cursor:'pointer'}}><PresentationChart className={styles.menuicon} style={{backgroundColor: '#26379b'}}/> Reports</div> */}
+                <div className={`${styles.horizontalsection} ${inter.className} ${selectedTab == 'Registration' ? styles.leftMenuItem_selected : styles.leftMenuItem} `} onClick={navigateRegistration.bind(this)} style={{cursor:'pointer'}}><UserPlus className={styles.menuicon}/> Registration</div>
+                {/* <div className={`${styles.horizontalsection} ${inter.className} ${selectedTab == 'Registration' ? styles.text1 : styles.text2}`} onClick={navigateRegistration.bind(this)} style={{cursor:'pointer'}}><IdentificationBadge className={styles.menuicon} style={{backgroundColor: '#26379b'}}/> Visitor pass</div> */}
+                {/* <div className={`${styles.horizontalsection} ${inter.className} ${styles.text2}`} ><CalendarCheck className={styles.menuicon} /> Control campus outing</div> */}
+              </div>
+              
+              {userData ?
+              <div className={styles.verticalsection} style={{gap:'8px',padding: '8px',backgroundColor: '#f0f0f0',border: '1px solid #e5e5e5',borderRadius: '8px'}}>
+                  <p className={`${inter.className} ${styles.text3}  ${styles.tag}`} style={{cursor:'pointer'}} >{userData.role}</p>
+                  <p className={`${inter.className} ${styles.text1}`} style={{cursor:'pointer'}} >{userData.username}</p>
+                  <p onClick={clearCookies.bind(this)} className={`${inter.className} ${styles.text2}`} style={{cursor:'pointer'}} >Log out</p>
+              </div>
+              : ''}
+            </div>
+          : ''}
 
         <div className={styles.maindivcenter} style={{height:'90vh', contentVisibility:'auto',padding: '0px 24px'}}>
             

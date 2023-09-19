@@ -11,6 +11,7 @@ import styles from '../page.module.css'
 import { useRouter } from 'next/navigation'
 const biscuits = new Biscuits
 import dayjs from 'dayjs'
+import Toast from './toast';
 
 // declare the apis of this page
   const verifyUser = async (pass, id, otp) => 
@@ -56,6 +57,8 @@ export default function Vertification() {
 
     // this is to save the jsonResult for verification
     const [queryResult, setQueryResult] = useState(); 
+    const [resultType, setResultType] = useState('');
+    const [resultMessage, setResultMessage] = useState('');
 
     useEffect(()=>{
         // Retrieve the cookie
@@ -63,14 +66,26 @@ export default function Vertification() {
         // let cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)sc_user_detail\s*\=\s*([^;]*).*$)|^.*$/, "$1");
         if(cookieValue){
             const obj = JSON.parse(decodeURIComponent(cookieValue))
-            console.log("This is from cookie"+obj.username)
-            setSession(true)
-            // router.push('/dashboard')
-            router.push('/dashboard')
+            
+            // for now, only admins can login in to this portal
+            if(obj.role == 'SuperAdmin' || obj.role == 'Admin' || obj.role == 'OutingAdmin' || obj.role == 'OutingIssuer')
+            {
+                setSession(true)
+                // router.push('/dashboard')
+                router.push('/dashboard')
+            }
+            else if(obj.role == 'Student' || obj.role == 'student'){
+                setSession(true)
+                // router.push('/dashboard')
+                router.push('/profileupdate')
+            }
+            else {
+
+            }
         }
         else{
             setSession(false)
-            console.log('Not found')
+            // console.log('Not found')
         }
     },[session]);
  
@@ -78,65 +93,96 @@ export default function Vertification() {
 // verify the collegeId by calling the API
 async function loginHere(){
 
-    // check for the input
-    if(document.getElementById('collegeId').value.length > 0){
+    try{
+        // check for the input
+        if(document.getElementById('collegeId').value.length > 0){
 
-        var otp = Math.floor(1000 + Math.random() * 9000);
-        setOTP(otp);
-        console.log(otp);
+            var otp = Math.floor(1000 + Math.random() * 9000);
+            setOTP(otp);
+            console.log(otp);
 
-        // show the loading.
-        setuserFound(true);
-        setotpSent(false);
-        
-        // call the api using secret key and collegeId provided
-        const result  = await verifyUser(process.env.NEXT_PUBLIC_API_PASS, document.getElementById('collegeId').value, otp)
-        const resultData = await result.json() // get data
-        setQueryResult(resultData); // store data
-        
-        
-        // check if query result status is 200
-        // if 200, that means, user is found and OTP is sent
-        if(resultData.status == 200) {
+            // show the loading.
+            setuserFound(true);
+            setotpSent(false);
             
-            // set the state variables with the user data
-            setUser(resultData.data)
-            setUsername(resultData.data.username)
-            setEmail(resultData.data.email)
-            setPhone(resultData.data.phoneNumber)
-
-            // save the data to local cookie
-            // let jsonString = JSON.stringify(queryResult.data)
-            // biscuits.set('sc_user_detail', encodeURIComponent(jsonString), {path: '/', expires: new Date(Date.now() + 300000)})
-            // document.cookie = "sc_user_detail="+encodeURIComponent(jsonString)+ "; expires=" + new Date(Date.now() + 300000).toUTCString() + "; path=/";
-
-            // Retrieve the cookie
-            // let cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)sc_user_detail\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-            // let cookieValue = biscuits.get('sc_user_detail')
-            // const obj = JSON.parse(decodeURIComponent(cookieValue))
+            // call the api using secret key and collegeId provided
+            const result  = await verifyUser(process.env.NEXT_PUBLIC_API_PASS, document.getElementById('collegeId').value, otp)
+            const resultData = await result.json() // get data
+            setQueryResult(resultData); // store data
             
-            // call the OTP api
-            // const otpResult = sendOTP()
+            // check if query result status is 200
+            // if 200, that means, user is found and OTP is sent
+            if(resultData.status == 200) {
+                
+                // set the state variables with the user data
+                setUser(resultData.data)
+                setUsername(resultData.data.username)
+                setEmail(resultData.data.email)
+                setPhone(resultData.data.phoneNumber)
 
-            // As OTP is already sent, show the OTP prompt text field
-            if(true){
-                // otp sent
-                setotpSent(true)
+                // save the data to local cookie
+                // let jsonString = JSON.stringify(queryResult.data)
+                // biscuits.set('sc_user_detail', encodeURIComponent(jsonString), {path: '/', expires: new Date(Date.now() + 300000)})
+                // document.cookie = "sc_user_detail="+encodeURIComponent(jsonString)+ "; expires=" + new Date(Date.now() + 300000).toUTCString() + "; path=/";
+
+                // Retrieve the cookie
+                // let cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)sc_user_detail\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+                // let cookieValue = biscuits.get('sc_user_detail')
+                // const obj = JSON.parse(decodeURIComponent(cookieValue))
+                
+                // call the OTP api
+                // const otpResult = sendOTP()
+
+                // As OTP is already sent, show the OTP prompt text field
+
+                // for now, only allow if user is admin
+                if(resultData.data.role == 'SuperAdmin' || resultData.data.role == 'Admin' || resultData.data.role == 'OutingAdmin' || resultData.data.role == 'OutingIssuer'){
+                    // otp sent
+                    setotpSent(true)
+                }
+                else if(resultData.data.role == 'Student' || resultData.data.role == 'student'){
+                    // otp sent
+                    setotpSent(true)
+                }
+                else {
+                    // block the user
+                    setuserFound(false);
+                    setotpSent(false);
+                    seterrorMsg('You do not have enough permissions to login. Contact your campus administrator.')
+                }
+                // if(true){
+                //     // otp sent
+                //     setotpSent(true)
+                // }
             }
+            else if(resultData.status == 404) {
+
+                seterrorMsg('No match found. Contact your campus administrator.')
+                setuserFound(false)
+                setinfoMsg(true) // show the big info message about reaching out
+                // otp sent
+                setotpSent(false)
+            }
+            
         }
-        else if(resultData.state == 404) {
-            setuserFound(false)
-            setinfoMsg(true)
-            // otp sent
-            setotpSent(false)
+        else {
+            // show error incase of no input
+            seterrorMsg('Enter your college registered number')
         }
+    }
+    catch(e){
         
+        setuserFound(false);
+        setotpSent(false);
+
+        // show and hide message
+        setResultType('error');
+        setResultMessage('Error reaching server. Please try again later!');
+        setTimeout(function(){
+            setResultType('');
+            setResultMessage('');
+        }, 3000);
     }
-    else {
-        // show error incase of no input
-        seterrorMsg('Enter your college registered number')
-    }
-  
 }
 
 // clear cookies
@@ -217,8 +263,15 @@ function verifyOTP(){
             // navigate to dashboard
             // router.push('/dashboard')
             
-            // temporarily showing registration
-            router.push('/dashboard')
+            // for now navigate the students to update their profile specific images
+            if(queryResult.data.role == 'SuperAdmin' || queryResult.data.role == 'Admin' || queryResult.data.role == 'OutingAdmin' || queryResult.data.role == 'OutingIssuer')
+            {
+                router.push('/dashboard')
+            }
+            else if(queryResult.data.role == 'Student' || queryResult.data.role == 'student'){
+                
+                router.push('/profileupdate')
+            }
         }
         else{
             setverifyOtpMsg('Invalid OTP!')
@@ -341,7 +394,8 @@ function verifyOTP(){
                 {(otpSent) ?
                 <div className={styles.card_block1}>
                     <p className={`${inter.className} ${styles.text3}`}>Verify your mobile</p>
-                    <p className={`${inter.className} ${styles.text2}`}>Please enter the verification code sent to {phone.slice(0, 4).padEnd(phone.length, '*')} or {email.slice(0, 4).padEnd(email.length, '*')}</p>
+                    <p className={`${inter.className} ${styles.text2}`}>Please enter the verification code sent to {email.slice(0, 4).padEnd(email.length, '*')}</p>
+                    {/* {phone.slice(0, 4).padEnd(phone.length, '*')} or  */}
                     <br/>
                     <input id="otp" className={`${styles.input_one} ${inter.className} ${styles.text3}`} placeholder="OTP" maxLength="4" style={{letterSpacing:30}} />
                     <br/>
@@ -361,7 +415,7 @@ function verifyOTP(){
             </div>
             
             
-            
+            {(resultMessage.length > 0) ? <Toast type={resultType} message={resultMessage} /> : ''}
 
             </div>
         </div>

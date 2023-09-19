@@ -36,10 +36,18 @@ const biscuits = new Biscuits
     });
    
 // Create new outing request for student
-export default function BlockDates() {
+export default function BlockDates({toggleShowBlockOuting}) {
     
     // create a router for auto navigation
     const router = useRouter();
+
+
+    // const handleClick = async (event, skip) => {
+        const closeClick = async () => {
+            // seterrorMsg('');
+            toggleShowBlockOuting(false)
+        }
+    
 
     //create new date object
     const today = new dayjs();
@@ -235,7 +243,7 @@ export default function BlockDates() {
                 <br/>
                 <div style={{display:'flex',gap:'8px'}}>
                 <button id="submit" onClick={blockNow} className={`${inter.className} ${styles.text2} ${styles.primarybtn}`}>Block date(s)</button>
-                <button id="cancel" className={`${inter.className} ${styles.text2} ${styles.secondarybtn}`}>Cancel</button>
+                <button id="cancel" onClick={closeClick} className={`${inter.className} ${styles.text2} ${styles.secondarybtn}`}>Cancel</button>
                 </div>
                 <br/>
                     {(errorMsg.length > 0) ? 

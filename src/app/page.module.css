@@ -246,6 +246,7 @@
 }
 
 .leftMenuItem:hover {
+  font-size: 15px;
   color: #0f172a;
   background-color: #e6e6e6;
 }

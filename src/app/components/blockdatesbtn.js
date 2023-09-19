@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 
 // pass state variable and the method to update state variable
-export default function BlockDatesBtn( {titleDialog}) {
+export default function BlockDatesBtn( {titleDialog, toggleShowBlockOuting}) {
 
   const [show, showTitleDialog] = useState(titleDialog);
 
@@ -21,6 +21,8 @@ export default function BlockDatesBtn( {titleDialog}) {
     showTitleDialog(!show)
   }
 
+
+ 
   
   return (
     
@@ -32,7 +34,7 @@ export default function BlockDatesBtn( {titleDialog}) {
                 <p className={`${inter.className} ${styles.text3}`}> Suggest a title</p>
             </div>
             <div className={`${show ? styles.hideshowdivshow : styles.hideshowdiv}`}>
-                <BlockDates /> 
+                <BlockDates toggleShowBlockOuting={toggleShowBlockOuting} /> 
             </div>
         {/* {(show) ? <BlockDates /> : null} */}
         </div>

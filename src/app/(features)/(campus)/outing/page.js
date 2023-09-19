@@ -15,6 +15,8 @@ import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/
 // const storage = getStorage();
 import firebase from '../../../../app/firebase';
 import Toast from '../../../../app/components/toast'
+import BlockDatesBtn from '../../../../app/components/blockdatesbtn'
+import OutingRequest from '../../../../app/components/outingrequest'
 const storage = getStorage(firebase, "gs://smartcampusimages-1.appspot.com");
 
 // Create a child reference
@@ -51,7 +53,7 @@ fetch("/api/requeststats/"+pass+"/"+role+"/"+branch+"/All/2/"+date, {
 
 
 // pass state variable and the method to update state variable
-export default function Dashboard() {
+export default function Outing() {
 
     // create a router for auto navigation
     const router = useRouter();
@@ -73,9 +75,7 @@ export default function Dashboard() {
     const [resultType, setResultType] = useState('');
     const [resultMessage, setResultMessage] = useState('');
 
-    const [studentsList, setStudentsList] = useState();
-    const [dataFound, setDataFound] = useState(true); // use to declare 0 rows
-    const [inputError, setInputError] = useState(false);
+    const [dataFound, setDataFound] = useState(true); 
     const [searching, setSearching] = useState(false);
 
     const [outingData, setOutingData] = useState();
@@ -85,7 +85,11 @@ export default function Dashboard() {
     //create new date object
     const today = new dayjs();
     
-    
+    const [showBlockOuting, setShowBlockOuting] = useState(false);
+    const toggleShowBlockOuting = async () => {
+        // setSelectedStudent(selectedStudent);
+        setShowBlockOuting(!showBlockOuting)
+    }
 
 
     // get the user and fire the data fetch
@@ -333,21 +337,23 @@ export default function Dashboard() {
         <div className={styles.verticalsection} style={{height:'100vh',gap:'8px'}}>
             
           <div style={{height:'8vh',display:'flex',flexDirection:'column',justifyContent:'space-around'}}>
-              <h2 className={inter.className}>Dashboard</h2>
+              <h2 className={inter.className}>Outing</h2>
           </div>      
 
-            {/* <div style={{width:'100%',display:'flex', flexDirection:'row',justifyContent:'space-between'}}>
+            <div style={{width:'100%',display:'flex', flexDirection:'row',justifyContent:'space-between'}}>
                 <div className={styles.horizontalsection}>
-                    <div className={`${styles.primarybtn} `} style={{display:'flex', flexDirection:'row', width:'fit-content', cursor:'pointer', gap:'4px'}}> 
+                    <div className={`${styles.primarybtn} `} style={{display:'flex', flexDirection:'row', width:'fit-content', cursor:'pointer', gap:'4px'}} onClick={toggleShowBlockOuting}> 
                         <Plus />
-                        <p className={`${inter.className}`}>New circular</p>
+                        <p className={`${inter.className}`}>Declare outing</p>
                     </div>
-                    <div className={`${styles.overlayBackground} ${showAddStudent ? styles.hideshowdivshow : styles.hideshowdiv}`}>
-                        <AddStudent toggleAddStudentOverlay={toggleAddStudentOverlay}/> 
+                    {/* <BlockDatesBtn titleDialog={false} /> */}
+                    {/* <OutingRequest /> */}
+                    <div className={`${styles.overlayBackground} ${showBlockOuting ? styles.hideshowdivshow : styles.hideshowdiv}`}>
+                        <BlockDatesBtn toggleShowBlockOuting={toggleShowBlockOuting} titleDialog={false} /> 
                     </div>
                 </div>
                
-            </div> */}
+            </div>
           
             
           
