@@ -105,12 +105,13 @@ export default function ProfileUpdate() {
         let cookieValue = biscuits.get('sc_user_detail')
             if(cookieValue){
                 const obj = JSON.parse(decodeURIComponent(cookieValue)) // get the cookie data
-
+console.log(obj.userImage);
                 // set the user state variable
                 setUser(obj)
                 setCollegeId(obj.collegeId)
                 setStudentName(true);
                 setStudentNameValue(obj.username)
+                
                 
                 
                 // get the requests data if doesnot exist
@@ -582,7 +583,69 @@ async function submitHere(){
                                 
                                 
                                     {/* <p className={(requestItem.requestType=='requestItem' ? 'requestItem_chip' : 'outing_chip')}>{requestItem.requestType}</p> */}
+
+                                {/* {user ?
+                                    <div className={styles.verticalsection} style={{width:'100%'}}>
+                            
+                                        {(user.username.length > 2) ? 
+                                        <div className={styles.horizontalsection} style={{alignItems:'flex-start'}}>
+                                            <img src={imageUrl} alt="Downloaded Image" key={collegeId} width={'50px'} height={'50px'} style={{ objectFit: 'cover', backgroundColor: '#F5F5F5', borderRadius: '50%' }}/>
+                                            <ImageComponent imageUrl={"https://firebasestorage.googleapis.com/v0/b/smartcampusimages-1.appspot.com/o/"+collegeId+".jpeg?alt=media"} id={user.collegeId} username={user.username}/>
+                                            <div>
+                                                <p className={`${inter.className} ${styles.text2}`}>Father: {user.username}</p> 
+                                                <p className={`${inter.className} ${styles.text2}`}>{user.phoneNumber}</p> 
+                                                <br/>
+                                            </div>
+                                        </div>
+                                        : ''}
                                         
+                                        {(user.fatherName.length > 2) ? 
+                                        <div className={styles.horizontalsection} style={{alignItems:'flex-start'}}>
+                                            <ImageComponent imageUrl={"https://firebasestorage.googleapis.com/v0/b/smartcampusimages-1.appspot.com/o/"+collegeId+"_1.jpeg?alt=media"} id={user.collegeId} username={user.fatherName}/>
+                                            <div>
+                                                <p className={`${inter.className} ${styles.text2}`}>Father: {user.fatherName}</p> 
+                                                <p className={`${inter.className} ${styles.text2}`}>{user.fatherPhoneNumber}</p> 
+                                                <br/>
+                                            </div>
+                                        </div>
+                                        : ''}
+                                        
+                                        
+                                        {(user.motherName.length > 2) ? 
+                                        <div className={styles.horizontalsection} style={{alignItems:'flex-start'}}>
+                                            <ImageComponent imageUrl={"https://firebasestorage.googleapis.com/v0/b/smartcampusimages-1.appspot.com/o/"+user.collegeId+"_2.jpeg?alt=media"} id={user.collegeId} username={user.motherName}/>
+                                            <div>
+                                                <p className={`${inter.className} ${styles.text2}`}>Mother: {user.motherName}</p> 
+                                                <p className={`${inter.className} ${styles.text2}`}>{user.motherPhoneNumber}</p> 
+                                                <br/>
+                                            </div>
+                                        </div>
+                                        : ''}
+                                        
+                                        {(user.guardianName.length > 2) ? 
+                                        <div className={styles.horizontalsection} style={{alignItems:'flex-start'}}>
+                                            <ImageComponent imageUrl={"https://firebasestorage.googleapis.com/v0/b/smartcampusimages-1.appspot.com/o/"+user.collegeId+"_3.jpeg?alt=media"} id={user.collegeId} username={user.guardianName}/>
+                                            <div>
+                                                <p className={`${inter.className} ${styles.text2}`}>Guardian 1: {user.guardianName}</p> 
+                                                <p className={`${inter.className} ${styles.text2}`}>{user.guardianPhoneNumber}</p> 
+                                                <br/>
+                                            </div>
+                                        </div>
+                                        : ''}
+                                        
+                                        {(user.guardian2Name.length > 2) ? 
+                                        <div className={styles.horizontalsection} style={{alignItems:'flex-start'}}>
+                                            <ImageComponent imageUrl={"https://firebasestorage.googleapis.com/v0/b/smartcampusimages-1.appspot.com/o/"+user.collegeId+"_3.jpeg?alt=media"} id={user.collegeId} username={user.guardian2Name}/>
+                                            <div>
+                                                <p className={`${inter.className} ${styles.text2}`}>Guardian 2: {user.guardian2Name}</p> 
+                                                <p className={`${inter.className} ${styles.text2}`}>{user.guardian2PhoneNumber}</p> 
+                                                <br/>
+                                            </div>
+                                        </div>
+                                        : ''}
+                                        
+                                    </div>
+                                    :''} */}
 
                                         <p className={`${inter.className} ${styles.text3_heading}`}>Update below photos as applicable:</p>
                                         
@@ -840,12 +903,102 @@ async function submitHere(){
   );
 }
 
+// function ImageComponent({ imageUrl, id, username  }) {
 
-    function ImageComponent({ imageUrl }) {
-        return (
-          <div>
-            {/* Replace 'imageUrl' with the actual URL of the image */}
-            <img src={imageUrl} alt="Downloaded Image" />
-          </div>
-        );
-      }
+//     const [imageLoaded, setImageLoaded] = useState(false);
+//         useEffect(() => {
+    
+//             const checkImageExists = async () => {
+//                 try {
+//                   // Make a request to the server-side API route to check if the image exists
+//                   const response = await fetch(`/api/check-image?imageUrl=${decodeURIComponent(imageUrl)}`);
+//                   const data = await response.json();
+          
+//                   if (data.exists) {
+//                     // Image exists, set 'imageExists' to true
+//                     setImageLoaded(true);
+//                   } else {
+//                     // Image doesn't exist, set 'imageExists' to false
+//                     setImageLoaded(false);
+//                   }
+//                 } catch (error) {
+//                   // Handle errors, or if the response is not OK, set 'imageExists' to false
+//                   setImageLoaded(false);
+//                 }
+//               };
+          
+//               checkImageExists();
+//           }, [imageLoaded]);
+    
+//     return (
+//       <div>
+//         {/* Replace 'imageUrl' with the actual URL of the image */}
+//         {imageLoaded ? (
+//         <img
+//             key={id}
+//             src={imageUrl}
+//             alt="Downloaded Image"
+//             width={'50px'}
+//             height={'50px'}
+//             style={{ objectFit: 'cover', backgroundColor: '#F5F5F5', borderRadius: '50%' }}
+//           />
+//           ) : (
+//             <div style={{backgroundColor: '#f5f5f5', width: '50px', height: '50px', borderRadius: '50%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}><p className={`${inter.className}`}>{abbreviateName(username)}</p></div>
+//         )}
+//       </div>
+//     );
+//   }
+    
+function ImageComponent({ imageUrl, id, username }) {
+        
+    const [imageLoaded, setImageLoaded] = useState(false);
+
+    useEffect(() => {
+
+        try{
+            const img = new Image();
+            img.src = imageUrl;
+        
+            img.onload = () => {
+                setImageLoaded(true);
+            };
+        
+            img.onerror = () => {
+                setImageLoaded(false);
+            };
+        }
+        catch(e){
+            // console.log("Error loading image");
+        }
+      }, [imageUrl]);
+
+    return (
+      <div>
+        {imageLoaded ? (
+          <img
+            key={id}
+            src={imageUrl}
+            alt="Downloaded Image"
+            width={'50px'}
+            height={'50px'}
+            style={{ objectFit: 'cover', backgroundColor: '#F5F5F5', borderRadius: '50%' }}
+          />
+        ) : (
+          <div style={{backgroundColor: '#f5f5f5', width: '50px', height: '50px', borderRadius: '50%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}><p className={`${inter.className}`}>{abbreviateName(username)}</p></div>
+        )}
+      </div>
+    );
+  }
+  function abbreviateName(name) {
+    const words = name.split(' ');
+    if (words.length >= 2) {
+      return `${words[0][0]}${words[1][0]}`;
+    } else if (words.length === 1) {
+      return `${words[0][0]}${words[0][1]}`;
+    } else {
+      return 'Invalid Name';
+    }
+  }
+
+
+      

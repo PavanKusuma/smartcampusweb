@@ -64,6 +64,7 @@ export default function SearchStudents() {
     const [offset, setOffset] = useState(0);
     const [dataStarted, setDataStarted] = useState(false);
     const [endOfData, setEndOfData] = useState(false);
+    
     const [totalStudents, setTotalStudents] = useState(0);
 
     const [selectedStudent, setSelectedStudent] = useState();
@@ -93,21 +94,21 @@ export default function SearchStudents() {
     // update profile overlay
     const [show, showUpdateProfile] = useState(false);
     const toggleUpdateProfileOverlay = async () => {
-        // setSelectedStudent(selectedStudent);
+        
         showUpdateProfile(!show)
     }
     
     // update parents overlay
     const [showParents, showUpdateParents] = useState(false);
     const toggleUpdateParentsOverlay = async () => {
-        // setSelectedStudent(selectedStudent);
+        
         showUpdateParents(!showParents)
     }
     
     // create student overlay
     const [showAddStudent, showAddStudentView] = useState(false);
     const toggleAddStudentOverlay = async () => {
-        // setSelectedStudent(selectedStudent);
+        
         showAddStudentView(!showAddStudent)
     }
 
@@ -177,7 +178,7 @@ export default function SearchStudents() {
     };
 
     // new search
-    function newSearch(){
+    async function newSearch(){
         setEndOfData(false);
         setOffset(0);
         setSearchedStudentsList([]); // Set searchedStudentsList to an empty array
@@ -193,7 +194,7 @@ export default function SearchStudents() {
         
         // check if the list is dataStarted.
         if(!endOfData){
-
+console.log('called');
             setSearching(true);
 
                 try{
@@ -273,6 +274,7 @@ export default function SearchStudents() {
         else {
             
             console.log("DONE READING");
+            // setEndOfData(true);
         }
 }
 
@@ -719,23 +721,47 @@ export default function SearchStudents() {
                         <div className={styles.verticalsection} style={{width:'100%'}}>
                             
                             {(selectedStudent.fatherName.length > 2) ? 
-                            <div>
-                                <p className={`${inter.className} ${styles.text2}`}>Father: {selectedStudent.fatherName}</p> 
-                                <p className={`${inter.className} ${styles.text2}`}>{selectedStudent.fatherPhoneNumber}</p> 
+                            <div className={styles.horizontalsection} style={{alignItems:'flex-start'}}>
+                                <ImageComponent imageUrl={"https://firebasestorage.googleapis.com/v0/b/smartcampusimages-1.appspot.com/o/"+selectedStudent.collegeId+"_1.jpeg?alt=media"} id={selectedStudent.collegeId} username={selectedStudent.fatherName}/>
+                                <div>
+                                    <p className={`${inter.className} ${styles.text2}`}>Father: {selectedStudent.fatherName}</p> 
+                                    <p className={`${inter.className} ${styles.text2}`}>{selectedStudent.fatherPhoneNumber}</p> 
+                                    <br/>
+                                </div>
                             </div>
                             : ''}
                             
+                            
                             {(selectedStudent.motherName.length > 2) ? 
-                            <div>
-                                <p className={`${inter.className} ${styles.text2}`}>Mother: {selectedStudent.motherName}</p> 
-                                <p className={`${inter.className} ${styles.text2}`}>{selectedStudent.motherPhoneNumber}</p> 
+                             <div className={styles.horizontalsection} style={{alignItems:'flex-start'}}>
+                                <ImageComponent imageUrl={"https://firebasestorage.googleapis.com/v0/b/smartcampusimages-1.appspot.com/o/"+selectedStudent.collegeId+"_2.jpeg?alt=media"} id={selectedStudent.collegeId} username={selectedStudent.motherName}/>
+                                <div>
+                                    <p className={`${inter.className} ${styles.text2}`}>Mother: {selectedStudent.motherName}</p> 
+                                    <p className={`${inter.className} ${styles.text2}`}>{selectedStudent.motherPhoneNumber}</p> 
+                                    <br/>
+                                </div>
                             </div>
                             : ''}
                             
                             {(selectedStudent.guardianName.length > 2) ? 
-                            <div>
-                                <p className={`${inter.className} ${styles.text2}`}>Guardian: {selectedStudent.guardianName}</p> 
-                                <p className={`${inter.className} ${styles.text2}`}>{selectedStudent.guardianPhoneNumber}</p> 
+                            <div className={styles.horizontalsection} style={{alignItems:'flex-start'}}>
+                                <ImageComponent imageUrl={"https://firebasestorage.googleapis.com/v0/b/smartcampusimages-1.appspot.com/o/"+selectedStudent.collegeId+"_3.jpeg?alt=media"} id={selectedStudent.collegeId} username={selectedStudent.guardianName}/>
+                                <div>
+                                    <p className={`${inter.className} ${styles.text2}`}>Guardian 1: {selectedStudent.guardianName}</p> 
+                                    <p className={`${inter.className} ${styles.text2}`}>{selectedStudent.guardianPhoneNumber}</p> 
+                                    <br/>
+                                </div>
+                            </div>
+                            : ''}
+                            
+                            {(selectedStudent.guardian2Name.length > 2) ? 
+                            <div className={styles.horizontalsection} style={{alignItems:'flex-start'}}>
+                                <ImageComponent imageUrl={"https://firebasestorage.googleapis.com/v0/b/smartcampusimages-1.appspot.com/o/"+selectedStudent.collegeId+"_3.jpeg?alt=media"} id={selectedStudent.collegeId} username={selectedStudent.guardian2Name}/>
+                                <div>
+                                    <p className={`${inter.className} ${styles.text2}`}>Guardian 2: {selectedStudent.guardian2Name}</p> 
+                                    <p className={`${inter.className} ${styles.text2}`}>{selectedStudent.guardian2PhoneNumber}</p> 
+                                    <br/>
+                                </div>
                             </div>
                             : ''}
                             
@@ -774,22 +800,29 @@ export default function SearchStudents() {
     //     );
     //   }
 
+     
 
     function ImageComponent({ imageUrl, id, username }) {
         
         const [imageLoaded, setImageLoaded] = useState(false);
 
         useEffect(() => {
-            const img = new Image();
-            img.src = imageUrl;
-        
-            img.onload = () => {
-              setImageLoaded(true);
-            };
-        
-            img.onerror = () => {
-              setImageLoaded(false);
-            };
+
+            try{
+                const img = new Image();
+                img.src = imageUrl;
+            
+                img.onload = () => {
+                    setImageLoaded(true);
+                };
+            
+                img.onerror = () => {
+                    setImageLoaded(false);
+                };
+            }
+            catch(e){
+                // console.log("Error loading image");
+            }
           }, [imageUrl]);
     
         return (

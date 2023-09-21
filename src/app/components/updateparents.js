@@ -95,15 +95,25 @@ export default function UpdateParents({userDetail, hostelDetail, handleDataChang
     const updateMotherPhoneNumber = (event) => {
         setMotherPhoneNumber(event.target.value);
     }; 
-    // mother name
+    // guardian name
     const [guardianName, setGuardianName] = useState(userDetail.guardianName);
     const updateGuardianName = (event) => {
         setGuardianName(event.target.value);
     };
-    // father phonenumber
+    // guardian phonenumber
     const [guardianPhoneNumber, setGuardianPhoneNumber] = useState(userDetail.guardianPhoneNumber);
     const updateGuardianPhoneNumber = (event) => {
         setGuardianPhoneNumber(event.target.value);
+    };
+    // guardian 2 name
+    const [guardian2Name, setGuardian2Name] = useState(userDetail.guardian2Name);
+    const updateGuardian2Name = (event) => {
+        setGuardian2Name(event.target.value);
+    };
+    // guardian 2 phonenumber
+    const [guardian2PhoneNumber, setGuardian2PhoneNumber] = useState(userDetail.guardian2PhoneNumber);
+    const updateGuardian2PhoneNumber = (event) => {
+        setGuardian2PhoneNumber(event.target.value);
     };
     // mother name
     const [address, setAddress] = useState(userDetail.address);
@@ -176,6 +186,14 @@ export default function UpdateParents({userDetail, hostelDetail, handleDataChang
         if(user.guardianPhoneNumber != guardianPhoneNumber){
             updateData.guardianPhoneNumber = guardianPhoneNumber
             userDetail.guardianPhoneNumber = guardianPhoneNumber
+        }
+        if(user.guardian2Name != guardian2Name){
+            updateData.guardian2Name = guardian2Name
+            userDetail.guardian2Name = guardian2Name
+        }
+        if(user.guardian2PhoneNumber != guardian2PhoneNumber){
+            updateData.guardian2PhoneNumber = guardian2PhoneNumber
+            userDetail.guardian2PhoneNumber = guardian2PhoneNumber
         }
         if(user.address != address){
             updateData.address = address
@@ -285,11 +303,17 @@ export default function UpdateParents({userDetail, hostelDetail, handleDataChang
                 <p className={`${inter.className} ${styles.text3}`}>Mother phone number:</p>
                 <input id="motherPhoneNumber" className={`${inter.className} ${styles.text2} ${styles.textInput}`} placeholder="Mother phone number" value={motherPhoneNumber} onChange={updateMotherPhoneNumber}/>
                 <br/><br/>
-                <p className={`${inter.className} ${styles.text3}`}>Guardian name:</p>
-                <input id="guardianName" className={`${inter.className} ${styles.text2} ${styles.textInput}`} placeholder="Guardian name" value={guardianName} onChange={updateGuardianName}/>
+                <p className={`${inter.className} ${styles.text3}`}>Guardian 1 name:</p>
+                <input id="guardianName" className={`${inter.className} ${styles.text2} ${styles.textInput}`} placeholder="Guardian 1 name" value={guardianName} onChange={updateGuardianName}/>
                 <br/><br/>
-                <p className={`${inter.className} ${styles.text3}`}>Guardian phone number:</p>
-                <input id="guardianPhoneNumber" className={`${inter.className} ${styles.text2} ${styles.textInput}`} placeholder="Guardian phone number" value={guardianPhoneNumber} onChange={updateGuardianPhoneNumber}/>
+                <p className={`${inter.className} ${styles.text3}`}>Guardian 1 phone number:</p>
+                <input id="guardianPhoneNumber" className={`${inter.className} ${styles.text2} ${styles.textInput}`} placeholder="Guardian 1 phone number" value={guardianPhoneNumber} onChange={updateGuardianPhoneNumber}/>
+                <br/><br/>
+                <p className={`${inter.className} ${styles.text3}`}>Guardian 2 name:</p>
+                <input id="guardian2Name" className={`${inter.className} ${styles.text2} ${styles.textInput}`} placeholder="Guardian 2 name" value={guardian2Name} onChange={updateGuardian2Name}/>
+                <br/><br/>
+                <p className={`${inter.className} ${styles.text3}`}>Guardian 2 phone number:</p>
+                <input id="guardian2PhoneNumber" className={`${inter.className} ${styles.text2} ${styles.textInput}`} placeholder="Guardian 2 phone number" value={guardian2PhoneNumber} onChange={updateGuardian2PhoneNumber}/>
                 <br/><br/>
                 
                 <p className={`${inter.className} ${styles.text3}`}>Address:</p>
