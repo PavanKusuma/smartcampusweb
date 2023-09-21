@@ -563,15 +563,16 @@ async function submitHere(){
 
             <div className={styles.horizontalsection} style={{height:'100%', width:'100%'}}>
 
-                <div className={styles.carddatasection} key={1234} style={{height:'100%',overflow:'scroll',alignItems:'flex-start'}}>
+                <div className={styles.carddatasection} key={1234} style={{height:'100%',overflow:'scroll',alignItems:'flex-start',padding:'24px',gap:'0px'}}>
                   
-                            <div className={styles.verticalsection}>
-                            <p className={`${inter.className} ${styles.text3_heading}`}>Full name:</p>
+                  {user ?
+                        <div className={styles.verticalsection}>
+                            {/* <p className={`${inter.className} ${styles.text3_heading}`}>Full name:</p>
                             <div className={`${inter.className}`} style={{display:'flex',flexWrap:'wrap',alignItems:'center',gap:'8px'}}>
                                 
                                 {studentName ? <div className={`${inter.className} ${styles.text1}`}>{studentNameValue}</div> : ''}
                             </div>
-                            <br/>
+                            <br/> */}
                             {/* <button id="submit" onClick={loginHere.bind(this)} className={`${inter.className} ${styles.text2} ${styles.primarybtn}`}>Sign in</button> */}
                             
                                 {inputError ? <div className={`${styles.error} ${inter.className} ${styles.text2}`}>Enter valid ID to proceed</div>
@@ -580,8 +581,76 @@ async function submitHere(){
                                 {/* <p className={`${inter.className} ${styles.text2}`} dangerouslySetInnerHTML={{ __html: project.description.replace(/\n/g, '<br>') }}></p> */}
                                 {/* <p className={`${inter.className} ${styles.text2}`}>{project.description.replace(/\n/g, '\n')}</p> */}
                                 
-                                
-                                
+                                    <p className={`${inter.className} ${styles.text1}`}>Profile details</p>
+                                    <br/>
+                                        <div style={{display:'flex',flexDirection:'row',justifyContent:'space-between',alignItems:'center',width:'100%',flexWrap:'wrap'}}>
+                                            <p className={`${inter.className} ${styles.text3}`}>Full name:</p>
+                                            <p className={`${inter.className} ${styles.text2}`}>{user.username}</p>
+                                        </div>
+                                        <div style={{borderBottom: '0.5px solid #00000026', width:'100%',margin:'4px 0px'}}></div>
+                                        
+                                        <div style={{display:'flex',flexDirection:'row',justifyContent:'space-between',alignItems:'center',width:'100%',flexWrap:'wrap'}}>
+                                            <p className={`${inter.className} ${styles.text3}`}>College Regd Id:</p>
+                                            <p className={`${inter.className} ${styles.text2}`}>{user.collegeId}</p>
+                                        </div>
+                                        <div style={{borderBottom: '0.5px solid #00000026', width:'100%',margin:'4px 0px'}}></div>
+                                        
+                                        <div style={{display:'flex',flexDirection:'row',justifyContent:'space-between',alignItems:'center',width:'100%',flexWrap:'wrap'}}>
+                                            <p className={`${inter.className} ${styles.text3}`}>Branch:</p>
+                                            <p className={`${inter.className} ${styles.text2}`}>{user.year} year, {user.branch} Dept</p>
+                                        </div>
+                                        <div style={{borderBottom: '0.5px solid #00000026', width:'100%',margin:'4px 0px'}}></div>
+                                        
+                                        {(user.type == 'Hostel' || user.type == 'hostel') ? 
+                                            <div style={{width:'100%'}}>
+                                                <div style={{display:'flex',flexDirection:'row',justifyContent:'space-between',alignItems:'center',width:'100%',flexWrap:'wrap'}}>
+                                                    <p className={`${inter.className} ${styles.text3}`}>Type:</p>
+                                                    <p className={`${inter.className} ${styles.text2}`}>Hosteler</p>
+                                                </div>
+                                                <div style={{borderBottom: '0.5px solid #00000026', width:'100%',margin:'4px 0px 8px 0px'}}></div>
+                                            </div>
+                                            : 
+                                            <div style={{width:'100%'}}>
+                                                <div style={{display:'flex',flexDirection:'row',justifyContent:'space-between',alignItems:'center',width:'100%',flexWrap:'wrap'}}>
+                                                    <p className={`${inter.className} ${styles.text3}`}>Type:</p>
+                                                    <p className={`${inter.className} ${styles.text2}`}>Day scholar</p>
+                                                </div>
+                                                <div style={{borderBottom: '0.5px solid #00000026', width:'100%',margin:'4px 0px 8px 0px'}}></div>
+                                            </div>
+                                        }
+
+                                        {(user.type != '-') ? 
+                                            <div style={{width:'100%'}}>
+                                                <div style={{display:'flex',flexDirection:'row',justifyContent:'space-between',alignItems:'center',width:'100%',flexWrap:'wrap'}}>
+                                                    <p className={`${inter.className} ${styles.text3}`}>Outing type:</p>
+                                                    <p className={`${inter.className} ${styles.text2} ${styles.tag}`}>{(user.outingType == 'yes') ? 'Self permitted' : 'Not-self permitted'}</p>
+                                                </div>
+                                                <div style={{borderBottom: '0.5px solid #00000026', width:'100%',margin:'12px 0px 4px 0px'}}></div>
+                                            </div>
+                                            :
+                                            ''
+                                        }
+                                        <div style={{display:'flex',flexDirection:'row',justifyContent:'space-between',alignItems:'center',width:'100%',flexWrap:'wrap'}}>
+                                            <p className={`${inter.className} ${styles.text3}`}>Email:</p>
+                                            <p className={`${inter.className} ${styles.text2}`}>{user.email}</p>
+                                        </div>
+                                        <div style={{borderBottom: '0.5px solid #00000026', width:'100%',margin:'4px 0px'}}></div>
+                                        <div style={{display:'flex',flexDirection:'row',justifyContent:'space-between',alignItems:'center',width:'100%',flexWrap:'wrap'}}>
+                                            <p className={`${inter.className} ${styles.text3}`}>Mobile:</p>
+                                            <p className={`${inter.className} ${styles.text2}`}>{user.phoneNumber}</p>
+                                        </div>
+                                        <div style={{borderBottom: '0.5px solid #00000026', width:'100%',margin:'4px 0px'}}></div>
+                                        <div style={{display:'flex',flexDirection:'row',justifyContent:'space-between',alignItems:'center',width:'100%',flexWrap:'wrap'}}>
+                                            <p className={`${inter.className} ${styles.text3}`}>Hostel:</p>
+                                            <p className={`${inter.className} ${styles.text2}`}>{user.hostelName}</p>
+                                        </div>
+                                        <div style={{borderBottom: '0.5px solid #00000026', width:'100%',margin:'4px 0px'}}></div>
+                                        <div style={{display:'flex',flexDirection:'row',justifyContent:'space-between',alignItems:'center',width:'100%',flexWrap:'wrap'}}>
+                                            <p className={`${inter.className} ${styles.text3}`}>Room number:</p>
+                                            <p className={`${inter.className} ${styles.text2}`}>{user.roomNumber}</p>
+                                        </div>
+                                        <div style={{borderBottom: '0.5px solid #00000026', width:'100%',margin:'4px 0px'}}></div>
+                                    <p className={`${inter.className} ${styles.text3}`} style={{fontSize:'10px'}}>Contact your campus admin to update above details</p>
                                     {/* <p className={(requestItem.requestType=='requestItem' ? 'requestItem_chip' : 'outing_chip')}>{requestItem.requestType}</p> */}
 
                                 {/* {user ?
@@ -647,11 +716,17 @@ async function submitHere(){
                                     </div>
                                     :''} */}
 
-                                        <p className={`${inter.className} ${styles.text3_heading}`}>Update below photos as applicable:</p>
-                                        
+                                    <br/>
+                                    <p className={`${inter.className} ${styles.text1}`}>Update below details</p>
+                                
+                                        {/* <p className={`${inter.className} ${styles.text3_heading}`}>Update below photos as applicable:</p> */}
+                                        <br/>
                                         <div className={`${inter.className} ${styles.verticalsection}`} style={{gap:'20px', alignItems: 'flex-start'}}>
                                             {/* Student image capture */}
-                                            <div>Student
+                                            <div>Your image: <br/>
+                                             {user.mediaCount > 0 && !capturedImage ?
+                                                 <img src={user.userImage} alt="Captured" style={{borderRadius:'10px',margin:'8px 0px'}} onError={(e) => {e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block';}}/>
+                                             :''}
                                             {/* {studentName ? <div className={`${inter.className} ${styles.text1}`}>{studentNameValue}</div> :  */}
                                                 {/* <input id="studentName" className={`${inter.className} ${styles.text2} ${styles.textInput}`} placeholder={studentName ? studentNameValue : 'Student name'} style={{width:'160px',marginTop:'8px',marginBottom:'8px'}}/> */}
                                                 {studentImage ?
@@ -664,6 +739,7 @@ async function submitHere(){
                                                             videoConstraints={videoConstraints}
                                                             mirrored={facingMode === 'environment'}
                                                             screenshotFormat="image/jpeg"
+                                                            style={{borderRadius:'10px',margin:'8px 0px'}} 
                                                         />
                                                         <button onClick={captureStudent} className={`${inter.className} ${styles.primarybtn}`} >Capture</button> &nbsp;&nbsp;
                                                         <button onClick={stopStudentCapture} className={`${inter.className} ${styles.secondarybtn}`}>Close</button>
@@ -672,7 +748,7 @@ async function submitHere(){
                                                 :
                                                 capturedImage ? 
                                                     <div>
-                                                        <img src={capturedImage} alt="Captured" />
+                                                        <img src={capturedImage} alt="Captured" style={{borderRadius:'10px',margin:'8px 0px'}} />
                                                         <p>✅ Captured</p>
                                                         <button onClick={() => reTake('Student')} className={`${inter.className} ${styles.secondarybtn}`}>Retake</button>
                                                         </div>
@@ -687,8 +763,10 @@ async function submitHere(){
                                              
                                             
                                             {/* Father image capture */}
-                                            <div>Father
-                                                
+                                            <div>Father image:<br/>
+                                            {user.mediaCount > 0 && !capturedFatherImage ?
+                                                <img src={"https://firebasestorage.googleapis.com/v0/b/smartcampusimages-1.appspot.com/o/"+user.collegeId+"_1.jpeg?alt=media"} alt="Captured" style={{borderRadius:'10px',margin:'8px 0px'}} onError={(e) => {e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block';}}/>
+                                             :''}
                                                 {fatherImage ?
                                                     // capturedFatherImage ? 
                                                     // <div>
@@ -705,6 +783,7 @@ async function submitHere(){
                                                             videoConstraints={videoConstraints}
                                                             mirrored={facingMode === 'environment'}
                                                             screenshotFormat="image/jpeg"
+                                                            style={{borderRadius:'10px',margin:'8px 0px'}} 
                                                         />
                                                         <button onClick={captureFather} className={`${inter.className} ${styles.primarybtn}`} >Capture</button> &nbsp;&nbsp;
                                                         <button onClick={stopFatherCapture} className={`${inter.className} ${styles.secondarybtn}`}>Close</button>
@@ -713,7 +792,7 @@ async function submitHere(){
                                                 :
                                                 capturedFatherImage ? 
                                                     <div>
-                                                        <img src={capturedFatherImage} alt="Captured" />
+                                                        <img src={capturedFatherImage} alt="Captured" style={{borderRadius:'10px',margin:'8px 0px'}}  />
                                                         <p>✅ Captured</p>
                                                         <button onClick={() => reTake('Father')} className={`${inter.className} ${styles.secondarybtn}`}>Retake</button>
                                                         </div>
@@ -722,8 +801,10 @@ async function submitHere(){
                                             </div>
                                             
                                             {/* Mother image capture */}
-                                            <div>Mother
-                                                
+                                            <div>Mother image:<br/>
+                                            {user.mediaCount > 0 && !capturedMotherImage ?
+                                                <img src={"https://firebasestorage.googleapis.com/v0/b/smartcampusimages-1.appspot.com/o/"+user.collegeId+"_2.jpeg?alt=media"} alt="Captured" style={{borderRadius:'10px',margin:'8px 0px'}} onError={(e) => {e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block';}}/>
+                                             :''}
                                                 {motherImage ?
                                                     // capturedMotherImage ? 
                                                     // <div>
@@ -740,6 +821,7 @@ async function submitHere(){
                                                             videoConstraints={videoConstraints}
                                                             mirrored={facingMode === 'environment'}
                                                             screenshotFormat="image/jpeg"
+                                                            style={{borderRadius:'10px',margin:'8px 0px'}} 
                                                         />
                                                         <button onClick={captureMother} className={`${inter.className} ${styles.primarybtn}`} >Capture</button> &nbsp;&nbsp;
                                                         <button onClick={stopMotherCapture} className={`${inter.className} ${styles.secondarybtn}`}>Close</button>
@@ -748,7 +830,7 @@ async function submitHere(){
                                                 :
                                                 capturedMotherImage ? 
                                                     <div>
-                                                        <img src={capturedMotherImage} alt="Captured" />
+                                                        <img src={capturedMotherImage} alt="Captured" style={{borderRadius:'10px',margin:'8px 0px'}}  />
                                                         <p>✅ Captured</p>
                                                         <button onClick={() => reTake('Mother')} className={`${inter.className} ${styles.secondarybtn}`}>Retake</button>
                                                         </div>
@@ -757,8 +839,10 @@ async function submitHere(){
                                             </div>
                                             
                                             {/* Guardian image capture */}
-                                            <div>Guardian
-                                                
+                                            <div>Guardian image:<br/>
+                                            {user.mediaCount > 0 && !capturedGuardianImage ?
+                                                <img src={"https://firebasestorage.googleapis.com/v0/b/smartcampusimages-1.appspot.com/o/"+user.collegeId+"_3.jpeg?alt=media"} alt="Captured" style={{borderRadius:'10px',margin:'8px 0px'}} onError={(e) => {e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block';}}/>
+                                             :''}
                                                 {guardianImage ?
                                                 // capturedGuardianImage ? 
                                                 //     <div>
@@ -775,6 +859,7 @@ async function submitHere(){
                                                             videoConstraints={videoConstraints}
                                                             mirrored={facingMode === 'environment'}
                                                             screenshotFormat="image/jpeg"
+                                                            style={{borderRadius:'10px',margin:'8px 0px'}} 
                                                         />
                                                         <button onClick={captureGuardian1} className={`${inter.className} ${styles.primarybtn}`} >Capture</button> &nbsp;&nbsp;
                                                         <button onClick={stopGuardianCapture} className={`${inter.className} ${styles.secondarybtn}`}>Close</button>
@@ -783,7 +868,7 @@ async function submitHere(){
                                                 :
                                                 capturedGuardianImage ? 
                                                     <div>
-                                                        <img src={capturedGuardianImage} alt="Captured" />
+                                                        <img src={capturedGuardianImage} alt="Captured" style={{borderRadius:'10px',margin:'8px 0px'}}  />
                                                         <p>✅ Captured</p>
                                                         <button onClick={() => reTake('Guardian')} className={`${inter.className} ${styles.secondarybtn}`}>Retake</button>
                                                         </div>
@@ -792,8 +877,10 @@ async function submitHere(){
                                             </div>
                                             
                                             {/* Guardian2 image capture */}
-                                            <div>Guardian 2
-                                                
+                                            <div>Guardian 2 image:<br/>
+                                            {user.mediaCount > 0 && !capturedGuardian2Image ?
+                                                <img src={"https://firebasestorage.googleapis.com/v0/b/smartcampusimages-1.appspot.com/o/"+user.collegeId+"_4.jpeg?alt=media"} alt="Captured" style={{borderRadius:'10px',margin:'8px 0px'}} onError={(e) => {e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block';}}/>
+                                             :''}
                                                 {guardianImage2 ?
                                                 // capturedGuardianImage ? 
                                                 //     <div>
@@ -810,6 +897,7 @@ async function submitHere(){
                                                             videoConstraints={videoConstraints}
                                                             mirrored={facingMode === 'environment'}
                                                             screenshotFormat="image/jpeg"
+                                                            style={{borderRadius:'10px',margin:'8px 0px'}} 
                                                         />
                                                         <button onClick={captureGuardian2} className={`${inter.className} ${styles.primarybtn}`} >Capture</button> &nbsp;&nbsp;
                                                         <button onClick={stopGuardian2Capture} className={`${inter.className} ${styles.secondarybtn}`}>Close</button>
@@ -818,7 +906,7 @@ async function submitHere(){
                                                 :
                                                 capturedGuardian2Image ? 
                                                     <div>
-                                                        <img src={capturedGuardian2Image} alt="Captured" />
+                                                        <img src={capturedGuardian2Image} alt="Captured" style={{borderRadius:'10px',margin:'8px 0px'}}  />
                                                         <p>✅ Captured</p>
                                                         <button onClick={() => reTake('Guardian2')} className={`${inter.className} ${styles.secondarybtn}`}>Retake</button>
                                                         </div>
@@ -842,6 +930,7 @@ async function submitHere(){
                                         }
                                     </div>
                             
+                            :''}
                        
                     
                     <br/>
@@ -948,47 +1037,8 @@ async function submitHere(){
 //       </div>
 //     );
 //   }
-    
-function ImageComponent({ imageUrl, id, username }) {
-        
-    const [imageLoaded, setImageLoaded] = useState(false);
 
-    useEffect(() => {
 
-        try{
-            const img = new Image();
-            img.src = imageUrl;
-        
-            img.onload = () => {
-                setImageLoaded(true);
-            };
-        
-            img.onerror = () => {
-                setImageLoaded(false);
-            };
-        }
-        catch(e){
-            // console.log("Error loading image");
-        }
-      }, [imageUrl]);
-
-    return (
-      <div>
-        {imageLoaded ? (
-          <img
-            key={id}
-            src={imageUrl}
-            alt="Downloaded Image"
-            width={'50px'}
-            height={'50px'}
-            style={{ objectFit: 'cover', backgroundColor: '#F5F5F5', borderRadius: '50%' }}
-          />
-        ) : (
-          <div style={{backgroundColor: '#f5f5f5', width: '50px', height: '50px', borderRadius: '50%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}><p className={`${inter.className}`}>{abbreviateName(username)}</p></div>
-        )}
-      </div>
-    );
-  }
   function abbreviateName(name) {
     const words = name.split(' ');
     if (words.length >= 2) {

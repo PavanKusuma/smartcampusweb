@@ -194,7 +194,7 @@ export default function SearchStudents() {
         
         // check if the list is dataStarted.
         if(!endOfData){
-console.log('called');
+
             setSearching(true);
 
                 try{
