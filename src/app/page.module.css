@@ -856,3 +856,30 @@
     background-position: 200%;
   }
 }
+
+
+
+
+
+
+
+/* IMAGE ENLARGE */
+
+/* Add some basic styles to the enlarged image */
+.enlargedImg {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+}
+
+/* Center the image vertically and horizontally */
+.enlargedImg img {
+  display: block;
+  margin: auto;
+  max-width: 80%; /* You can adjust the maximum width */
+  max-height: 80vh; /* You can adjust the maximum height */
+}

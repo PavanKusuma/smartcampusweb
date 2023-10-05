@@ -73,55 +73,55 @@ export default function UpdateParents({userDetail, hostelDetail, handleDataChang
     const [isAllowed, setIsallowed] = useState(true);
    
     // type
-    const [type, setType] = useState(userDetail.type);
+    const [type, setType] = useState('');
     
     // father name
-    const [fatherName, setFatherName] = useState(userDetail.fatherName);
+    const [fatherName, setFatherName] = useState('');
     const updateFatherName = (event) => {
         setFatherName(event.target.value);
     };
     // father phonenumber
-    const [fatherPhoneNumber, setFatherPhoneNumber] = useState(userDetail.fatherPhoneNumber);
+    const [fatherPhoneNumber, setFatherPhoneNumber] = useState('');
     const updateFatherPhoneNumber = (event) => {
         setFatherPhoneNumber(event.target.value);
     };
     // mother name
-    const [motherName, setMotherName] = useState(userDetail.motherName);
+    const [motherName, setMotherName] = useState('');
     const updateMotherName = (event) => {
         setMotherName(event.target.value);
     };
     // father phonenumber
-    const [motherPhoneNumber, setMotherPhoneNumber] = useState(userDetail.motherPhoneNumber);
+    const [motherPhoneNumber, setMotherPhoneNumber] = useState('');
     const updateMotherPhoneNumber = (event) => {
         setMotherPhoneNumber(event.target.value);
     }; 
     // guardian name
-    const [guardianName, setGuardianName] = useState(userDetail.guardianName);
+    const [guardianName, setGuardianName] = useState('');
     const updateGuardianName = (event) => {
         setGuardianName(event.target.value);
     };
     // guardian phonenumber
-    const [guardianPhoneNumber, setGuardianPhoneNumber] = useState(userDetail.guardianPhoneNumber);
+    const [guardianPhoneNumber, setGuardianPhoneNumber] = useState('');
     const updateGuardianPhoneNumber = (event) => {
         setGuardianPhoneNumber(event.target.value);
     };
     // guardian 2 name
-    const [guardian2Name, setGuardian2Name] = useState(userDetail.guardian2Name);
+    const [guardian2Name, setGuardian2Name] = useState('');
     const updateGuardian2Name = (event) => {
         setGuardian2Name(event.target.value);
     };
     // guardian 2 phonenumber
-    const [guardian2PhoneNumber, setGuardian2PhoneNumber] = useState(userDetail.guardian2PhoneNumber);
+    const [guardian2PhoneNumber, setGuardian2PhoneNumber] = useState('');
     const updateGuardian2PhoneNumber = (event) => {
         setGuardian2PhoneNumber(event.target.value);
     };
     // mother name
-    const [address, setAddress] = useState(userDetail.address);
+    const [address, setAddress] = useState('');
     const updateAddress = (event) => {
         setAddress(event.target.value);
     };
     // hostel id
-    const [hostelId, setHostelId] = useState(userDetail.hostelId);
+    const [hostelId, setHostelId] = useState('');
     const [selectedHostelIdIndex, setSelectedHostelIdIndex] = useState(0);
     const updateHostelId = (event) => {
         setSelectedHostelIdIndex(hostelIds.indexOf(event.target.value));
@@ -130,12 +130,12 @@ export default function UpdateParents({userDetail, hostelDetail, handleDataChang
         // updateHostelName()
     };
     // hostel name
-    const [hostelName, setHostelName] = useState(userDetail.hostelName);
+    const [hostelName, setHostelName] = useState('');
     const updateHostelName = (event) => {
         setHostelName(event.target.value);
     };
     // Room number
-    const [roomNumber, setRoomNumber] = useState(userDetail.roomNumber);
+    const [roomNumber, setRoomNumber] = useState('');
     const updateRoomNumber = (event) => {
         setRoomNumber(event.target.value);
     };
@@ -146,6 +146,19 @@ export default function UpdateParents({userDetail, hostelDetail, handleDataChang
 
         // Extract hostel details into separate lists
         setType(userDetail.type);
+        setFatherName(userDetail.fatherName);
+        setFatherPhoneNumber(userDetail.fatherPhoneNumber);
+        setMotherName(userDetail.motherName);
+        setMotherPhoneNumber(userDetail.motherPhoneNumber);
+        setGuardianName(userDetail.guardianName);
+        setGuardianPhoneNumber(userDetail.guardianPhoneNumber);
+        setGuardian2Name(userDetail.guardian2Name);
+        setGuardian2PhoneNumber(userDetail.guardian2PhoneNumber);
+        setAddress(userDetail.address);
+        setHostelId(userDetail.hostelId);
+        setHostelName(userDetail.hostelName);
+        setRoomNumber(userDetail.roomNumber);
+        
         setHostelNames(hostels.map((hostel) => hostel.hostelName));
         setHostelIds(hostels.map((hostel) => hostel.hostelId));
         setRoomNumbers(hostels.map((hostel) => hostel.roomNumbers));
@@ -156,7 +169,8 @@ export default function UpdateParents({userDetail, hostelDetail, handleDataChang
     async function updateParentsNow(){
 
     // check for the input
-    if(document.getElementById('fatherName').value.length > 0 && document.getElementById('fatherPhoneNumber').value.length > 0){
+    if(fatherName.length > 0 && fatherPhoneNumber.length > 0){
+    // if(document.getElementById('fatherName').value.length > 0 && document.getElementById('fatherPhoneNumber').value.length > 0){
 
         // this is the key value pair data that includes what all to be updated
         const updateData = {
@@ -265,7 +279,7 @@ export default function UpdateParents({userDetail, hostelDetail, handleDataChang
         }
     } else {
         // show error incase of no input
-        seterrorMsg('Enter the required fields');
+        seterrorMsg('Nothing to update');
     }
   
 }

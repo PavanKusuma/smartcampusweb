@@ -52,60 +52,102 @@ export default function UpdateUser({userDetail, handleDataChange, toggleUpdatePr
     const [disabledDates, setDisabledDates] = useState([]);
     const [isAllowed, setIsallowed] = useState(true);
    
-    // username
-    const [username, setUsername] = useState(userDetail.username);
-    const updateUsername = (event) => {
-        setUsername(event.target.value);
-    };
-    // email
-    const [email, setEmail] = useState(userDetail.email);
-    const updateEmail = (event) => {
-        setEmail(event.target.value);
-    };
-    // phoneNumber
-    const [phoneNumber, setPhoneNumber] = useState(userDetail.phoneNumber);
-    const updatePhoneNumber = (event) => {
-        setPhoneNumber(event.target.value);
-    };
-    // branch
-    const [branch, setBranch] = useState(userDetail.branch);
-    const updateBranch = (event) => {
-        setBranch(event.target.value);
-    };
-    // year
-    const [year, setYear] = useState(userDetail.year);
-    const updateYear = (event) => {
-        setYear(event.target.value);
-    };
-    // semester
-    const [semester, setSemester] = useState(userDetail.semester);
-    const updateSemester = (event) => {
-        setSemester(event.target.value);
-    };
-    // type
-    const [type, setType] = useState(userDetail.type);
-    const updateType = (event) => {
-        setType(event.target.value);
-    };
-    // outingType
-    const [outingType, setOutingType] = useState(userDetail.outingType);
-    const updateOutingType = (event) => {
-        setOutingType(event.target.value);
-    };
+    // // username
+    // const [username, setUsername] = useState(userDetail.username);
+    // const updateUsername = (event) => {
+    //     setUsername(event.target.value);
+    // };
+    // // email
+    // const [email, setEmail] = useState(userDetail.email);
+    // const updateEmail = (event) => {
+    //     setEmail(event.target.value);
+    // };
+    // // phoneNumber
+    // const [phoneNumber, setPhoneNumber] = useState(userDetail.phoneNumber);
+    // const updatePhoneNumber = (event) => {
+    //     setPhoneNumber(event.target.value);
+    // };
+    // // branch
+    // const [branch, setBranch] = useState(userDetail.branch);
+    // const updateBranch = (event) => {
+    //     setBranch(event.target.value);
+    // };
+    // // year
+    // const [year, setYear] = useState(userDetail.year);
+    // const updateYear = (event) => {
+    //     setYear(event.target.value);
+    // };
+    // // semester
+    // const [semester, setSemester] = useState(userDetail.semester);
+    // const updateSemester = (event) => {
+    //     setSemester(event.target.value);
+    // };
+    // // type
+    // const [type, setType] = useState(userDetail.type);
+    // const updateType = (event) => {
+    //     setType(event.target.value);
+    // };
+    // // outingType
+    // const [outingType, setOutingType] = useState(userDetail.outingType);
+    // const updateOutingType = (event) => {
+    //     setOutingType(event.target.value);
+    // };
+
+     // username
+     const [username, setUsername] = useState('');
+     const updateUsername = (event) => {
+         setUsername(event.target.value);
+     };
+     // email
+     const [email, setEmail] = useState('');
+     const updateEmail = (event) => {
+         setEmail(event.target.value);
+     };
+     // phoneNumber
+     const [phoneNumber, setPhoneNumber] = useState('');
+     const updatePhoneNumber = (event) => {
+         setPhoneNumber(event.target.value);
+     };
+     // branch
+     const [branch, setBranch] = useState('');
+     const updateBranch = (event) => {
+         setBranch(event.target.value);
+     };
+     // year
+     const [year, setYear] = useState('');
+     const updateYear = (event) => {
+         setYear(event.target.value);
+     };
+     // semester
+     const [semester, setSemester] = useState('');
+     const updateSemester = (event) => {
+         setSemester(event.target.value);
+     };
+     // type
+     const [type, setType] = useState('');
+     const updateType = (event) => {
+         setType(event.target.value);
+     };
+     // outingType
+     const [outingType, setOutingType] = useState('');
+     const updateOutingType = (event) => {
+         setOutingType(event.target.value);
+     };
+ 
 
 
 
     useEffect(()=>{ 
         // getBlockedDates(dayjs(today.toDate()).format('YYYY-MM-DD'));
         // updateUserNow();
-        // setUsername(userDetail.username);
-        // setEmail(userDetail.email);
-        // setPhoneNumber(userDetail.phoneNumber);
-        // setBranch(userDetail.branch);
-        // setYear(userDetail.year);
-        // setSemester(userDetail.semester);
-        // setType(userDetail.type);
-        // setOutingType(userDetail.outingType);
+        setUsername(userDetail.username);
+        setEmail(userDetail.email);
+        setPhoneNumber(userDetail.phoneNumber);
+        setBranch(userDetail.branch);
+        setYear(userDetail.year);
+        setSemester(userDetail.semester);
+        setType(userDetail.type);
+        setOutingType(userDetail.outingType);
         
 
       },[userDetail, type])
@@ -113,8 +155,10 @@ export default function UpdateUser({userDetail, handleDataChange, toggleUpdatePr
     // update user
     async function updateUserNow(){
 
+        // updated value is in 'username'. so you can check it to see if there is any value
+        // also additionally, we can check if entered value and existing value are same or different
     // check for the input
-    if(document.getElementById('username').value.length > 0 && document.getElementById('email').value.length > 0 && document.getElementById('phoneNumber').value.length > 0){
+    if(username.length > 0 && email.length > 0 && phoneNumber.length > 0){
 
         // this is the key value pair data that includes what all to be updated
         const updateData = {
@@ -207,7 +251,7 @@ export default function UpdateUser({userDetail, handleDataChange, toggleUpdatePr
         }
     } else {
         // show error incase of no input
-        seterrorMsg('Enter the required fields');
+        seterrorMsg('Nothing to update');
     }
   
 }

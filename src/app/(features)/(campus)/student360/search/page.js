@@ -115,7 +115,15 @@ export default function SearchStudents() {
     // this is the selected student object that will be call to update after every panel closes
     const updateSelectedStudent = (selectedStudent1) => {
         setSelectedStudent(selectedStudent1);
+
+        
     }
+
+    // // a varaiable for showing enlarged image
+    // const [isEnlarged, setIsEnlarged] = useState(false);
+    // const toggleEnlarged = () => {
+    //     setIsEnlarged(!isEnlarged);
+    // };
    
 
     // get the user and fire the data fetch
@@ -168,7 +176,7 @@ export default function SearchStudents() {
     // console.log(capturedStudentImage); // Updated value
 
 
-    },[selectedStudent, inView]);
+    },[selectedStudent, setSelectedStudent, inView]);
 
     // Function to handle the "Enter" key press
     const handleKeyPress = (event) => {
@@ -179,12 +187,17 @@ export default function SearchStudents() {
 
     // new search
     async function newSearch(){
+        
         setEndOfData(false);
         setOffset(0);
         setSearchedStudentsList([]); // Set searchedStudentsList to an empty array
         setActiveRequestsList([]); // Set searchedStudentsList to an empty array
         setActiveVisitorPasssList([]); // Set searchedStudentsList to an empty array
         getData(); // now call the getData
+
+        // clearing selection
+        setSelectedStudent();
+        setUserDetailview(false)
     }
 
     // get the requests data
@@ -400,6 +413,9 @@ export default function SearchStudents() {
     // show user detail view
     function showUserDetail(collegeId){
 
+        setSelectedStudent();
+        setUserDetailview(false)
+
         const studentWithCollegeId = searchedStudentsList.find(
             (student) => student.collegeId === collegeId
           );
@@ -610,7 +626,17 @@ export default function SearchStudents() {
                             </div> */}
 
                             <div className={styles.horizontalsection} style={{gap:'24px',alignItems:'flex-start',padding:'32px',width:'100%'}}>
+                                
                                 <ImageComponentLarge imageUrl={selectedStudent.userImage} id={selectedStudent.collegeId} username={selectedStudent.username}/>
+                                
+
+                                {/* <!-- Enlarged image container --> */}
+                                {/* <div id="enlargedimg" className={styles.enlargedImg} onClick={() => hideEnlarged()}>
+                                    <ImageComponentLarge imageUrl={selectedStudent.userImage} id={selectedStudent.collegeId} username={selectedStudent.username}/>
+                                   
+                                </div> */}
+
+
                                 <div className={styles.verticalsection} style={{flex:'1'}}>
                                     <h3 className={`${inter.className}`} >{selectedStudent.username}</h3>
                                     <p className={`${inter.className} ${styles.text2}`} style={{letterSpacing:'1px'}}>{selectedStudent.collegeId} • {selectedStudent.branch} • {selectedStudent.year} Year</p>
@@ -806,6 +832,12 @@ export default function SearchStudents() {
         
         const [imageLoaded, setImageLoaded] = useState(false);
 
+        // a varaiable for showing enlarged image
+        const [isEnlarged, setIsEnlarged] = useState(false);
+        const toggleEnlarged = () => {
+            setIsEnlarged(!isEnlarged);
+        };
+
         useEffect(() => {
 
             try{
@@ -828,14 +860,33 @@ export default function SearchStudents() {
         return (
           <div>
             {imageLoaded ? (
-              <img
-                key={id}
-                src={imageUrl}
-                alt="Downloaded Image"
-                width={'50px'}
-                height={'50px'}
-                style={{ objectFit: 'cover', backgroundColor: '#F5F5F5', borderRadius: '50%' }}
-              />
+
+                <div>
+                {isEnlarged ? (
+                        <div className="enlarged-image" onClick={toggleEnlarged} style={{ position: 'fixed', top: 0, left: 0, width: '100%',height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, }}>
+                            <img key={id} src={imageUrl} alt="Profile image" style={{ objectFit: 'cover', backgroundColor: '#F5F5F5', borderRadius: '8px', cursor: 'pointer',maxWidth: '100%',maxHeight: '100%' }} onClick={toggleEnlarged} />
+                        </div>
+                    ) : 
+                    ''}
+                    <img
+                        key={id}
+                        src={imageUrl}
+                        alt="Profile image"
+                        width={'50px'}
+                        height={'50px'}
+                        style={{ objectFit: 'cover', backgroundColor: '#F5F5F5', borderRadius: '10%', cursor: 'pointer' }}
+                        onClick={toggleEnlarged} 
+                        title='Click to enlarge'
+                    />
+                    </div>
+            //   <img
+            //     key={id}
+            //     src={imageUrl}
+            //     alt="Downloaded Image"
+            //     width={'50px'}
+            //     height={'50px'}
+            //     style={{ objectFit: 'cover', backgroundColor: '#F5F5F5', borderRadius: '50%' }}
+            //   />
             ) : (
               <div style={{backgroundColor: '#f5f5f5', width: '50px', height: '50px', borderRadius: '50%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}><p className={`${inter.className}`}>{abbreviateName(username)}</p></div>
             )}
@@ -846,6 +897,12 @@ export default function SearchStudents() {
       function ImageComponentLarge({ imageUrl, id, username }) {
         
         const [imageLoaded, setImageLoaded] = useState(false);
+
+        // a varaiable for showing enlarged image
+        const [isEnlarged, setIsEnlarged] = useState(false);
+        const toggleEnlarged = () => {
+            setIsEnlarged(!isEnlarged);
+        };
 
         useEffect(() => {
             const img = new Image();
@@ -864,14 +921,34 @@ export default function SearchStudents() {
         return (
           <div>
             {imageLoaded ? (
-              <img
-                key={id}
-                src={imageUrl}
-                alt="Downloaded Image"
-                width={'200px'}
-                height={'250px'}
-                style={{ objectFit: 'cover', backgroundColor: '#F5F5F5', borderRadius: '10%' }}
-              />
+                <div>
+                {isEnlarged ? (
+                        <div className="enlarged-image" onClick={toggleEnlarged} style={{ position: 'fixed', top: 0, left: 0, width: '100%',height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, }}>
+                            <img key={id} src={imageUrl} alt="Profile image" style={{ objectFit: 'cover', backgroundColor: '#F5F5F5', borderRadius: '8px', cursor: 'pointer',maxWidth: '100%',maxHeight: '100%' }} onClick={toggleEnlarged} />
+                        </div>
+                    ) : 
+                    ''}
+                    <img
+                        key={id}
+                        src={imageUrl}
+                        alt="Profile image"
+                        width={'200px'}
+                        height={'250px'}
+                        style={{ objectFit: 'cover', backgroundColor: '#F5F5F5', borderRadius: '10%', cursor: 'pointer' }}
+                        onClick={toggleEnlarged} 
+                        title='Click to enlarge'
+                    />
+                    </div>
+
+            //   <img
+            //     key={id}
+            //     src={imageUrl}
+            //     alt="Downloaded Image"
+            //     width={'200px'}
+            //     height={'250px'}
+            //     style={{ objectFit: 'cover', backgroundColor: '#F5F5F5', borderRadius: '10%', cursor: 'pointer' }}
+            //     onClick={toggleEnlarged} 
+            //   />
             ) : (
                 <div style={{backgroundColor: '#f5f5f5', width: '200px', height: '250px', borderRadius: '10%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
                     <h2 className={`${inter.className}`}>{abbreviateName(username)}</h2><br/>
