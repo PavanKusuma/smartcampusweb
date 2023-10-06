@@ -41,7 +41,7 @@ export async function GET(request,{params}) {
                     // sendSMS(params.ids[11], params.ids[12], dayjs(params.ids[6]).format('DD-MM-YY hh:mm A'), dayjs(params.ids[7]).format('YYYY-MM-DD'))
 
                     // send the notification
-                    const notificationResult = await send_notification('Outing request by '+params.ids[4], 'f2d0fbcf-24a7-4ba1-ab2f-886e1ce8f874', 'Single');
+                    const notificationResult = await send_notification('Outing request by '+params.ids[4], 'fd65be57-ccf5-4a28-b859-639fe66049e3', 'Single');
                         
                     // return successful update
                     return Response.json({status: 200, message:'Request submitted!', notification: notificationResult}, {status: 200})
@@ -110,7 +110,7 @@ export async function GET(request,{params}) {
       if (playerId.length > 0) {
         var playerIds = [];
         playerIds.push(playerId);
-  // console.log(playerId);
+  
         var notification;
         // notification object
         if (type == 'Single') {

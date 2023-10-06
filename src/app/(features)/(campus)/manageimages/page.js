@@ -85,7 +85,7 @@ export default function ManageImages() {
 
                 // set the user state variable
                 setUser(obj)
-                readImagesAndPrintReferences();
+                // readImagesAndPrintReferences();
                 if(!completed){
                     getData();
                     
