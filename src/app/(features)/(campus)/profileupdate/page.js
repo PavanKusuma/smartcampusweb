@@ -754,7 +754,10 @@ async function submitHere(){
                                                         </div>
                                                         :
                                                     <div>
-                                                        <button onClick={startStudentCapture} className={`${inter.className} ${styles.secondarybtn}`}>Open camera</button>
+                                                        <p className={styles.text2}>Not available</p>
+                                                        {/* Commenting this section to stop the student image upload from student side
+                                                        admins will provide the student images
+                                                        <button onClick={startStudentCapture} className={`${inter.className} ${styles.secondarybtn}`}>Open camera</button> */}
                                                     </div>
                                                 }
 

@@ -2,6 +2,9 @@ import pool from '../../db'
 import { Keyverify } from '../../secretverify';
 var mysql = require('mysql2')
 import dayjs from 'dayjs'
+const OneSignal = require('onesignal-node')
+
+const client = new OneSignal.Client(process.env.ONE_SIGNAL_APPID, process.env.ONE_SIGNAL_APIKEY)
 
 // create new outing request by the student
 // returns the data on success
@@ -37,8 +40,14 @@ export async function GET(request,{params}) {
                     sendSMS(params.ids[11], params.ids[12], dayjs(params.ids[6]).format('DD-MM-YY hh:mm A'), dayjs(params.ids[7]).format('DD-MM-YY hh:mm A'))
                     // sendSMS(params.ids[11], params.ids[12], dayjs(params.ids[6]).format('DD-MM-YY hh:mm A'), dayjs(params.ids[7]).format('YYYY-MM-DD'))
 
+                    // send the notification
+                    const notificationResult = await send_notification('Outing request by '+params.ids[4], 'f2d0fbcf-24a7-4ba1-ab2f-886e1ce8f874', 'Single');
+                        
+                    // return successful update
+                    return Response.json({status: 200, message:'Request submitted!', notification: notificationResult}, {status: 200})
+
                     // return the user data
-                    return Response.json({status: 200, message:'Request submitted!'}, {status: 200})
+                    // return Response.json({status: 200, message:'Request submitted!'}, {status: 200})
                 } catch (error) {
                     // user doesn't exist in the system
                     return Response.json({status: 404, message:'Error creating request. Please try again later!'+error.message}, {status: 200})
@@ -90,4 +99,52 @@ export async function GET(request,{params}) {
         //   console.log(queryResult);
   }
   
+
+  // send the notification using onesignal.
+  // use the playerIds of the users.
+  // check if playerId length > 2
+  async function send_notification(message, playerId, type) {
+
+    return new Promise(async (resolve, reject) => {
+      // send notification only if there is playerId for the user
+      if (playerId.length > 0) {
+        var playerIds = [];
+        playerIds.push(playerId);
+  // console.log(playerId);
+        var notification;
+        // notification object
+        if (type == 'Single') {
+          notification = {
+            contents: {
+              'en': message,
+            },
+            // include_player_ids: ['playerId'],
+            // include_player_ids: ['90323-043'],
+            include_player_ids: [playerId],
+          };
+        } else {
+          notification = {
+            contents: {
+              'en': message,
+            },
+            include_player_ids: playerIds,
+          };
+        }
+  
+        try {
+          // create notification
+          const notificationResult = await client.createNotification(notification);
+          
+          resolve(notificationResult);
+
+        } catch (error) {
+          
+          resolve(null);
+        }
+      } else {
+        resolve(null);
+      }
+    });
+  }
+
 

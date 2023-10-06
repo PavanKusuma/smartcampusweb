@@ -1,7 +1,7 @@
 'use client'
 import { Inter } from 'next/font/google'
 import styles from '../../../app/page.module.css'
-import { Monitor, UserFocus, ArrowSquareOut, PresentationChart, IdentificationBadge, CalendarCheck, UserPlus } from 'phosphor-react'
+import { Monitor, UserFocus, ArrowSquareOut, PresentationChart, IdentificationBadge, CalendarCheck, UserPlus, ImageSquare } from 'phosphor-react'
 import Image from 'next/image'
 import Biscuits from 'universal-cookie'
 const biscuits = new Biscuits
@@ -23,6 +23,7 @@ const inter = Inter({ subsets: ['latin'] })
     const [selectedTab, setSelectedTab] = useState('Dashboard');
     const [userData, setUserData] = useState();
     const [role, setRole] = useState();
+    const [id, setId] = useState();
     // function handleTabChange(tabName){
     //     setSelectedTab(tabName);
     //     console.log(tabName);
@@ -47,10 +48,12 @@ const inter = Inter({ subsets: ['latin'] })
     let cookieValue = biscuits.get('sc_user_detail')
     if(cookieValue){
         const obj = JSON.parse(decodeURIComponent(cookieValue)) // get the cookie data
-console.log('Hello');
-setUserData(obj);
-setRole(obj.role);
-console.log(obj.username);
+
+        // configure some variables
+        setUserData(obj);
+        setRole(obj.role);
+        setId(obj.collegeId);
+
         // set the user state variable
         
         // get the requests data if doesnot exist
@@ -116,6 +119,11 @@ console.log(obj.username);
       setSelectedTab('Registration')
       router.push('/registration/form')
     }
+    function navigateManageImages(){
+      // biscuits.set('selectedTab', 'Registration', {path: '/', expires: new Date(Date.now() + 10800000)})
+      setSelectedTab('Manage images')
+      router.push('/manageimages')
+    }
 
     return (
 
@@ -154,6 +162,8 @@ console.log(obj.username);
                 {/* <div className={`${styles.horizontalsection} ${inter.className} ${styles.text2}`} style={{cursor:'pointer'}}><ArrowSquareOut className={styles.menuicon} style={{backgroundColor: '#26379b'}}/> Outing</div>
                 <div className={`${styles.horizontalsection} ${inter.className} ${styles.text2}`} style={{cursor:'pointer'}}><PresentationChart className={styles.menuicon} style={{backgroundColor: '#26379b'}}/> Reports</div> */}
                 <div className={`${styles.horizontalsection} ${inter.className} ${selectedTab == 'Registration' ? styles.leftMenuItem_selected : styles.leftMenuItem} `} onClick={navigateRegistration.bind(this)} style={{cursor:'pointer'}}><UserPlus className={styles.menuicon}/> Registration</div>
+                
+                {id == 'S33' ? <div className={`${styles.horizontalsection} ${inter.className} ${selectedTab == 'Manage images' ? styles.leftMenuItem_selected : styles.leftMenuItem} `} onClick={navigateManageImages.bind(this)} style={{cursor:'pointer'}}><ImageSquare className={styles.menuicon}/> Manage images</div> : ''}
                 {/* <div className={`${styles.horizontalsection} ${inter.className} ${selectedTab == 'Registration' ? styles.text1 : styles.text2}`} onClick={navigateRegistration.bind(this)} style={{cursor:'pointer'}}><IdentificationBadge className={styles.menuicon} style={{backgroundColor: '#26379b'}}/> Visitor pass</div> */}
                 {/* <div className={`${styles.horizontalsection} ${inter.className} ${styles.text2}`} ><CalendarCheck className={styles.menuicon} /> Control campus outing</div> */}
               </div>
