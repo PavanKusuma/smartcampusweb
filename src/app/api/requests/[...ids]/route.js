@@ -50,7 +50,35 @@ export async function GET(request,{params}) {
             // check for the user role
             // if SuperAdmin, get all the requests w.r.t status
             else if(params.ids[1] == 'SuperAdmin'){
-                const [rows, fields] = await connection.execute('SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY u.year DESC LIMIT 20 OFFSET '+params.ids[3]);
+
+                // verify what type of requests admin is asking
+                let query = '';
+
+                // based on the status, the query might change because of the ORDER BY
+                if(params.ids[2] == 'Submitted'){
+
+                    // check for request type (official or general)
+                    if(params.ids[6] == '3'){
+                        query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestType="3" AND requestStatus = "'+params.ids[2]+'" ORDER BY u.year,u.collegeId DESC LIMIT 20 OFFSET '+params.ids[3];
+                    }
+                    else {
+                        query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestType!="3" AND requestStatus = "'+params.ids[2]+'" ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3];
+                    }
+                }
+                else if(params.ids[2] == 'Approved'){
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
+                }
+                else if(params.ids[2] == 'Issued' || params.ids[2] == 'InOuting' ){
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY issuedOn DESC LIMIT 20 OFFSET '+params.ids[3];
+                }
+                else if(params.ids[2] == 'Returned' ){
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY returnedOn DESC LIMIT 20 OFFSET '+params.ids[3];
+                }
+                else {
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3];
+                }
+
+                const [rows, fields] = await connection.execute(query);
                 connection.release();
             
                 // check if user is found
@@ -72,10 +100,10 @@ export async function GET(request,{params}) {
                 if(params.ids[6] == '3'){
                     // for the admin, removing the offset
                     // loading all the results at a time so that search can be made inline
-                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" AND requestType="3" ORDER BY u.year DESC';
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" AND requestType="3" ORDER BY u.year,u.collegeId DESC';
                 }
                 else {
-                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" AND requestType!="3"  ORDER BY u.year DESC LIMIT 20 OFFSET '+params.ids[3];
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" AND requestType!="3"  ORDER BY u.year,u.collegeId DESC LIMIT 20 OFFSET '+params.ids[3];
                 }
 
                 const [rows, fields] = await connection.execute(query);
