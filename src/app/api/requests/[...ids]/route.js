@@ -50,7 +50,7 @@ export async function GET(request,{params}) {
             // check for the user role
             // if SuperAdmin, get all the requests w.r.t status
             else if(params.ids[1] == 'SuperAdmin'){
-                const [rows, fields] = await connection.execute('SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3]);
+                const [rows, fields] = await connection.execute('SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY r.collegeId DESC LIMIT 20 OFFSET '+params.ids[3]);
                 connection.release();
             
                 // check if user is found
@@ -72,10 +72,10 @@ export async function GET(request,{params}) {
                 if(params.ids[6] == '3'){
                     // for the admin, removing the offset
                     // loading all the results at a time so that search can be made inline
-                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" AND requestType="3" ORDER BY requestDate DESC';
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" AND requestType="3" ORDER BY r.collegeId DESC';
                 }
                 else {
-                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" AND requestType!="3"  ORDER BY requestDate DESC LIMIT 20 OFFSET '+params.ids[3];
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" AND requestType!="3"  ORDER BY r.collegeId DESC LIMIT 20 OFFSET '+params.ids[3];
                 }
 
                 const [rows, fields] = await connection.execute(query);

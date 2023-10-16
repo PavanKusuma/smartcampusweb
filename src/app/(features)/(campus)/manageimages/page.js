@@ -88,13 +88,10 @@ export default function ManageImages() {
                 // readImagesAndPrintReferences();
                 if(!completed){
                     getData();
-                    
                 }
                 else {
                     console.log("DONE READING");
                 }
-
- 
                 
                 // get the requests data if doesnot exist
                 // if(!requests){

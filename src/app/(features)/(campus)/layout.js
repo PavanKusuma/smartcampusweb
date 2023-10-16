@@ -1,7 +1,7 @@
 'use client'
 import { Inter } from 'next/font/google'
 import styles from '../../../app/page.module.css'
-import { Monitor, UserFocus, ArrowSquareOut, PresentationChart, IdentificationBadge, CalendarCheck, UserPlus, ImageSquare } from 'phosphor-react'
+import { Monitor, UserFocus, ArrowSquareOut, PresentationChart, IdentificationBadge, CalendarCheck, UserPlus, FileImage } from 'phosphor-react'
 import Image from 'next/image'
 import Biscuits from 'universal-cookie'
 const biscuits = new Biscuits
@@ -163,7 +163,7 @@ const inter = Inter({ subsets: ['latin'] })
                 <div className={`${styles.horizontalsection} ${inter.className} ${styles.text2}`} style={{cursor:'pointer'}}><PresentationChart className={styles.menuicon} style={{backgroundColor: '#26379b'}}/> Reports</div> */}
                 <div className={`${styles.horizontalsection} ${inter.className} ${selectedTab == 'Registration' ? styles.leftMenuItem_selected : styles.leftMenuItem} `} onClick={navigateRegistration.bind(this)} style={{cursor:'pointer'}}><UserPlus className={styles.menuicon}/> Registration</div>
                 
-                {id == 'S33' ? <div className={`${styles.horizontalsection} ${inter.className} ${selectedTab == 'Manage images' ? styles.leftMenuItem_selected : styles.leftMenuItem} `} onClick={navigateManageImages.bind(this)} style={{cursor:'pointer'}}><ImageSquare className={styles.menuicon}/> Manage images</div> : ''}
+                {id == 'S33' ? <div className={`${styles.horizontalsection} ${inter.className} ${selectedTab == 'Manage images' ? styles.leftMenuItem_selected : styles.leftMenuItem} `} onClick={navigateManageImages.bind(this)} style={{cursor:'pointer'}}><FileImage className={styles.menuicon}/> Manage images</div> : ''}
                 {/* <div className={`${styles.horizontalsection} ${inter.className} ${selectedTab == 'Registration' ? styles.text1 : styles.text2}`} onClick={navigateRegistration.bind(this)} style={{cursor:'pointer'}}><IdentificationBadge className={styles.menuicon} style={{backgroundColor: '#26379b'}}/> Visitor pass</div> */}
                 {/* <div className={`${styles.horizontalsection} ${inter.className} ${styles.text2}`} ><CalendarCheck className={styles.menuicon} /> Control campus outing</div> */}
               </div>
