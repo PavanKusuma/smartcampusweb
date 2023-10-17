@@ -142,7 +142,8 @@ export async function GET(request,{params}) {
             // 8. collegeId
             else if(params.ids[1] == 'S3'){ 
                 try {
-                    const [rows, fields] = await connection.execute('UPDATE request SET isStudentOut = 1, requestStatus ="'+params.ids[3]+'", checkoutOn = "'+params.ids[4]+'" where requestId = "'+params.ids[2]+'" and isOpen = 1 and TIMESTAMPDIFF(MINUTE, requestFrom, "'+params.ids[4]+'") > -30');
+                    const [rows, fields] = await connection.execute('UPDATE request SET isStudentOut = 1, requestStatus ="'+params.ids[3]+'", checkoutOn = "'+params.ids[4]+'" where requestId = "'+params.ids[2]+'" and isOpen = 1');
+                    // const [rows, fields] = await connection.execute('UPDATE request SET isStudentOut = 1, requestStatus ="'+params.ids[3]+'", checkoutOn = "'+params.ids[4]+'" where requestId = "'+params.ids[2]+'" and isOpen = 1 and TIMESTAMPDIFF(MINUTE, requestFrom, "'+params.ids[4]+'") > -30');
                     // const [rows, fields] = await connection.execute('UPDATE request SET isStudentOut = 1, requestStatus ="'+params.ids[3]+'", checkoutOn = "'+params.ids[4]+'" where requestId = "'+params.ids[2]+'" and isOpen = 1 and ((dayjs(?, "YYYY-MM-DD HH:mm:ss").diff(dayjs(requestFrom, "YYYY-MM-DD HH:mm:ss"), "minute") > -30))');
 
                     // check if the request is updated. 
