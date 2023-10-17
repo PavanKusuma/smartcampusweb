@@ -142,12 +142,14 @@ export async function GET(request,{params}) {
             // 8. collegeId
             else if(params.ids[1] == 'S3'){ 
                 try {
-                    const [rows, fields] = await connection.execute('UPDATE request SET isStudentOut = 1, requestStatus ="'+params.ids[3]+'", checkoutOn = "'+params.ids[4]+'" where requestId = "'+params.ids[2]+'" and isOpen = 1');
-                    
+                    const [rows, fields] = await connection.execute('UPDATE request SET isStudentOut = 1, requestStatus ="'+params.ids[3]+'", checkoutOn = "'+params.ids[4]+'" where requestId = "'+params.ids[2]+'" and isOpen = 1 and TIMESTAMPDIFF(MINUTE, requestFrom, "'+params.ids[4]+'") > -30');
+                    // const [rows, fields] = await connection.execute('UPDATE request SET isStudentOut = 1, requestStatus ="'+params.ids[3]+'", checkoutOn = "'+params.ids[4]+'" where requestId = "'+params.ids[2]+'" and isOpen = 1 and ((dayjs(?, "YYYY-MM-DD HH:mm:ss").diff(dayjs(requestFrom, "YYYY-MM-DD HH:mm:ss"), "minute") > -30))');
+
                     // check if the request is updated. 
-                    // It will not get updated incase Any Admin has cancelled the request before checkout
+                    // It will not get updated incase Any Admin has cancelled the request before checkout                    
                     if(rows.affectedRows == 0){
-                        return Response.json({status: 403, message:'Your request is rejected!'}, {status: 200})
+                        
+                        return Response.json({status: 403, message:'Your request is rejected or checkout now allowed at this time!'}, {status: 200})
                     }
                     else {
                         // check if the student parent phone number is present
