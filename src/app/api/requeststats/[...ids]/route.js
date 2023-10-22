@@ -29,6 +29,7 @@ export async function GET(request,{params}) {
                     // check if the request is asking for complete data or for specific branch
                     if(params.ids[3] == 'All' && params.ids[1] != 'Admin'){
                         // q = 'SELECT requestStatus, count(*) as count FROM request group by requestStatus';
+                        // q = 'SELECT s.status AS requestStatus, COUNT(r.requestStatus) AS count FROM (SELECT "Submitted" AS status UNION SELECT "Approved" UNION SELECT "Issued" UNION SELECT "InOuting" UNION SELECT "Rejected" UNION SELECT "Cancelled" UNION SELECT "Returned") AS s LEFT JOIN request r ON s.status = r.requestStatus AND r.isOpen = 1 GROUP BY s.status UNION SELECT "InCampus" AS requestStatus, COUNT(*) AS COUNT FROM user WHERE type = "hostel" and role="student"';
                         q = 'SELECT s.status AS requestStatus, COUNT(r.requestStatus) AS count FROM (SELECT "Submitted" AS status UNION SELECT "Approved" UNION SELECT "Issued" UNION SELECT "InOuting" UNION SELECT "Rejected" UNION SELECT "Cancelled" UNION SELECT "Returned") AS s LEFT JOIN request r ON s.status = r.requestStatus AND r.isOpen = 1 GROUP BY s.status UNION SELECT "InCampus" AS requestStatus, COUNT(*) AS COUNT FROM user WHERE type = "hostel" and (year=2 or year=3)';
                     }
                     else {
