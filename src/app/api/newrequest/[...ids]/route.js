@@ -64,7 +64,7 @@ export async function GET(request,{params}) {
                     
                 } catch (error) {
                     // user doesn't exist in the system
-                    return Response.json({status: 404, message:'Error creating request. Please try again later!'+error.message}, {status: 200})
+                    return Response.json({status: 404, message:'Error creating request. Please try again later!'}, {status: 200})
                 }
             // }
             // else if(params.ids[2] == 3){
@@ -93,7 +93,7 @@ export async function GET(request,{params}) {
     }
     catch (err){
         // some error occured
-        return Response.json({status: 500, message:'Facing issues. Please try again!'+err.message}, {status: 200})
+        return Response.json({status: 500, message:'Facing issues. Please try again!'}, {status: 200})
     }
     
     

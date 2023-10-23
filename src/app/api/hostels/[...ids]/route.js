@@ -65,14 +65,14 @@ export async function GET(request,{params}) {
                                 - (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting')
                                 + (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting' AND DATE(requestTo) = "`+params.ids[2]+`" AND TIME(requestTo) < '14:00:00')
                                 - (SELECT COUNT(*) FROM request WHERE requestStatus IN ('Submitted', 'Approved', 'Issued') AND DATE(requestFrom) = "`+params.ids[2]+`" AND TIME(requestFrom) < '12:00:00')
-                                + (SELECT COUNT(*) FROM visitorpass WHERE DATE(visitOn) = "`+params.ids[2]+`" AND isOpen=1)
+                                + (SELECT SUM(count) FROM visitorpass WHERE DATE(visitOn) = "`+params.ids[2]+`" AND isOpen=1)
                             ) as lunch,
                             (
                                 (SELECT COUNT(*) FROM user WHERE type = 'hostel' AND role = 'student')
                                 - (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting')
                                 + (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting' AND DATE(requestTo) = "`+params.ids[2]+`" AND TIME(requestTo) > '14:00:00')
                                 - (SELECT COUNT(*) FROM request WHERE requestStatus IN ('Submitted', 'Approved', 'Issued') AND DATE(requestFrom) = "`+params.ids[2]+`" AND TIME(requestFrom) < '19:00:00')
-                                + (SELECT COUNT(*) FROM visitorpass WHERE DATE(visitOn) = "`+params.ids[2]+`" AND isOpen=1)
+                                + (SELECT SUM(count) FROM visitorpass WHERE DATE(visitOn) = "`+params.ids[2]+`" AND isOpen=1)
                             ) as dinner`;
                     const [rows, fields] = await connection.execute(q);
                     connection.release();
