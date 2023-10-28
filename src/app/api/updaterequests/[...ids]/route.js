@@ -209,11 +209,11 @@ export async function GET(request,{params}) {
                                 END
                             WHERE
                         collegeId = "`+params.ids[5]+`" AND isOpen = 1
-                        AND 
-                        ((requestStatus = 'Returned' AND TIMESTAMPDIFF(MINUTE, returnedOn, "`+params.ids[2]+`") >5) 
-                        OR 
-                        (requestStatus = 'InOuting' AND TIMESTAMPDIFF(MINUTE, checkoutOn, "`+params.ids[2]+`") >5));` ;
-                        // AND (requestStatus!='InOuting' OR (requestStatus = 'InOuting' AND TIMESTAMPDIFF(MINUTE, checkoutOn, "`+params.ids[2]+`") >5));` ;
+                        AND (requestStatus!='InOuting' OR (requestStatus = 'InOuting' AND TIMESTAMPDIFF(MINUTE, checkoutOn, "`+params.ids[2]+`") >5));` ;
+                        // ((requestStatus = 'Returned' AND TIMESTAMPDIFF(MINUTE, returnedOn, "`+params.ids[2]+`") >5) 
+                        // OR 
+                        // (requestStatus = 'InOuting' AND TIMESTAMPDIFF(MINUTE, checkoutOn, "`+params.ids[2]+`") >5));` ;
+                        
                         // ensuring time difference is 5mins to avoid double scanning.
 
                     const [rows, fields] = await connection.execute(q);
@@ -494,7 +494,7 @@ export async function GET(request,{params}) {
                                         // check if the request is updated. 
                                         // It will not get updated incase Any Admin has cancelled the request before checkout
                                         if(rows1.affectedRows == 0){
-                                            return Response.json({status: 404, message:'Your request is rejected!'}, {status: 200})
+                                            return Response.json({status: 199, message:'Your request is rejected!'}, {status: 200})
                                         }
                                         else {
                                             // check if the student parent phone number is present
@@ -507,7 +507,8 @@ export async function GET(request,{params}) {
                                             const notificationResult = await send_notification('👋 You checked out of the campus', params.ids[3], 'Single');
 
                                             // return successful update
-                                            return Response.json({status: 200, message:'👋 You checked out of the campus!',notification: notificationResult,}, {status: 200})
+                                            return Response.json({status: 200, message:'Checkout success!',notification: notificationResult,}, {status: 200})
+                                            // return Response.json({status: 200, message:'You checked out of the campus!',notification: notificationResult,}, {status: 200})
                                         }
                                         
                                 }
@@ -535,7 +536,7 @@ export async function GET(request,{params}) {
                                         // check if the request is updated. 
                                         // It will not get updated incase Any Admin has cancelled the request before checkout
                                         if(rows1.affectedRows == 0){
-                                            return Response.json({status: 404, message:'Your request is rejected!'}, {status: 200})
+                                            return Response.json({status: 199, message:'Your request is rejected!'}, {status: 200})
                                         }
                                         else {
                                             // check if the student parent phone number is present
@@ -548,14 +549,15 @@ export async function GET(request,{params}) {
                                             const notificationResult = await send_notification('✅ You checked in to the campus', params.ids[3], 'Single');
 
                                             // return successful update
-                                            return Response.json({status: 200, message:'✅ You checked in to the campus',notification: notificationResult,}, {status: 200})
+                                            return Response.json({status: 200, message:'Checkin success!',notification: notificationResult,}, {status: 200})
+                                            // return Response.json({status: 200, message:'You checked in to the campus',notification: notificationResult,}, {status: 200})
                                         }
 
                             }
                             else {
                                 // student is trying to double scan
                                 // notify about that their checkout is already done.
-                                return Response.json({status: 201, message:'Your checkout is done! Please proceed.'}, {status: 200})
+                                return Response.json({status: 201, message:'Checkout success! \nPlease proceed.'}, {status: 200})
                             }
 
                         }
@@ -567,7 +569,7 @@ export async function GET(request,{params}) {
                             const notificationResult = await send_notification('✅ Your check in is already recorded. Please proceed and close the request.', params.ids[3], 'Single');
 
                             // return update
-                            return Response.json({status: 201, message:'Your checkin is done! Please proceed.',notification: notificationResult,}, {status: 200})
+                            return Response.json({status: 201, message:'Checkin success! \nPlease proceed.',notification: notificationResult,}, {status: 200})
                         }
                         else if(updatedRequestStatus == 'Submitted' || updatedRequestStatus == 'Approved'){
                             // send the notification
