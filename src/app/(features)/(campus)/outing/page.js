@@ -24,17 +24,17 @@ const storage = getStorage(firebase, "gs://smartcampusimages-1.appspot.com");
 // const doc = new jsPDF();
 
 // Create styles
-const styles1 = StyleSheet.create({
-    page: {
-      flexDirection: 'row',
-      backgroundColor: '#E4E4E4'
-    },
-    section: {
-      margin: 10,
-      padding: 10,
-      flexGrow: 1
-    }
-  });
+// const styles1 = StyleSheet.create({
+//     page: {
+//       flexDirection: 'row',
+//       backgroundColor: '#E4E4E4'
+//     },
+//     section: {
+//       margin: 10,
+//       padding: 10,
+//       flexGrow: 1
+//     }
+//   });
 
 
 
