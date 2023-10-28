@@ -18,10 +18,10 @@ import Toast from '../../../../app/components/toast'
 import BlockDatesBtn from '../../../../app/components/blockdatesbtn'
 import OutingRequest from '../../../../app/components/outingrequest'
 const storage = getStorage(firebase, "gs://smartcampusimages-1.appspot.com");
-const xlsx = require('xlsx');
-import {jsPDF} from 'jsPDF';
+// const xlsx = require('xlsx');
+// import {jsPDF} from 'jsPDF';
 // Default export is a4 paper, portrait, using millimeters for units
-const doc = new jsPDF();
+// const doc = new jsPDF();
 
 // Create styles
 const styles1 = StyleSheet.create({
@@ -212,8 +212,8 @@ export default function Outing() {
                     // stream.on('finish', function() {
                     // iframe.src = stream.toBlobURL('application/pdf');
                     // });
-                    doc.text("Hello world!", 10, 10);
-doc.save("a4.pdf");
+//                     doc.text("Hello world!", 10, 10);
+// doc.save("a4.pdf");
 
                     // Initialize counters
                     let inHostel = 0;
