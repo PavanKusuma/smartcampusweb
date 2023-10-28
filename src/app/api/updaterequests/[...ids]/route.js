@@ -19,7 +19,8 @@ const client = new OneSignal.Client(process.env.ONE_SIGNAL_APPID, process.env.ON
 // Stage1.5 –– To be Rejected and move to closed –– by updating isOpen = 0
 // Stage0.5 –– To be Canceled –– Move the request to closed by updating isOpen = 0 and status to Canceled – This can be done by Student or Admin (Add extra comment to mention who did it)
 
-// Stage33 –– This is the stage to verify at security
+// Stage33 –– This is the consolidated stage to verify at security
+// Stage331 –– This is the consolidated stage to verify at security – Correct one
 
 export async function GET(request,{params}) {
 
@@ -208,7 +209,12 @@ export async function GET(request,{params}) {
                                 END
                             WHERE
                         collegeId = "`+params.ids[5]+`" AND isOpen = 1
-                        AND (requestStatus!='InOuting' OR (requestStatus = 'InOuting' AND TIMESTAMPDIFF(MINUTE, checkoutOn, "`+params.ids[2]+`") >30));` ;
+                        AND 
+                        ((requestStatus = 'Returned' AND TIMESTAMPDIFF(MINUTE, returnedOn, "`+params.ids[2]+`") >5) 
+                        OR 
+                        (requestStatus = 'InOuting' AND TIMESTAMPDIFF(MINUTE, checkoutOn, "`+params.ids[2]+`") >5));` ;
+                        // AND (requestStatus!='InOuting' OR (requestStatus = 'InOuting' AND TIMESTAMPDIFF(MINUTE, checkoutOn, "`+params.ids[2]+`") >5));` ;
+                        // ensuring time difference is 5mins to avoid double scanning.
 
                     const [rows, fields] = await connection.execute(q);
                     connection.release();
@@ -287,6 +293,322 @@ export async function GET(request,{params}) {
                 }
                 
             }
+
+            /// Security check
+            /// check if active request exists
+            // if so, check the status of the request
+            //
+            // 0. Pass
+            // 1. stage
+            // 2. dateInstance
+            // 3. playerId
+            // 4. username
+            // 5. collegeId
+            // else if(params.ids[1] == 'S331'){ 
+                
+            //     var notificationResult;
+
+            //     try {
+
+            //         // Select query to retrieve the request that is active
+            //         // this helps us to understand if the student is 'checking out' or 'checking in'
+            //         const [rows, fields] = await connection.execute('SELECT * FROM request WHERE collegeId = "'+params.ids[5]+'" AND isOpen = 1');
+                    
+            //         // check if active request exists
+            //         if(rows.length > 0){
+
+            //             // get the updated requestStatus
+            //             const updatedRequestStatus = rows[0].requestStatus;
+                        
+            //             // check the status of the active request
+            //             if(updatedRequestStatus == 'Issued'){
+
+            //                 // if Issued, student is trying to checkout
+            //                 // check for the double scan, that means check if 'checkoutOn' is already present or not
+            //                 if(rows[0].checkoutOn == null){
+                                
+            //                     if(true){ // check if student tries to checkout way before their checkout time
+            //                     // if(dayjs(params.ids[2]).diff(dayjs(rows[0].requestTo), 'minute') < 30){
+
+            //                         // mark as InOuting
+            //                         const [rows1, fields] = await connection.execute('UPDATE request SET isStudentOut = 1, requestStatus ="InOuting", checkoutOn = "'+params.ids[2]+'" where requestId = "'+rows[0].requestId+'" and isOpen = 1');
+
+            //                             // check if the request is updated. 
+            //                             // It will not get updated incase Any Admin has cancelled the request before checkout
+            //                             if(rows1.affectedRows == 0){
+            //                                 return Response.json({status: 404, message:'Your request is rejected!'}, {status: 200})
+            //                             }
+            //                             else {
+            //                                 // check if the student parent phone number is present
+            //                                 var qq = `SELECT 
+            //                                 CASE
+            //                                     WHEN LENGTH(fatherPhoneNumber) > 2 THEN fatherPhoneNumber
+            //                                     WHEN LENGTH(motherPhoneNumber) > 2 THEN motherPhoneNumber
+            //                                     WHEN LENGTH(guardianPhoneNumber) > 2 THEN guardianPhoneNumber
+            //                                     WHEN LENGTH(guardian2PhoneNumber) > 2 THEN guardian2PhoneNumber
+            //                                     ELSE NULL
+            //                                 END AS phoneNumber
+            //                                 from user_details where collegeId = "`+params.ids[5]+`"`;
+            //                                 const [rows2, fields1] = await connection.execute(qq);
+            //                                 connection.release();
+                                            
+            //                                 if(rows2.phoneNumber != null){
+            //                                     // send SMS
+            //                                     sendSMS('S3',params.ids[4],rows2.phoneNumber, dayjs(params.ids[2]).format('hh:mm A, DD-MM-YY'));
+            //                                 }
+
+            //                                 // send the notification
+            //                                 const notificationResult = await send_notification('👋 You checked out of the campus', params.ids[3], 'Single');
+
+            //                                 // return successful update
+            //                                 return Response.json({status: 200, message:'👋 You checked out of the campus!',notification: notificationResult,}, {status: 200})
+            //                             }
+                                        
+            //                     }
+            //                     else {
+            //                         // student is not allowed to checkout way before. Show warning.
+            //                         return Response.json({status: 198, message:'Not allowed. Your checkout time is at'+ rows[0].requestTo}, {status: 200})
+            //                     }
+            //                 }
+            //                 else {
+            //                     // this section is very rare, only occurs in case of glitch
+            //                     // student is trying to double scan, show message to not do that
+            //                     return Response.json({status: 199, message:'Error! contact admin'}, {status: 200})
+            //                 }
+                        
+            //             }
+            //             else if(updatedRequestStatus == 'InOuting'){
+
+            //                 // if InOuting, student is trying to checkin
+            //                 // check if the time difference between checkout and checkin is more than 5 mins
+            //                 if(dayjs(params.ids[2]).diff(dayjs(rows[0].checkoutOn), 'minute') > 5){
+
+            //                     // mark as returned
+            //                     const [rows1, fields] = await connection.execute('UPDATE request SET isStudentOut = 0, requestStatus ="Returned", returnedOn = "'+params.ids[2]+'" where requestId = "'+rows[0].requestId+'" and isOpen = 1');
+
+            //                             // check if the request is updated. 
+            //                             // It will not get updated incase Any Admin has cancelled the request before checkout
+            //                             if(rows1.affectedRows == 0){
+            //                                 return Response.json({status: 404, message:'Your request is rejected!'}, {status: 200})
+            //                             }
+            //                             else {
+            //                                 // check if the student parent phone number is present
+            //                                 const [rows2, fields1] = await connection.execute(`SELECT 
+            //                                 CASE
+            //                                     WHEN LENGTH(fatherPhoneNumber) > 2 THEN fatherPhoneNumber
+            //                                     WHEN LENGTH(motherPhoneNumber) > 2 THEN motherPhoneNumber
+            //                                     WHEN LENGTH(guardianPhoneNumber) > 2 THEN guardianPhoneNumber
+            //                                     WHEN LENGTH(guardian2PhoneNumber) > 2 THEN guardian2PhoneNumber
+            //                                     ELSE NULL
+            //                                 END AS phoneNumber
+            //                                 from user_details where collegeId = "`+params.ids[5]+`"`);
+            //                                 connection.release();
+                                            
+            //                                 if(rows2.phoneNumber != null){
+            //                                     // send SMS
+            //                                     sendSMS('S4',params.ids[4],rows2.phoneNumber, dayjs(params.ids[2]).format('hh:mm A, DD-MM-YY'));
+            //                                 }
+
+            //                                 // send the notification
+            //                                 const notificationResult = await send_notification('✅ You checked in to the campus', params.ids[3], 'Single');
+
+            //                                 // return successful update
+            //                                 return Response.json({status: 200, message:'✅ You checked in to the campus',notification: notificationResult,}, {status: 200})
+            //                             }
+
+            //                 }
+            //                 else {
+            //                     // student is trying to double scan
+            //                     // notify about that their checkout is already done.
+            //                     return Response.json({status: 201, message:'Your checkout is done! Please proceed.'}, {status: 200})
+            //                 }
+
+            //             }
+            //             else if(updatedRequestStatus == 'Returned'){
+            //                 // student is trying to double scan
+            //                 // notify student that they already checked in
+
+            //                 // send the notification
+            //                 const notificationResult = await send_notification('✅ Your check in is already recorded. Please proceed and close the request.', params.ids[3], 'Single');
+
+            //                 // return update
+            //                 return Response.json({status: 201, message:'Your checkin is done! Please proceed.',notification: notificationResult,}, {status: 200})
+            //             }
+
+            //         }
+            //         else {
+            //             // request not found
+            //             return Response.json({status: 404, message:'Your request is not approved or rejected or closed!'}, {status: 200})
+            //         }
+                    
+                    
+            //     } catch (error) { // error updating
+            //         return Response.json({status: 404, message:'Error. Contact admin!'+error}, {status: 200})
+            //     }
+                
+            // }
+            else if(params.ids[1] == 'S333'){ 
+                
+                var notificationResult;
+
+                try {
+
+                    // Select query to retrieve the request that is active
+                    // this helps us to understand if the student is 'checking out' or 'checking in'
+                    var q = `SELECT
+                                request.*,
+                                CASE
+                                WHEN LENGTH(fatherPhoneNumber) > 2 THEN fatherPhoneNumber
+                                WHEN LENGTH(motherPhoneNumber) > 2 THEN motherPhoneNumber
+                                WHEN LENGTH(guardianPhoneNumber) > 2 THEN guardianPhoneNumber
+                                WHEN LENGTH(guardian2PhoneNumber) > 2 THEN guardian2PhoneNumber
+                                ELSE NULL 
+                                END AS phoneNumber
+                            FROM request
+                            LEFT JOIN user_details
+                            ON request.collegeId = user_details.collegeId
+                            WHERE request.collegeId = "`+params.ids[5]+`" AND request.isOpen = 1;`;
+                    
+                    const [rows, fields] = await connection.execute(q);
+                    // const [rows, fields] = await connection.execute('SELECT * FROM request WHERE collegeId = "'+params.ids[5]+'" AND isOpen = 1');
+                    
+                    // check if active request exists
+                    if(rows.length > 0){
+
+                        // get the updated requestStatus
+                        const updatedRequestStatus = rows[0].requestStatus;
+                        
+                        // check the status of the active request
+                        if(updatedRequestStatus == 'Issued'){
+
+                            // if Issued, student is trying to checkout
+                            // check for the double scan, that means check if 'checkoutOn' is already present or not
+                            if(rows[0].checkoutOn == null){
+                                
+                                if(true){ // check if student tries to checkout way before their checkout time
+                                // if(dayjs(params.ids[2]).diff(dayjs(rows[0].requestTo), 'minute') < 30){
+
+                                    // mark as InOuting
+                                    const [rows1, fields] = await connection.execute('UPDATE request SET isStudentOut = 1, requestStatus ="InOuting", checkoutOn = "'+params.ids[2]+'" where requestId = "'+rows[0].requestId+'" and isOpen = 1');
+
+                                        // check if the request is updated. 
+                                        // It will not get updated incase Any Admin has cancelled the request before checkout
+                                        if(rows1.affectedRows == 0){
+                                            return Response.json({status: 404, message:'Your request is rejected!'}, {status: 200})
+                                        }
+                                        else {
+                                            // check if the student parent phone number is present
+                                            if(rows[0].phoneNumber != null){
+                                                // send SMS
+                                                sendSMS('S3',params.ids[4],rows[0].phoneNumber, dayjs(params.ids[2]).format('hh:mm A, DD-MM-YY'));
+                                            }
+
+                                            // send the notification
+                                            const notificationResult = await send_notification('👋 You checked out of the campus', params.ids[3], 'Single');
+
+                                            // return successful update
+                                            return Response.json({status: 200, message:'👋 You checked out of the campus!',notification: notificationResult,}, {status: 200})
+                                        }
+                                        
+                                }
+                                else {
+                                    // student is not allowed to checkout way before. Show warning.
+                                    return Response.json({status: 198, message:'Not allowed. Your checkout time is at'+ rows[0].requestTo}, {status: 200})
+                                }
+                            }
+                            else {
+                                // this section is very rare, only occurs in case of glitch
+                                // student is trying to double scan, show message to not do that
+                                return Response.json({status: 199, message:'Error. Contact admin'}, {status: 200})
+                            }
+                        
+                        }
+                        else if(updatedRequestStatus == 'InOuting'){
+
+                            // if InOuting, student is trying to checkin
+                            // check if the time difference between checkout and checkin is more than 5 mins
+                            if(dayjs(params.ids[2]).diff(dayjs(rows[0].checkoutOn), 'minute') > 5){
+
+                                // mark as returned
+                                const [rows1, fields] = await connection.execute('UPDATE request SET isStudentOut = 0, requestStatus ="Returned", returnedOn = "'+params.ids[2]+'" where requestId = "'+rows[0].requestId+'" and isOpen = 1');
+
+                                        // check if the request is updated. 
+                                        // It will not get updated incase Any Admin has cancelled the request before checkout
+                                        if(rows1.affectedRows == 0){
+                                            return Response.json({status: 404, message:'Your request is rejected!'}, {status: 200})
+                                        }
+                                        else {
+                                            // check if the student parent phone number is present
+                                            if(rows[0].phoneNumber != null){
+                                                // send SMS
+                                                sendSMS('S4',params.ids[4],rows[0].phoneNumber, dayjs(params.ids[2]).format('hh:mm A, DD-MM-YY'));
+                                            }
+
+                                            // send the notification
+                                            const notificationResult = await send_notification('✅ You checked in to the campus', params.ids[3], 'Single');
+
+                                            // return successful update
+                                            return Response.json({status: 200, message:'✅ You checked in to the campus',notification: notificationResult,}, {status: 200})
+                                        }
+
+                            }
+                            else {
+                                // student is trying to double scan
+                                // notify about that their checkout is already done.
+                                return Response.json({status: 201, message:'Your checkout is done! Please proceed.'}, {status: 200})
+                            }
+
+                        }
+                        else if(updatedRequestStatus == 'Returned'){
+                            // student is trying to double scan
+                            // notify student that they already checked in
+
+                            // send the notification
+                            const notificationResult = await send_notification('✅ Your check in is already recorded. Please proceed and close the request.', params.ids[3], 'Single');
+
+                            // return update
+                            return Response.json({status: 201, message:'Your checkin is done! Please proceed.',notification: notificationResult,}, {status: 200})
+                        }
+                        else if(updatedRequestStatus == 'Submitted' || updatedRequestStatus == 'Approved'){
+                            // send the notification
+                            const notificationResult = await send_notification('❌ Your request is not Issued. Contact admin.', params.ids[3], 'Single');
+
+                            // return update
+                            return Response.json({status: 199, message:'Request not issued!.',notification: notificationResult,}, {status: 200})
+                        }
+                        else if(updatedRequestStatus == 'Rejected'){
+                            // send the notification
+                            const notificationResult = await send_notification('❌ Your request is rejected. Contact admin.', params.ids[3], 'Single');
+
+                            // return update
+                            return Response.json({status: 199, message:'Request rejected!.',notification: notificationResult,}, {status: 200})
+                        }
+                        else if(updatedRequestStatus == 'Cancelled'){
+                            // send the notification
+                            const notificationResult = await send_notification('❌ Your request is cancelled. Contact admin.', params.ids[3], 'Single');
+
+                            // return update
+                            return Response.json({status: 199, message:'Request cancelled!.',notification: notificationResult,}, {status: 200})
+                        }
+                        else {
+                            // return update
+                            return Response.json({status: 199, message:'Error. Contact admin.',notification: notificationResult,}, {status: 200})
+                        }
+
+                    }
+                    else {
+                        // request not found
+                        return Response.json({status: 404, message:'No active request found!'}, {status: 200})
+                        // return Response.json({status: 404, message:'Your request is not approved or rejected or closed!'}, {status: 200})
+                    }
+                    
+                    
+                } catch (error) { // error updating
+                    return Response.json({status: 404, message:'Error. Contact admin.'+error}, {status: 200})
+                }
+                
+            }
+
             // else if(params.ids[4] == 'OutingAssistant'){
             // 0. Pass
             // 1. stage

@@ -9,6 +9,7 @@ const client = new OneSignal.Client(process.env.ONE_SIGNAL_APPID, process.env.ON
 // returns the user data on success
 
 // pass, collegeId, OTP, deviceId, loginTime
+// campusId to be added – helps to identify the student campus
 export async function GET(request,{params}) {
 
     // Send emails to each user with their respective OTP code

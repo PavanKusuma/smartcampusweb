@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "browserify": "^17.0.0",
     "dayjs": "^1.11.7",
     "debug": "^4.3.4",
     "firebase": "^10.1.0",
@@ -27,11 +28,18 @@
     "recharts": "^2.8.0",
     "supports-color": "^9.3.1",
     "twilio": "^4.9.0",
-    "universal-cookie": "^4.0.4"
+    "universal-cookie": "^4.0.4",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/node": "18.15.10",
+    "@types/pdfkit": "^0.13.1",
     "@types/react": "18.0.29",
     "typescript": "5.0.2"
+  },
+  "browser": {
+    "fs": false,
+    "os": false,
+    "path": false
   }
 }

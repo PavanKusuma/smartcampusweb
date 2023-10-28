@@ -150,7 +150,7 @@ export default function UpdateUser({userDetail, handleDataChange, toggleUpdatePr
         setOutingType(userDetail.outingType);
         
 
-      },[userDetail, type])
+      },[userDetail])
 
     // update user
     async function updateUserNow(){

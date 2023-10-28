@@ -731,17 +731,19 @@ export default function SearchStudents() {
                         <div style={{borderBottom: '0.5px solid #00000026', width:'100%',margin:'12px 0px'}}></div>
 
                         {(activeVisitorPassList!=null && activeVisitorPassList.length > 0) ?
-                        <div>
-                            <div style={{display:'flex',flexWrap:'wrap' ,gap:'8px',margin:'12px 0px'}}>
+                        
+                            <div style={{display:'flex',flexWrap:'wrap' ,gap:'8px',width:'100%'}}>
                                 <p className={`${inter.className} ${styles.text1}`} style={{color:'darkorange',fontSize:'28px'}} >•</p>
                                 <p className={`${inter.className} ${styles.text1}`} >Visitor pass –</p>
                                 <p className={`${inter.className} ${styles.text2}`}>{dayjs(activeVisitorPassList[0].visitOn).format('MMM DD, YYYY')} – {activeRequestsList[0].count} members</p>
                                 <p className={`${inter.className} ${styles.text3}`}>({activeRequestsList[0].description})</p>
                             </div>
-                            <div style={{borderBottom: '0.5px solid #00000026', width:'100%',margin:'12px 0px'}}></div>
-                        </div>
+                            
+                        
                         : ''
                         }
+                        {(activeVisitorPassList!=null && activeVisitorPassList.length > 0) ?
+                        <div style={{borderBottom: '0.5px solid #00000026', width:'100%',margin:'12px 0px'}}></div>:''}
                         
                         <p className={`${inter.className} ${styles.text1}`} >Parents</p>
                         <div className={styles.verticalsection} style={{width:'100%'}}>

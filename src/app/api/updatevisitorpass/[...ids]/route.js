@@ -57,14 +57,14 @@ export async function GET(request,{params}) {
     
                         if(params.ids[6] == 'Approved'){
                             // send the notification
-                            const notificationResult = await send_notification('🙌 Your visitor pass is approved. Use QR code to checkin and checkout visitors!', params.ids[9], params.ids[10]);
+                            const notificationResult = await send_notification('🙌 Your Parent/Guardian visit is approved. Use QR code to checkin and checkout visitors!', params.ids[9], params.ids[10]);
                             
                             // return the response
                             return Response.json({status: 200,message: 'Updated!',notification: notificationResult,});
                         }
                         else {
                             // send the notification
-                            const notificationResult = await send_notification('❌ Your visitor pass is rejected!', params.ids[9], params.ids[10]);
+                            const notificationResult = await send_notification('❌ Your Parent/Guardian visit is rejected!', params.ids[9], params.ids[10]);
                             
                             // return the response
                             return Response.json({status: 200,message: 'Updated!',notification: notificationResult,});
@@ -82,7 +82,7 @@ export async function GET(request,{params}) {
                         connection.release();
     
                         // send the notification
-                        const notificationResult = await send_notification('🙌 Your visitor pass is approved. Use QR code to checkin and checkout visitors!', params.ids[9], params.ids[10]);
+                        const notificationResult = await send_notification('🙌 Your Parent/Guardian visit is approved. Use QR code to checkin and checkout visitors!', params.ids[9], params.ids[10]);
                         
                         // return successful update
                         return Response.json({status: 200, message:'Updated!',notification: notificationResult,}, {status: 200})
@@ -124,7 +124,7 @@ export async function GET(request,{params}) {
                         }
 
                         // send the notification
-                        const notificationResult = await send_notification('👋 Your visitors checked in to the campus', params.ids[5], 'Single');
+                        const notificationResult = await send_notification('👋 Your Parent/Guardian checked in to the campus', params.ids[5], 'Single');
 
                         // return successful update
                         return Response.json({status: 200, message:'Updated!',notification: notificationResult,}, {status: 200})
@@ -164,7 +164,7 @@ export async function GET(request,{params}) {
                     }
                     
                     // send the notification
-                    const notificationResult = await send_notification('✅ Your visitors checked out of the campus', params.ids[5], 'Single');
+                    const notificationResult = await send_notification('✅ Your Parent/Guardian checked out of the campus', params.ids[5], 'Single');
                     
                     // return successful update
                     return Response.json({status: 200, message:'Updated!',notification: notificationResult,}, {status: 200})
@@ -228,7 +228,7 @@ export async function GET(request,{params}) {
                         if(updatedRequestStatus == 'Checkin'){
 
                             // check if parent details are present to send SMS
-                            msg = 'Checkin Successful!';
+                            msg = 'Parent/Guardian Checkin Successful!';
                             // check if there is father phone number for the student
                             // if(rows1.length > 0){
                             //     if(rows1[0].fatherPhoneNumber.length > 3){
@@ -237,12 +237,12 @@ export async function GET(request,{params}) {
                             //     }
                             // }
                             // send the notification
-                            notificationResult = await send_notification('👋 Your visitors checked in to the campuss', params.ids[3], 'Single');
+                            notificationResult = await send_notification('👋 Your Parent/Guardian checked in to the campuss', params.ids[3], 'Single');
                         }
                         else if(updatedRequestStatus == 'Checkout'){
 
                             // check if parent details are present to send SMS
-                            msg = 'Checkout Successful!';
+                            msg = 'Parent/Guardian Checkout Successful!';
                             // check if there is father phone number for the student
                             // if(rows1.length > 0){
                             //     if(rows1[0].fatherPhoneNumber.length > 3){
@@ -251,7 +251,7 @@ export async function GET(request,{params}) {
                             //     }
                             // }
                             // send the notification
-                            notificationResult = await send_notification('✅ Your visitors checked out of the campus', params.ids[3], 'Single');
+                            notificationResult = await send_notification('✅ Your Parent/Guardian checked out of the campus', params.ids[3], 'Single');
                         }
                         
                         // return successful update

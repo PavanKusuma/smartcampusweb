@@ -18,6 +18,25 @@ import Toast from '../../../../app/components/toast'
 import BlockDatesBtn from '../../../../app/components/blockdatesbtn'
 import OutingRequest from '../../../../app/components/outingrequest'
 const storage = getStorage(firebase, "gs://smartcampusimages-1.appspot.com");
+const xlsx = require('xlsx');
+import {jsPDF} from 'jsPDF';
+// Default export is a4 paper, portrait, using millimeters for units
+const doc = new jsPDF();
+
+// Create styles
+const styles1 = StyleSheet.create({
+    page: {
+      flexDirection: 'row',
+      backgroundColor: '#E4E4E4'
+    },
+    section: {
+      margin: 10,
+      padding: 10,
+      flexGrow: 1
+    }
+  });
+
+
 
 // Create a child reference
 // const imagesRef = ref(storage, 'images');
@@ -178,6 +197,24 @@ export default function Outing() {
                     // total students
                     const result = queryResult.data;
 
+                    // const worksheet = xlsx.utils.json_to_sheet(result);
+                    // const workbook = xlsx.utils.book_new();
+                    // xlsx.utils.book_append_sheet(workbook,worksheet,'Sheet 123');
+                    // xlsx.writeFile(workbook, 'sample1234.xlsx');
+
+
+                    // Create a document
+                    // var doc = new PDFDocument();
+                    // var stream = doc.pipe(blobStream());
+                    // doc.fontSize(25).text('Here is some vector graphics...', 100, 80);
+                    // // end and display the document in the iframe to the right
+                    // doc.end();
+                    // stream.on('finish', function() {
+                    // iframe.src = stream.toBlobURL('application/pdf');
+                    // });
+                    doc.text("Hello world!", 10, 10);
+doc.save("a4.pdf");
+
                     // Initialize counters
                     let inHostel = 0;
                     let totalStrength = 0;
@@ -258,6 +295,7 @@ export default function Outing() {
             // show and hide message
             setResultType('error');
             setResultMessage('Issue loading. Please refresh or try again later!');
+            console.log(e.message);
             setTimeout(function(){
                 setResultType('');
                 setResultMessage('');
