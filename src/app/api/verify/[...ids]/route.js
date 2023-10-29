@@ -3,6 +3,7 @@ import pool from '../../db'
 import { Keyverify } from '../../secretverify';
 import nodemailer from 'nodemailer';
 const OneSignal = require('onesignal-node')
+import dayjs from 'dayjs'
 
 const client = new OneSignal.Client(process.env.ONE_SIGNAL_APPID, process.env.ONE_SIGNAL_APIKEY)
 // this is used to verify the user and send OTP for authorizing into the system
@@ -26,6 +27,9 @@ export async function GET(request,{params}) {
 
     // get the pool connection to db
     const connection = await pool.getConnection();
+
+    // current date time for updating
+    var currentDate =  dayjs(new Date(Date.now())).format('YYYY-MM-DD HH:mm:ss');
 
     try{
 
@@ -61,9 +65,9 @@ export async function GET(request,{params}) {
                     }
 
                     // create query for insert
-                    const q1 = 'INSERT INTO user_sessions (collegeId, deviceId, sessionToken, isLoggedIn) VALUES ( ?, ?, ?, ?)';
+                    const q1 = 'INSERT INTO user_sessions (collegeId, deviceId, sessionToken, isLoggedIn, lastActivityTime) VALUES ( ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE isLoggedIn = isLoggedIn + 1, lastActivityTime = "'+currentDate+'";';
                     // create new request
-                    const [rows1, fields] = await connection.execute(q1, [ params.ids[1], params.ids[3], randomUUID(), 1]);
+                    const [rows1, fields] = await connection.execute(q1, [ params.ids[1], params.ids[3], randomUUID(), 1, currentDate]);
                     connection.release();
                     // console.log("Message sent: %s", info.messageId);
                     // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
@@ -82,7 +86,7 @@ export async function GET(request,{params}) {
             }
             else {
                 // user doesn't exist in the system
-                return Response.json({status: 404, message:'Registered number provided does not match with your college records!'}, {status: 200})
+                return Response.json({status: 404, message:'This Regd.No does not match with any campus records!'}, {status: 200})
             }
         }
         else {

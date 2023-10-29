@@ -346,7 +346,7 @@ export async function GET(request,{params}) {
                         }
                         else if(updatedRequestStatus == 'Checkin'){
 
-                            // if InOuting, student is trying to checkin
+                            // if Checkin, vistor is trying to checkout
                             // check if the time difference between checkout and checkin is more than 5 mins
                             if(dayjs(params.ids[2]).diff(dayjs(rows[0].checkin), 'minute') > 5){
 
@@ -377,7 +377,7 @@ export async function GET(request,{params}) {
                             else {
                                 // student is trying to double scan
                                 // notify about that their checkout is already done.
-                                return Response.json({status: 201, message:'Checkout success! \nPlease proceed.'}, {status: 200})
+                                return Response.json({status: 201, message:'Checkin success! \nPlease proceed.', data: rows[0]}, {status: 200})
                             }
 
                         }
@@ -389,7 +389,7 @@ export async function GET(request,{params}) {
                             const notificationResult = await send_notification('✅ Your Parent/Guardian check out is already recorded. Please proceed and close the request.', params.ids[3], 'Single');
 
                             // return update
-                            return Response.json({status: 201, message:'Checkout success! \nPlease proceed.',notification: notificationResult,}, {status: 200})
+                            return Response.json({status: 201, message:'Checkout success! \nPlease proceed.', data: rows[0], notification: notificationResult,}, {status: 200})
                         }
                         else if(updatedRequestStatus == 'Submitted'){
                             // send the notification
