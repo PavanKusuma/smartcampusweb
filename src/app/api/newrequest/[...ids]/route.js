@@ -37,34 +37,47 @@ export async function GET(request,{params}) {
                     
                     if(rows0.length == 0){
 
-                      // create query for insert
-                      const q = 'INSERT INTO request (requestId, requestType, oRequestId, collegeId, description, requestFrom, requestTo, duration, requestStatus, requestDate, approver, approverName, approvedOn, comment, issuer, issuerName, issuedOn, consentBy, isOpen, isStudentOut, returnedOn, isAllowed) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )';
-                      // create new request
-                      const [rows, fields] = await connection.execute(q, [ params.ids[1], params.ids[2], params.ids[3], params.ids[4], params.ids[5], params.ids[6], params.ids[7], params.ids[8], "Submitted", params.ids[10] ,  '-','-', null, '-', '-','-',null, '-', 1, 0, null, params.ids[9]]);
-                      connection.release();
+                      // check if the user is not blocked by the admin
+                      // if profileUpdated column value is 3, then user is meant to be blocked by admin.
+                      const [rows1, fields1] = await connection.execute('SELECT profileUpdated from user where collegeId=?', [ params.ids[4] ]);
+                      console.log(rows1);
+                      
+                      if(rows1[0].profileUpdated == 3){
+                        // mention that admin blocked the user to raise request
+                        return Response.json({status: 199, message:'You are not allowed to raise request. Contact your admin!'}, {status: 201})
+                      }
+                      else {
+                        
+                        // create query for insert
+                        const q = 'INSERT INTO request (requestId, requestType, oRequestId, collegeId, description, requestFrom, requestTo, duration, requestStatus, requestDate, approver, approverName, approvedOn, comment, issuer, issuerName, issuedOn, consentBy, isOpen, isStudentOut, returnedOn, isAllowed) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )';
+                        // create new request
+                        const [rows, fields] = await connection.execute(q, [ params.ids[1], params.ids[2], params.ids[3], params.ids[4], decodeURIComponent(params.ids[5]), params.ids[6], params.ids[7], params.ids[8], "Submitted", params.ids[10] ,  '-','-', null, '-', '-','-',null, '-', 1, 0, null, params.ids[9]]);
+                        connection.release();
 
-                      // send SMS to parent
-                      sendSMS(params.ids[11], params.ids[12], dayjs(params.ids[6]).format('DD-MM-YY hh:mm A'), dayjs(params.ids[7]).format('DD-MM-YY hh:mm A'))
-                      // sendSMS(params.ids[11], params.ids[12], dayjs(params.ids[6]).format('DD-MM-YY hh:mm A'), dayjs(params.ids[7]).format('YYYY-MM-DD'))
+                        // send SMS to parent
+                        sendSMS(params.ids[11], params.ids[12], dayjs(params.ids[6]).format('DD-MM-YY hh:mm A'), dayjs(params.ids[7]).format('DD-MM-YY hh:mm A'))
+                        // sendSMS(params.ids[11], params.ids[12], dayjs(params.ids[6]).format('DD-MM-YY hh:mm A'), dayjs(params.ids[7]).format('YYYY-MM-DD'))
 
-                      // send the notification
-                      const notificationResult = await send_notification('Outing request by '+params.ids[4], 'fd65be57-ccf5-4a28-b859-639fe66049e3', 'Single');
-                          
-                      // return successful update
-                      return Response.json({status: 200, message:'Request submitted!', notification: notificationResult}, {status: 200})
+                        // send the notification
+                        const notificationResult = await send_notification('Outing request by '+params.ids[4], 'fd65be57-ccf5-4a28-b859-639fe66049e3', 'Single');
+                            
+                        // return successful update
+                        return Response.json({status: 200, message:'Request submitted!', notification: notificationResult}, {status: 200})
 
-                      // return the user data
-                      // return Response.json({status: 200, message:'Request submitted!'}, {status: 200})
+                        // return the user data
+                        // return Response.json({status: 200, message:'Request submitted!'}, {status: 200})                        
+                      }
+
                     }
                     else {
-                      // return successful update
+                      // return message to close active requests
                       return Response.json({status: 201, message:'Close active requests before raising new one!'}, {status: 201})
                     }
 
                     
                 } catch (error) {
                     // user doesn't exist in the system
-                    return Response.json({status: 404, message:'Error creating request. Please try again later!'}, {status: 200})
+                    return Response.json({status: 404, message:'Error creating request. Please try again later!'+error.message}, {status: 200})
                 }
             // }
             // else if(params.ids[2] == 3){

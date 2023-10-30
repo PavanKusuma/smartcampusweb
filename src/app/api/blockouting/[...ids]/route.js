@@ -1,6 +1,5 @@
 import pool from '../../db'
 import { Keyverify } from '../../secretverify';
-var mysql = require('mysql2')
 import dayjs from 'dayjs'
 
 // create new officialrequest for outing by the Admins
@@ -30,7 +29,7 @@ export async function GET(request,{params}) {
             if(params.ids[1] == 0){ // create official / blocked dates data
                 try {
                     // create query for insert
-                    const q = 'INSERT INTO officialrequest (oRequestId, oType, duration, oFrom, oTo, oBy,oByName, description, branch, year, createdOn) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+                    const q = 'INSERT INTO officialrequest (oRequestId, oType, duration, oFrom, oTo, oBy,oByName, description, campusId, course, branch, year, createdOn) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
                     // create new request
                     const [rows, fields] = await connection.execute(q, [ params.ids[2], params.ids[3], params.ids[4], params.ids[5], params.ids[6], params.ids[7], params.ids[8], params.ids[9], params.ids[10], params.ids[11],params.ids[12] ]);
                     connection.release();
@@ -73,7 +72,8 @@ export async function GET(request,{params}) {
                 }
             }
             else if(params.ids[1] == 3){ // fetch data for specific branch and year – student
-                const [rows, fields] = await connection.execute('SELECT * from officialrequest WHERE (branch = "All" or FIND_IN_SET("'+params.ids[3]+'", branch)>0) AND (year="All" or FIND_IN_SET("'+params.ids[4]+'",year)>0) AND (oFrom >= "'+currentDate+'" OR oTo >= "'+currentDate+'") ORDER BY oFrom DESC');
+                const [rows, fields] = await connection.execute('SELECT * from officialrequest WHERE (campusId = "All" or FIND_IN_SET("'+params.ids[3]+'", campusId)>0) AND (course = "All" or FIND_IN_SET("'+params.ids[4]+'", course)>0) AND (branch = "All" or FIND_IN_SET("'+params.ids[5]+'", branch)>0) AND (year="All" or FIND_IN_SET("'+params.ids[6]+'",year)>0) AND (oFrom >= "'+currentDate+'" OR oTo >= "'+currentDate+'") ORDER BY oFrom DESC');
+                // const [rows, fields] = await connection.execute('SELECT * from officialrequest WHERE (campusId = "All" or FIND_IN_SET("'+params.ids[5]+'", campusId)>0) AND (course = "All" or FIND_IN_SET("'+params.ids[6]+'", course)>0) AND (branch = "All" or FIND_IN_SET("'+params.ids[3]+'", branch)>0) AND (year="All" or FIND_IN_SET("'+params.ids[4]+'",year)>0) AND (oFrom >= "'+currentDate+'" OR oTo >= "'+currentDate+'") ORDER BY oFrom DESC');
                 connection.release();
             
                 // check if user is found
