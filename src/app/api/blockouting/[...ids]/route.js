@@ -29,9 +29,9 @@ export async function GET(request,{params}) {
             if(params.ids[1] == 0){ // create official / blocked dates data
                 try {
                     // create query for insert
-                    const q = 'INSERT INTO officialrequest (oRequestId, oType, duration, oFrom, oTo, oBy,oByName, description, campusId, course, branch, year, createdOn) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+                    const q = 'INSERT INTO officialrequest (oRequestId, oType, duration, oFrom, oTo, oBy,oByName, description, campusId, branch, year, createdOn) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
                     // create new request
-                    const [rows, fields] = await connection.execute(q, [ params.ids[2], params.ids[3], params.ids[4], params.ids[5], params.ids[6], params.ids[7], params.ids[8], params.ids[9], params.ids[10], params.ids[11],params.ids[12] ]);
+                    const [rows, fields] = await connection.execute(q, [ params.ids[2], params.ids[3], params.ids[4], params.ids[5], params.ids[6], params.ids[7], params.ids[8], params.ids[9], params.ids[10], params.ids[11], params.ids[12],params.ids[13] ]);
                     connection.release();
                     // return the user data
                     return Response.json({status: 200, message: params.ids[3]+' request submitted!'}, {status: 200})
@@ -72,7 +72,7 @@ export async function GET(request,{params}) {
                 }
             }
             else if(params.ids[1] == 3){ // fetch data for specific branch and year – student
-                const [rows, fields] = await connection.execute('SELECT * from officialrequest WHERE (campusId = "All" or FIND_IN_SET("'+params.ids[3]+'", campusId)>0) AND (course = "All" or FIND_IN_SET("'+params.ids[4]+'", course)>0) AND (branch = "All" or FIND_IN_SET("'+params.ids[5]+'", branch)>0) AND (year="All" or FIND_IN_SET("'+params.ids[6]+'",year)>0) AND (oFrom >= "'+currentDate+'" OR oTo >= "'+currentDate+'") ORDER BY oFrom DESC');
+                const [rows, fields] = await connection.execute('SELECT * from officialrequest WHERE campusId = "'+params.ids[3]+'" AND (branch = "All" or FIND_IN_SET("'+params.ids[4]+'", branch)>0) AND (oFrom >= "'+currentDate+'" OR oTo >= "'+currentDate+'") ORDER BY oFrom DESC');
                 // const [rows, fields] = await connection.execute('SELECT * from officialrequest WHERE (campusId = "All" or FIND_IN_SET("'+params.ids[5]+'", campusId)>0) AND (course = "All" or FIND_IN_SET("'+params.ids[6]+'", course)>0) AND (branch = "All" or FIND_IN_SET("'+params.ids[3]+'", branch)>0) AND (year="All" or FIND_IN_SET("'+params.ids[4]+'",year)>0) AND (oFrom >= "'+currentDate+'" OR oTo >= "'+currentDate+'") ORDER BY oFrom DESC');
                 connection.release();
             

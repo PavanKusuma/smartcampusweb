@@ -59,10 +59,10 @@ export async function GET(request,{params}) {
 
                     // check for request type (official or general)
                     if(params.ids[6] == '3'){
-                        query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestType="3" AND requestStatus = "'+params.ids[2]+'" ORDER BY u.year,u.collegeId DESC LIMIT 50 OFFSET '+params.ids[3];
+                        query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestType="3" AND requestStatus = "'+params.ids[2]+'" ORDER BY requestFrom DESC LIMIT 50 OFFSET '+params.ids[3];
                     }
                     else {
-                        query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestType!="3" AND requestStatus = "'+params.ids[2]+'" ORDER BY requestDate DESC LIMIT 50 OFFSET '+params.ids[3];
+                        query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestType!="3" AND requestStatus = "'+params.ids[2]+'" ORDER BY requestFrom DESC LIMIT 50 OFFSET '+params.ids[3];
                     }
                 }
                 else if(params.ids[2] == 'Approved'){
