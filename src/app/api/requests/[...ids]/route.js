@@ -66,16 +66,20 @@ export async function GET(request,{params}) {
                     }
                 }
                 else if(params.ids[2] == 'Approved'){
-                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY approvedOn DESC LIMIT 50 OFFSET '+params.ids[3];
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY requestFrom DESC LIMIT 50 OFFSET '+params.ids[3];
+                    // query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY approvedOn DESC LIMIT 50 OFFSET '+params.ids[3];
                 }
                 else if(params.ids[2] == 'Issued' || params.ids[2] == 'InOuting' ){
-                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY issuedOn DESC LIMIT 50 OFFSET '+params.ids[3];
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY requestFrom DESC LIMIT 50 OFFSET '+params.ids[3];
+                    // query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY issuedOn DESC LIMIT 50 OFFSET '+params.ids[3];
                 }
                 else if(params.ids[2] == 'Returned' ){
-                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY returnedOn DESC LIMIT 50 OFFSET '+params.ids[3];
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY requestFrom DESC LIMIT 50 OFFSET '+params.ids[3];
+                    // query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY returnedOn DESC LIMIT 50 OFFSET '+params.ids[3];
                 }
                 else {
-                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY requestDate DESC LIMIT 50 OFFSET '+params.ids[3];
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY requestFrom DESC LIMIT 50 OFFSET '+params.ids[3];
+                    // query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY requestDate DESC LIMIT 50 OFFSET '+params.ids[3];
                 }
 
                 const [rows, fields] = await connection.execute(query);
@@ -126,16 +130,19 @@ export async function GET(request,{params}) {
                 // verify what type of requests issuer is asking
                 let query = '';
                 if(params.ids[6] == '3'){
-                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND requestType="3" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND requestType="3" ORDER BY requestFrom DESC LIMIT 20 OFFSET '+params.ids[3];
+                    // query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND requestType="3" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
                 }
                 else {
                     // we want to return all requests irrespective of official or general outing just for viewing
                     // if user is asking for pending requests (approved), then only return what they can approve
                     if(params.ids[2] == 'Approved'){
-                        query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND requestType!="3" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
+                        query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND requestType!="3" ORDER BY requestFrom DESC LIMIT 20 OFFSET '+params.ids[3];
+                        // query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND requestType!="3" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
                     }
                     else {
-                        query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
+                        query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY requestFrom DESC LIMIT 20 OFFSET '+params.ids[3];
+                        // query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
                     }
                 }
 
@@ -155,7 +162,8 @@ export async function GET(request,{params}) {
             }
             // if OutingIssuer, get only OFFICIAL requests that are approved by admin and that belong to issuer hostel
             else if(params.ids[1] == 'OutingIssuer'){
-                const [rows, fields] = await connection.execute('SELECT r.*,u.*, d.* FROM request r JOIN user u ON r.collegeId = u.collegeId JOIN user_details d ON r.collegeId = d.collegeId WHERE r.requestStatus = "'+params.ids[2]+'" AND r.requestType="3" AND d.hostelId = "'+params.ids[6]+'" ORDER BY r.approvedOn DESC LIMIT 20 OFFSET '+params.ids[3]);
+                const [rows, fields] = await connection.execute('SELECT r.*,u.*, d.* FROM request r JOIN user u ON r.collegeId = u.collegeId JOIN user_details d ON r.collegeId = d.collegeId WHERE r.requestStatus = "'+params.ids[2]+'" AND r.requestType="3" AND d.hostelId = "'+params.ids[6]+'" ORDER BY r.requestFrom DESC LIMIT 20 OFFSET '+params.ids[3]);
+                // const [rows, fields] = await connection.execute('SELECT r.*,u.*, d.* FROM request r JOIN user u ON r.collegeId = u.collegeId JOIN user_details d ON r.collegeId = d.collegeId WHERE r.requestStatus = "'+params.ids[2]+'" AND r.requestType="3" AND d.hostelId = "'+params.ids[6]+'" ORDER BY r.approvedOn DESC LIMIT 20 OFFSET '+params.ids[3]);
                 connection.release();
             
                 // check if user is found
@@ -171,7 +179,7 @@ export async function GET(request,{params}) {
             }
             // if OutingAssistant, get all requests that are issued by OutingIssuer
             else if(params.ids[1] == 'OutingAssistant'){
-                const [rows, fields] = await connection.execute('SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND r.isOpen = 1 AND r.collegeId = "'+params.ids[2]+'" ORDER BY issuedOn DESC LIMIT 20 OFFSET '+params.ids[3]);
+                const [rows, fields] = await connection.execute('SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND r.isOpen = 1 AND r.collegeId = "'+params.ids[2]+'" ORDER BY requestFrom DESC LIMIT 20 OFFSET '+params.ids[3]);
                 // const [rows, fields] = await connection.execute('SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY issuedOn DESC LIMIT 20 OFFSET '+params.ids[3]);
                 connection.release();
             
