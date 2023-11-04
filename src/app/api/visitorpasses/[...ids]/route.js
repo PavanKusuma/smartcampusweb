@@ -89,7 +89,7 @@ export async function GET(request,{params}) {
             }
             
             // if OutingAssistant, get all requests that are issued by OutingAdmin or SuperAdmin
-            else if(params.ids[1] == 'OutingAssistant'){
+            else if(params.ids[1] == 'OutingAssistant' || params.ids[1] == 'FoodAdmin'){
                 // const [rows, fields] = await connection.execute('SELECT p.*,v.* FROM visitorpass p JOIN visitors v WHERE p.vRequestId = v.vRequestId AND p.collegeId = "'+params.ids[2]+'" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3]);
                 // connection.release();
 

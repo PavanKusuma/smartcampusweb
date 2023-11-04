@@ -291,38 +291,94 @@ export async function GET(request,{params}) {
                     // get the list of things to update
                     const jsonObject = JSON.parse(params.ids[3]);
                     var updateString = '';
+                    var uDKeys = '', uDValues = '';
 
-                    // parse through the list of things to update and form a string
-                    for (const key in jsonObject) {
-                        if (jsonObject.hasOwnProperty(key)) {
-                          const value = jsonObject[key];
-                          
-                            if(updateString.length == 0){
-                                updateString = `${key}='${value}'`;
-                            }
-                            else {
-                                updateString = updateString + `,${key}='${value}'`;
+                    console.log(jsonObject);
+                    // check if the details are present or not
+                    const [drows, dfields] = await connection.execute('SELECT detailsId from user_details WHERE collegeId = ?', [params.ids[2]]);
+                    console.log(drows.length);
+                    // user parent details are present, hence just run the update query
+                    if(drows.length > 0){
+
+                        // parse through the list of things to update and form a string
+                        for (const key in jsonObject) {
+                            if (jsonObject.hasOwnProperty(key)) {
+                            const value = jsonObject[key];
+                            
+                                if(updateString.length == 0){
+                                    updateString = `${key}='${value}'`;
+                                }
+                                else {
+                                    updateString = updateString + `,${key}='${value}'`;
+                                }
                             }
                         }
-                      }
-                      
-                    console.log(`UPDATE user_details SET ${updateString} WHERE collegeId = '${params.ids[2]}'`);
-                    let q = `UPDATE user_details SET ${updateString} WHERE collegeId = '${params.ids[2]}'`;
-                    
-                    const [rows, fields] = await connection.execute(q);
-                    connection.release();
-                    // return successful update
 
-                    // check if user is found
-                    if(rows.affectedRows > 0){
-                        // return the requests data
-                        return Response.json({status: 200, data: rows, message:'Details found!'}, {status: 200})
+                        // check if parents record exist or not
+                        // update if exisits, else create new
+                        
+                        console.log(`UPDATE user_details SET ${updateString} WHERE collegeId = '${params.ids[2]}'`);
+                        let q = `UPDATE user_details SET ${updateString} WHERE collegeId = '${params.ids[2]}'`;
+                        
+                        const [rows, fields] = await connection.execute(q);
+                        connection.release();
+                        // return successful update
+
+                        // check if updated
+                        if(rows.affectedRows > 0){
+                            // return the requests data
+                            return Response.json({status: 200, data: rows, message:'Updated successfully!'}, {status: 200})
+
+                        }
+                        else {
+                            // user doesn't exist in the system
+                            return Response.json({status: 201, message:'No updated!'}, {status: 200})
+                        }
 
                     }
+                    // user parent details are NOT present, hence insert the details
                     else {
-                        // user doesn't exist in the system
-                        return Response.json({status: 201, message:'No Student found!'}, {status: 200})
+
+                        // userDetailObject
+                        for (const key in jsonObject) {
+                            if (jsonObject.hasOwnProperty(key)) {
+                            const value = jsonObject[key];
+                            
+                                if(uDKeys.length == 0){
+                                    // updateString = `${key}='${value}'`;
+                                    uDKeys = `${key}`;
+                                    uDValues = `'${value}'`;
+
+                                }
+                                else {
+                                    // updateString = updateString + `,${key}='${value}'`;
+                                    uDKeys = uDKeys + `,${key}`;
+                                    uDValues = uDValues + `,'${value}'`;
+                                }
+                            }
+                        }
+
+                        let q = `INSERT INTO user_details (collegeId,${uDKeys}) VALUES ('${params.ids[2]}',${uDValues})`;
+                    
+                            const [rows1, fields1] = await connection.execute(q);
+                            connection.release();
+                            // return successful update
+
+                            // check if user is found
+                            if(rows1.affectedRows > 0){
+                                // return the requests data
+                                return Response.json({status: 200, data1: rows1, message:'Updated successfully!'}, {status: 200})
+
+                            }
+                            else {
+                                // user doesn't exist in the system
+                                return Response.json({status: 201, message:'No updated!'}, {status: 200})
+                            }
+
                     }
+                    
+
+                    
                 } catch (error) { // error updating
                     return Response.json({status: 404, message:'No Student found!'+error.message}, {status: 200})
                 }

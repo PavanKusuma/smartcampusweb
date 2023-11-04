@@ -33,7 +33,7 @@ export async function GET(request,{params}) {
         comment = '-';
     }
     else {
-        comment = params.ids[8]+'\n';
+        comment = decodeURIComponent(params.ids[8])+'\n';
         // comment = '\n'+params.ids[8];
     }
 

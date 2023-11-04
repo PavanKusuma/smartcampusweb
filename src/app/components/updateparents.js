@@ -83,6 +83,7 @@ export default function UpdateParents({userDetail, hostelDetail, handleDataChang
     // father phonenumber
     const [fatherPhoneNumber, setFatherPhoneNumber] = useState('');
     const updateFatherPhoneNumber = (event) => {
+        console.log('Entered');
         setFatherPhoneNumber(event.target.value);
     };
     // mother name
@@ -125,15 +126,22 @@ export default function UpdateParents({userDetail, hostelDetail, handleDataChang
     const [selectedHostelIdIndex, setSelectedHostelIdIndex] = useState(0);
     const updateHostelId = (event) => {
         setSelectedHostelIdIndex(hostelIds.indexOf(event.target.value));
-        setHostelId(event.target.value);
         
-        // updateHostelName()
+        setHostelId(event.target.value);
+        // need to update hostel name when hostelId changes
+        updateHostelName(hostelIds.indexOf(event.target.value))
     };
     // hostel name
     const [hostelName, setHostelName] = useState('');
-    const updateHostelName = (event) => {
-        setHostelName(event.target.value);
+    const updateHostelName = (number) => {
+        setHostelName(hostelNames[number]);
+        // need to update room number when hostel name changes
+        updateRoomNumberOnHostelChange(number);
     };
+    const updateRoomNumberOnHostelChange = (number) => {
+        
+        setRoomNumber(roomNumbers[number].split(',')[0]);
+    }
     // Room number
     const [roomNumber, setRoomNumber] = useState('');
     const updateRoomNumber = (event) => {
@@ -172,7 +180,7 @@ export default function UpdateParents({userDetail, hostelDetail, handleDataChang
     if(fatherName.length > 0 && fatherPhoneNumber.length > 0){
     // if(document.getElementById('fatherName').value.length > 0 && document.getElementById('fatherPhoneNumber').value.length > 0){
 
-        // this is the key value pair data that includes what all to be updated
+    // this is the key value pair data that includes what all to be updated
         const updateData = {
         };
 
@@ -213,17 +221,37 @@ export default function UpdateParents({userDetail, hostelDetail, handleDataChang
             updateData.address = address
             userDetail.address = address
         }
+        
+        // hostel Id selection
         if(user.hostelId != hostelId){
             updateData.hostelId = hostelId
             userDetail.hostelId = hostelId
         }
+        if(hostelId == '') {
+            updateData.hostelId = hostelIds[0]
+            userDetail.hostelId = hostelIds[0]
+            setHostelId(hostelIds[0]);
+        }
+
+        // hostel name selection
         if(user.hostelName != hostelName){
-            updateData.hostelName = hostelName
+            // updateData.hostelName = hostelName
             userDetail.hostelName = hostelName
         }
+        if(hostelName == ''){            
+            // updateData.hostelName = hostelNames[0]
+            userDetail.hostelName = hostelNames[0]
+        }
+
+        // room number selection
         if(user.roomNumber != roomNumber){
             updateData.roomNumber = roomNumber
             userDetail.roomNumber = roomNumber
+        }
+        if(roomNumber == ''){
+            updateData.roomNumber = roomNumbers[0].split(',')[0]
+            userDetail.roomNumber = roomNumbers[0].split(',')[0]
+            setRoomNumber(roomNumbers[0].split(',')[0])
         }
 
 
@@ -244,7 +272,7 @@ export default function UpdateParents({userDetail, hostelDetail, handleDataChang
 
                 // show and hide message
                 setResultType('success');
-                setResultMessage('Updated!');
+                setResultMessage(queryResult.message);
                 setTimeout(function(){
                     setResultType('');
                     setResultMessage('');
