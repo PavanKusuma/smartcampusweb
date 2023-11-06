@@ -11,7 +11,7 @@ const client = new OneSignal.Client(process.env.ONE_SIGNAL_APPID, process.env.ON
 // key, requestId, requestType, oRequestId, collegeId, description, requestFrom, requestTo, duration, isAllowed, requestDate, username, phoneNumber
 //////// based on the requestType create the request
 
-// requestType (1 – local outing, 2 – out-city outing, 3 – official outing)
+// requestType (1 – local outing, 2 – out-city outing, 3 – official outing, 4 – temporary day pass)
 // key, requestId, requestType, oRequestId, collegeId, description, requestFrom, requestTo, duration, isAllowed, requestDate, username, phoneNumber
 export async function GET(request,{params}) {
 
@@ -40,18 +40,38 @@ export async function GET(request,{params}) {
                       // check if the user is not blocked by the admin
                       // if profileUpdated column value is 3, then user is meant to be blocked by admin.
                       const [rows1, fields1] = await connection.execute('SELECT profileUpdated from user where collegeId=?', [ params.ids[4] ]);
-                      console.log(rows1);
                       
                       if(rows1[0].profileUpdated == 3){
                         // mention that admin blocked the user to raise request
                         return Response.json({status: 199, message:'You are not allowed to raise request. Contact your admin!'}, {status: 201})
                       }
                       else {
-                        
+
                         // create query for insert
-                        const q = 'INSERT INTO request (requestId, requestType, oRequestId, collegeId, description, requestFrom, requestTo, duration, requestStatus, requestDate, approver, approverName, approvedOn, comment, issuer, issuerName, issuedOn, consentBy, isOpen, isStudentOut, returnedOn, isAllowed) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )';
+                        const q = 'INSERT INTO request (requestId, requestType, oRequestId, collegeId, description, requestFrom, requestTo, duration, requestStatus, requestDate, approver, approverName, approvedOn, comment, issuer, issuerName, issuedOn, consentBy, isOpen, isStudentOut, checkoutOn, returnedOn, isAllowed) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )';
                         // create new request
-                        const [rows, fields] = await connection.execute(q, [ params.ids[1], params.ids[2], params.ids[3], params.ids[4], decodeURIComponent(params.ids[5]), params.ids[6], params.ids[7], params.ids[8], "Submitted", params.ids[10] ,  '-','-', null, '-', '-','-',null, '-', 1, 0, null, params.ids[9]]);
+                        const [rows, fields] = await connection.execute(q, [ params.ids[1], params.ids[2], params.ids[3], params.ids[4], decodeURIComponent(params.ids[5]), params.ids[6], params.ids[7], params.ids[8], "Submitted", params.ids[10] ,  '-','-', null, '-', '-','-',null, '-', 1, 0, null, null, params.ids[9]]);
+
+                        // TEMPORARY DAY PASS, we need to request for each date
+                        if(params.ids[2] == 4){
+                          
+                          var startDate = dayjs(params.ids[6]);
+                          var endDate = dayjs(params.ids[7]);
+                          var currentDate = startDate;
+
+                          // check for date range and iterate to create request for each date.
+                          while (currentDate.isBefore(endDate) || currentDate.isSame(endDate)){
+
+                            // create query for insert
+                            const q = 'INSERT INTO passrequest (requestId, collegeId, requestFrom, checkoutOn, returnedOn, requestStatus) VALUES ( ?, ?, ?, ?, ?, ?)';
+                            // create new request
+                            var currentDateFormatted = currentDate.format('YYYY-MM-DD HH:mm:ss');
+                            const [rows, fields] = await connection.execute(q, [ params.ids[1], params.ids[2], currentDateFormatted, null, null, "Submitted"],);
+
+                            // increment to the next date
+                            currentDate = currentDate.add(1,'day');
+                          }
+                        }
                         connection.release();
 
                         // send SMS to parent
@@ -65,7 +85,10 @@ export async function GET(request,{params}) {
                         return Response.json({status: 200, message:'Request submitted!', notification: notificationResult}, {status: 200})
 
                         // return the user data
-                        // return Response.json({status: 200, message:'Request submitted!'}, {status: 200})                        
+                        // return Response.json({status: 200, message:'Request submitted!'}, {status: 200})                   
+                      
+                      
+                             
                       }
 
                     }

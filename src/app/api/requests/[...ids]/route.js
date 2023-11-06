@@ -104,10 +104,12 @@ export async function GET(request,{params}) {
                 if(params.ids[6] == '3'){
                     // for the admin, removing the offset
                     // loading all the results at a time so that search can be made inline
-                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" AND requestType="3" ORDER BY u.year,u.collegeId DESC';
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND FIND_IN_SET("'+params.ids[5]+'",u.branch) > 0 AND requestType="3" ORDER BY u.year,u.collegeId DESC';
+                    // query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" AND requestType="3" ORDER BY u.year,u.collegeId DESC';
                 }
                 else {
-                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" AND requestType!="3"  ORDER BY u.year,u.collegeId DESC LIMIT 20 OFFSET '+params.ids[3];
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND FIND_IN_SET("'+params.ids[5]+'",u.branch) > 0 AND requestType!="3"  ORDER BY u.year,u.collegeId DESC LIMIT 20 OFFSET '+params.ids[3];
+                    // query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND u.branch = "'+params.ids[5]+'" AND requestType!="3"  ORDER BY u.year,u.collegeId DESC LIMIT 20 OFFSET '+params.ids[3];
                 }
 
                 const [rows, fields] = await connection.execute(query);

@@ -61,37 +61,43 @@ export async function GET(request,{params}) {
 
                     let q = `SELECT
                                 'Breakfast' as requestStatus,
-                                (
-                                    (SELECT COUNT(*) FROM user WHERE type = 'hostel' AND role = 'student')
-                                    - (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting')
-                                    + (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting' AND DATE(requestTo) = "`+params.ids[2]+`" AND TIME(requestTo) < '10:00:00')
-                                    - (SELECT COUNT(*) FROM request WHERE requestStatus IN ('Submitted', 'Approved', 'Issued') AND DATE(requestFrom) = "`+params.ids[2]+`" AND TIME(requestFrom) < '7:00:00')
-                                    + (SELECT CASE WHEN SUM(foodCount) > 0 THEN SUM(foodCount) ELSE 0 END AS BREAKFAST FROM visitorpass WHERE DATE(visitOn) = "`+params.ids[2]+`" AND isOpen = 1)
-                                ) as count
+                                CAST(
+                                    (
+                                        (SELECT COUNT(*) FROM user WHERE type = 'hostel' AND role = 'student')
+                                        - (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting')
+                                        + (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting' AND DATE(requestTo) = "`+params.ids[2]+`" AND TIME(requestTo) < '10:00:00')
+                                        - (SELECT COUNT(*) FROM request WHERE requestStatus IN ('Submitted', 'Approved', 'Issued') AND DATE(requestFrom) = "`+params.ids[2]+`" AND TIME(requestFrom) < '7:00:00')
+                                        + (SELECT CASE WHEN SUM(foodCount) > 0 THEN SUM(foodCount) ELSE 0 END AS BREAKFAST FROM visitorpass WHERE DATE(visitOn) = "`+params.ids[2]+`" AND isOpen = 1)
+                                        ) AS SIGNED
+                                    ) as count
                             
                             UNION
-                            
+
                             SELECT 
                                 'Lunch' as requestStatus,
-                                (
-                                    (SELECT COUNT(*) FROM user WHERE type = 'hostel' AND role = 'student')
-                                    - (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting')
-                                    + (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting' AND DATE(requestTo) = "`+params.ids[2]+`" AND TIME(requestTo) < '14:00:00')
-                                    - (SELECT COUNT(*) FROM request WHERE requestStatus IN ('Submitted', 'Approved', 'Issued') AND DATE(requestFrom) = "`+params.ids[2]+`" AND TIME(requestFrom) < '12:00:00')
-                                    + (SELECT CASE WHEN SUM(foodCount) > 0 THEN SUM(foodCount) ELSE 0 END AS LUNCH FROM visitorpass WHERE DATE(visitOn) = "`+params.ids[2]+`" AND isOpen = 1)
+                                CAST(
+                                    (
+                                        (SELECT COUNT(*) FROM user WHERE type = 'hostel' AND role = 'student')
+                                        - (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting')
+                                        + (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting' AND DATE(requestTo) = "`+params.ids[2]+`" AND TIME(requestTo) < '14:00:00')
+                                        - (SELECT COUNT(*) FROM request WHERE requestStatus IN ('Submitted', 'Approved', 'Issued') AND DATE(requestFrom) = "`+params.ids[2]+`" AND TIME(requestFrom) < '12:00:00')
+                                        + (SELECT CASE WHEN SUM(foodCount) > 0 THEN SUM(foodCount) ELSE 0 END AS LUNCH FROM visitorpass WHERE DATE(visitOn) = "`+params.ids[2]+`" AND isOpen = 1)
+                                    ) AS SIGNED 
                                 ) as count
                             
                             UNION
                             
                             SELECT
                                 'Dinner' as requestStatus,
-                                (
-                                    (SELECT COUNT(*) FROM user WHERE type = 'hostel' AND role = 'student')
-                                    - (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting')
-                                    + (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting' AND DATE(requestTo) = "`+params.ids[2]+`" AND TIME(requestTo) > '14:00:00')
-                                    - (SELECT COUNT(*) FROM request WHERE requestStatus IN ('Submitted', 'Approved', 'Issued') AND DATE(requestFrom) = "`+params.ids[2]+`" AND TIME(requestFrom) < '19:00:00')
-                                    + (SELECT CASE WHEN SUM(foodCount) > 0 THEN SUM(foodCount) ELSE 0 END AS DINNER FROM visitorpass WHERE DATE(visitOn) = "`+params.ids[2]+`" AND isOpen = 1)
-                                ) as count;
+                                CAST(
+                                    (
+                                        (SELECT COUNT(*) FROM user WHERE type = 'hostel' AND role = 'student')
+                                        - (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting')
+                                        + (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting' AND DATE(requestTo) = "`+params.ids[2]+`" AND TIME(requestTo) > '14:00:00')
+                                        - (SELECT COUNT(*) FROM request WHERE requestStatus IN ('Submitted', 'Approved', 'Issued') AND DATE(requestFrom) = "`+params.ids[2]+`" AND TIME(requestFrom) < '19:00:00')
+                                        + (SELECT CASE WHEN SUM(foodCount) > 0 THEN SUM(foodCount) ELSE 0 END AS DINNER FROM visitorpass WHERE DATE(visitOn) = "`+params.ids[2]+`" AND isOpen = 1)
+                                        ) AS SIGNED
+                                    ) as count;
                             `;
                     const [rows, fields] = await connection.execute(q);
                     connection.release();

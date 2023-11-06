@@ -44,7 +44,7 @@ export async function GET(request,{params}) {
                         const notificationResult = await send_notification('Food coupon availed for '+params.ids[4]+' people', params.ids[4], 'Single');
                         
                         // Return the requests data
-                        return Response.json({ status: 201, message: 'Scan success!', data: rows, notification: notificationResult });
+                        return Response.json({ status: 201, message: 'Student + !'+rows[0].foodCount+' visitors', data: rows[0], notification: notificationResult });
                     }
                     else {
                         // Return the requests data
