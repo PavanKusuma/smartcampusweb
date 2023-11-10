@@ -489,7 +489,7 @@ export async function GET(request,{params}) {
                                 // if(dayjs(params.ids[2]).diff(dayjs(rows[0].requestTo), 'minute') < 30){
 
                                     // mark as InOuting
-                                    const [rows1, fields] = await connection.execute('UPDATE request SET isStudentOut = 1, requestStatus ="InOuting", checkoutOn = "'+params.ids[2]+'" where requestId = "'+rows[0].requestId+'" and isOpen = 1');
+                                    const [rows1, fields] = await connection.execute('UPDATE request SET isStudentOut = 1, requestStatus ="InOuting", checkoutOn = ? WHERE requestId = ? AND isOpen = 1 AND checkoutOn IS NULL',[params.ids[2],rows[0].requestId]);
 
                                         // check if the request is updated. 
                                         // It will not get updated incase Any Admin has cancelled the request before checkout
@@ -497,6 +497,19 @@ export async function GET(request,{params}) {
                                             return Response.json({status: 199, message:'Your request is rejected!'}, {status: 200})
                                         }
                                         else {
+
+                                            // if the requestType is 4 (TEMPORARY DAY PASS), update the day pass in passrequest table.
+                                            // check if its the first day of day pass and update the status
+                                            if(rows[0].requestType == 4){
+                                                // update checkoutOn for the first time
+                                                const [passRows, passFields] = await connection.execute(`UPDATE passrequest SET requestStatus ="InOuting", checkoutOn = ? WHERE requestId = ? AND DATE(requestFrom) = ? AND checkoutOn IS NULL`,[params.ids[2],rows[0].requestId,dayjs(params.ids[2]).format('YYYY-MM-DD')]);
+                                                // const [passRows, passFields] = await connection.execute('UPDATE passrequest SET requestStatus ="InOuting", checkoutOn = ? WHERE requestId = ? AND requestFrom = ? AND checkoutOn IS NULL',[params.ids[2],rows[0].requestId, dayjs(params.ids[2]).format('hh:mm A, DD-MM-YY')]);
+
+                                                if(passRows.affectedRows == 0){
+                                                    return Response.json({status: 199, message:'No day pass found!'}, {status: 200})
+                                                }
+                                            }
+                                            
                                             // check if the student parent phone number is present
                                             if(rows[0].phoneNumber != null){
                                                 // send SMS
@@ -530,13 +543,23 @@ export async function GET(request,{params}) {
                             // check if the time difference between checkout and checkin is more than 5 mins
                             if(dayjs(params.ids[2]).diff(dayjs(rows[0].checkoutOn), 'minute') > 5){
 
-                                // mark as returned
-                                const [rows1, fields] = await connection.execute('UPDATE request SET isStudentOut = 0, requestStatus ="Returned", returnedOn = "'+params.ids[2]+'" where requestId = "'+rows[0].requestId+'" and isOpen = 1');
+                                
+                                // if the requestType is 4 (TEMPORARY DAY PASS), update the day pass in passrequest table.
+                                if(rows[0].requestType == 4){
+
+                                    // check if its the last day of day pass, if so update the main request status to returned too
+                                    if(dayjs(params.ids[2]).isSame(dayjs(rows[0].requestTo), 'day')){
+                                        // mark as returned
+                                        const [passrows1, passfields1] = await connection.execute('UPDATE request SET isStudentOut = 0, requestStatus ="Returned", returnedOn = ? where requestId = ? and isOpen = 1',[params.ids[2],rows[0].requestId]);
+
+                                        // update returnedOn for the last time
+                                        const [passRows, passFields] = await connection.execute(`UPDATE passrequest SET requestStatus ="Returned", returnedOn = ? WHERE requestId = ? AND DATE(requestFrom) = ? AND returnedOn IS NULL`,[params.ids[2],rows[0].requestId,dayjs(params.ids[2]).format('YYYY-MM-DD')]);
+                                        
 
                                         // check if the request is updated. 
                                         // It will not get updated incase Any Admin has cancelled the request before checkout
-                                        if(rows1.affectedRows == 0){
-                                            return Response.json({status: 199, message:'Your request is rejected!'}, {status: 200})
+                                        if(passRows.affectedRows == 0){
+                                            return Response.json({status: 199, message:'No active day pass!'}, {status: 200})
                                         }
                                         else {
                                             // check if the student parent phone number is present
@@ -552,6 +575,81 @@ export async function GET(request,{params}) {
                                             return Response.json({status: 200, message:'Checkin success!',notification: notificationResult,}, {status: 200})
                                             // return Response.json({status: 200, message:'You checked in to the campus',notification: notificationResult,}, {status: 200})
                                         }
+                                    }
+                                    else {
+                                            // update day passes based for the middle days other than start and end days
+                                            // update day passes based on checkoutOn/returnedOn is NULL 
+                                            var passquery = `UPDATE passrequest
+                                            SET
+                                            
+                                            checkoutOn = CASE
+                                                WHEN requestStatus = 'Submitted' THEN ?
+                                                ELSE checkoutOn
+                                            END,
+                                            returnedOn = CASE
+                                                WHEN requestStatus = 'InOuting' THEN ?
+                                                ELSE returnedOn
+                                            END,
+                                            requestStatus = CASE
+                                                WHEN requestStatus = 'Submitted' THEN 'InOuting'
+                                                WHEN requestStatus = 'InOuting' THEN 'Returned'
+                                                ELSE requestStatus
+                                            END
+                                            WHERE requestId = ? AND Date(requestFrom) = ? `;
+                                            const [passRows, passFields] = await connection.execute(passquery,[params.ids[2],params.ids[2],rows[0].requestId,dayjs(params.ids[2]).format('YYYY-MM-DD')]);
+                                            
+                                            // check if the request is updated. 
+                                            // It will not get updated incase Any Admin has cancelled the request before checkout
+                                            if(passRows.affectedRows == 0){
+                                                return Response.json({status: 199, message:'No active day pass!'}, {status: 200})
+                                            }
+                                            else {
+                                                // no need to send SMS for the middle days
+                                                // check if the student parent phone number is present
+                                                // if(rows[0].phoneNumber != null){
+                                                //     // send SMS
+                                                //     sendSMS('S4',params.ids[4],rows[0].phoneNumber, dayjs(params.ids[2]).format('hh:mm A, DD-MM-YY'));
+                                                // }
+
+                                                // send the notification
+                                                const notificationResult = await send_notification('✅ Your daypass is verified. Proceed.', params.ids[3], 'Single');
+
+                                                // return successful update
+                                                return Response.json({status: 200, message:'Success!',notification: notificationResult,}, {status: 200})
+                                                // return Response.json({status: 200, message:'You checked in to the campus',notification: notificationResult,}, {status: 200})
+                                            }
+
+                                    }
+                                    
+                                    
+                                }
+                                // for noraml requests other than requestType 4 requests
+                                else {
+
+                                    // mark as returned
+                                    const [rows1, fields] = await connection.execute('UPDATE request SET isStudentOut = 0, requestStatus ="Returned", returnedOn = "'+params.ids[2]+'" where requestId = "'+rows[0].requestId+'" and isOpen = 1');
+
+                                    // check if the request is updated. 
+                                    // It will not get updated incase Any Admin has cancelled the request before checkout
+                                    if(rows1.affectedRows == 0){
+                                        return Response.json({status: 199, message:'Your request is rejected!'}, {status: 200})
+                                    }
+                                    else {
+                                        // check if the student parent phone number is present
+                                        if(rows[0].phoneNumber != null){
+                                            // send SMS
+                                            sendSMS('S4',params.ids[4],rows[0].phoneNumber, dayjs(params.ids[2]).format('hh:mm A, DD-MM-YY'));
+                                        }
+
+                                        // send the notification
+                                        const notificationResult = await send_notification('✅ You checked in to the campus', params.ids[3], 'Single');
+
+                                        // return successful update
+                                        return Response.json({status: 200, message:'Checkin success!',notification: notificationResult,}, {status: 200})
+                                        // return Response.json({status: 200, message:'You checked in to the campus',notification: notificationResult,}, {status: 200})
+                                    }
+                                }
+
 
                             }
                             else {

@@ -66,7 +66,7 @@ export async function GET(request,{params}) {
                             const q = 'INSERT INTO passrequest (requestId, collegeId, requestFrom, checkoutOn, returnedOn, requestStatus) VALUES ( ?, ?, ?, ?, ?, ?)';
                             // create new request
                             var currentDateFormatted = currentDate.format('YYYY-MM-DD HH:mm:ss');
-                            const [rows, fields] = await connection.execute(q, [ params.ids[1], params.ids[2], currentDateFormatted, null, null, "Submitted"],);
+                            const [rows, fields] = await connection.execute(q, [ params.ids[1], params.ids[4], currentDateFormatted, null, null, "Submitted"],);
 
                             // increment to the next date
                             currentDate = currentDate.add(1,'day');

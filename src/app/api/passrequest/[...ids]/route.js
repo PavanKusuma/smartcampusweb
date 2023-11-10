@@ -25,7 +25,7 @@ export async function GET(request,{params}) {
                 // check what type of requests to be shown
                 // if status is Submitted, that means student is looking for recent request
                 
-                query = 'SELECT * FROM passrequest WHERE requestId = "'+params.ids[2]+'"';
+                query = 'SELECT * FROM passrequest WHERE requestId = "'+params.ids[2]+'" ORDER BY requestFrom ASC';
                 const [rows, fields] = await connection.execute(query);
                 connection.release();
 
