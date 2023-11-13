@@ -47,7 +47,7 @@ export async function GET(request,{params}) {
 
                 // profileUpdated value is used to remove the student from the central system
                 // other features outside the central system can be still accessed.
-                if(rows[0].profileUpdated == 1){
+                if(rows[0].profileUpdated != 0){
                     
                     // check if email is present
                     if(rows[0].email.length > 2){

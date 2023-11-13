@@ -482,7 +482,8 @@ export async function GET(request,{params}) {
                 }
             }
             // update the profileUpdated to 3 for blocking or unblocking user
-            //3 – Blocked from taking outing
+            // 4 – Temporary day scholar
+            // 3 – Blocked from taking outing
             // 2 – Active & profile is not updated
             // 1 – Active & profile is updated
             // 0 – Inactive – out of college
@@ -492,6 +493,30 @@ export async function GET(request,{params}) {
                     connection.release();
                     // return successful update
                     return Response.json({status: 200, message:'Updated!'}, {status: 200})
+                } catch (error) { // error updating
+                    return Response.json({status: 404, message:'No user found!'}, {status: 200})
+                }
+            }
+            // Change the outingType
+            // yes - self-permitted
+            // no - not self-permitted
+            else if(params.ids[1] == 'U14'){
+                try {
+                    const [rows, fields] = await connection.execute('UPDATE user SET outingType ="'+params.ids[3]+'" where collegeId = "'+params.ids[2]+'"');
+                    connection.release();
+                    // return successful update
+                    return Response.json({status: 200, message:'Outing type updated!'}, {status: 200})
+                } catch (error) { // error updating
+                    return Response.json({status: 404, message:'No user found!'}, {status: 200})
+                }
+            }
+            // Change the phoneNumber
+            else if(params.ids[1] == 'U15'){
+                try {
+                    const [rows, fields] = await connection.execute('UPDATE user SET phoneNumber ="'+params.ids[3]+'" where collegeId = "'+params.ids[2]+'"');
+                    connection.release();
+                    // return successful update
+                    return Response.json({status: 200, message:'Phone number updated!'}, {status: 200})
                 } catch (error) { // error updating
                     return Response.json({status: 404, message:'No user found!'}, {status: 200})
                 }

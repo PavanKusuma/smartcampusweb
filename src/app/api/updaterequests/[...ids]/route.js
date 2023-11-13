@@ -767,8 +767,9 @@ export async function GET(request,{params}) {
                         remark = '-';
                     }
                     else {
-                        remark = params.ids[4]+'\n';
+                        remark = decodeURIComponent(params.ids[4])+'\n';
                     }
+                    
                     const [rows, fields] = await connection.execute('UPDATE request SET isOpen = 0, requestStatus="Cancelled", comment = CASE WHEN comment = "-" THEN REPLACE(comment,"-","'+remark+'") ELSE CONCAT(comment,"'+remark+'") END where requestId = "'+params.ids[2]+'"');
                     connection.release();
                     
