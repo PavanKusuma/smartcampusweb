@@ -1,5 +1,9 @@
 import pool from '../../db'
 import { Keyverify } from '../../secretverify';
+import dayjs from 'dayjs'
+const OneSignal = require('onesignal-node')
+
+const client = new OneSignal.Client(process.env.ONE_SIGNAL_APPID, process.env.ONE_SIGNAL_APIKEY)
 
 // API for updates to user data
 // params used for this API
@@ -490,9 +494,16 @@ export async function GET(request,{params}) {
             else if(params.ids[1] == 'U13'){
                 try {
                     const [rows, fields] = await connection.execute('UPDATE user SET profileUpdated ="'+params.ids[3]+'" where collegeId = "'+params.ids[2]+'"');
+                    const [rows2, fields2] = await connection.execute('SELECT gcm_regId FROM user WHERE collegeId = "'+params.ids[2]+'"');
+
+                    // send the notification
+                    const notificationResult = await send_notification('✅ Your profile is updated by admin. Refresh profile to view.', rows2[0].gcm_regId, Single);
+                        
                     connection.release();
                     // return successful update
-                    return Response.json({status: 200, message:'Updated!'}, {status: 200})
+                    return Response.json({status: 200, message:'Profile updated!',notification: notificationResult}, {status: 200})
+                    
+
                 } catch (error) { // error updating
                     return Response.json({status: 404, message:'No user found!'}, {status: 200})
                 }
@@ -503,9 +514,15 @@ export async function GET(request,{params}) {
             else if(params.ids[1] == 'U14'){
                 try {
                     const [rows, fields] = await connection.execute('UPDATE user SET outingType ="'+params.ids[3]+'" where collegeId = "'+params.ids[2]+'"');
+                    const [rows2, fields2] = await connection.execute('SELECT gcm_regId FROM user WHERE collegeId = "'+params.ids[2]+'"');
+
+                    // send the notification
+                    const notificationResult = await send_notification('✅ Your outing type is changed by admin. Refresh profile to view.', rows2[0].gcm_regId, Single);
+                        
                     connection.release();
                     // return successful update
-                    return Response.json({status: 200, message:'Outing type updated!'}, {status: 200})
+                    return Response.json({status: 200, message:'Outing type updated!',notification: notificationResult}, {status: 200})
+
                 } catch (error) { // error updating
                     return Response.json({status: 404, message:'No user found!'}, {status: 200})
                 }
@@ -536,3 +553,50 @@ export async function GET(request,{params}) {
     }
   }
   
+
+    // send the notification using onesignal.
+  // use the playerIds of the users.
+  // check if playerId length > 2
+  async function send_notification(message, playerId, type) {
+
+    return new Promise(async (resolve, reject) => {
+      // send notification only if there is playerId for the user
+      if (playerId.length > 0) {
+        var playerIds = [];
+        playerIds.push(playerId);
+  
+        var notification;
+        // notification object
+        if (type == 'Single') {
+          notification = {
+            contents: {
+              'en': message,
+            },
+            // include_player_ids: ['playerId'],
+            // include_player_ids: ['90323-043'],
+            include_player_ids: [playerId],
+          };
+        } else {
+          notification = {
+            contents: {
+              'en': message,
+            },
+            include_player_ids: playerIds,
+          };
+        }
+  
+        try {
+          // create notification
+          const notificationResult = await client.createNotification(notification);
+          
+          resolve(notificationResult);
+
+        } catch (error) {
+          
+          resolve(null);
+        }
+      } else {
+        resolve(null);
+      }
+    });
+  }

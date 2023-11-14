@@ -775,7 +775,7 @@ export async function GET(request,{params}) {
                     
                     if(params.ids[3] != '-'){
                         // send the notification
-                        const notificationResult = await send_notification('❌ You request is cancelled', params.ids[3], 'Single');
+                        const notificationResult = await send_notification('❌ Your request is cancelled', params.ids[3], 'Single');
                         
                         // return successful update
                         return Response.json({status: 200, message:'Cancelled!', notification: notificationResult}, {status: 200})
