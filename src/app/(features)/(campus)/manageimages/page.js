@@ -36,6 +36,16 @@ fetch("/api/requeststats/"+pass+"/"+role+"/"+branch+"/All/1", {
     },
 });
 
+const getUsers = async (pass) => 
+  
+fetch("/api/user/"+pass+"/U8/0", {
+    method: "GET",
+    headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+    },
+});
+
 
 
 // pass state variable and the method to update state variable
@@ -52,6 +62,8 @@ export default function ManageImages() {
     const [completed, setCompleted] = useState(false);
     const [totalStudents, setTotalStudents] = useState(0);
     const [studentsInCampus, setStudentsInCampus] = useState(0);
+    const [usersToDelete, setUsersToDelete] = useState([]);
+    // const usersToDelete = [];
     
     const [requestsInOuting, setRequestsInOuting] = useState(0);
     const [requestsIssued, setRequestsIssued] = useState(0);
@@ -85,8 +97,10 @@ export default function ManageImages() {
 
                 // set the user state variable
                 setUser(obj)
+                getUsersData()
                 // readImagesAndPrintReferences();
                 if(!completed){
+                    
                     getData();
                 }
                 else {
@@ -158,9 +172,17 @@ async function readImagesAndPrintReferences(pageToken = null) {
         // }
 
 
+
         // List all items in the folder
         const items = await listAll(imagesRef);
-        const prefix = '22B01'
+
+        for (let i = 0; i < usersToDelete.length; i++) {
+            const element = usersToDelete[i];
+            
+            
+            console.log('1');
+        const prefix = element
+        // const prefix = 's3'
 
         // Filter items based on the prefix
         // const filteredItems = items.items.filter((item) =>
@@ -168,7 +190,8 @@ async function readImagesAndPrintReferences(pageToken = null) {
         // );
         // Filter items based on the prefix and length
         const filteredItems = items.items.filter((item) =>
-            item.name.startsWith(prefix) && item.name.length == 14
+            item.name.startsWith(prefix)
+            // item.name.startsWith(prefix) && item.name.length == 14
         );
 
         // Print the count of matching images
@@ -180,13 +203,16 @@ async function readImagesAndPrintReferences(pageToken = null) {
             console.log(item.fullPath);
         });
 
-         // Delete each matching image
+        //  Delete each matching image
         // for (const item of filteredItems) {
         //     await deleteObject(item);
         //     console.log(`Deleted: ${item.fullPath}`);
         // }
 
-        // console.log('Deletion completed.');
+        
+    }
+
+        console.log('Deletion completed.');
 
 
       } catch (error) {
@@ -276,6 +302,81 @@ async function readImagesAndPrintReferences(pageToken = null) {
                     //     setStudentsList((studentsList) => [...studentsList, ...queryResult.data]);
                     // }
                     // set data found
+                    setDataFound(true);
+                }
+                else {
+                    
+                    setDataFound(false);
+                }
+
+                setSearching(false);
+                setCompleted(false);
+            }
+            else if(queryResult.status == 401) {
+                
+                setSearching(false);
+                setDataFound(false);
+                setCompleted(true);
+            }
+            else if(queryResult.status == 404) {
+                
+                setSearching(false);
+                setDataFound(false);
+                setCompleted(true);
+            }
+            else if(queryResult.status == 201) {
+                
+                setSearching(false);
+                setDataFound(false);
+                setCompleted(true);
+            }
+        }
+        catch (e){
+            
+            // show and hide message
+            setResultType('error');
+            setResultMessage('Issue loading. Please refresh or try again later!');
+            setTimeout(function(){
+                setResultType('');
+                setResultMessage('');
+            }, 3000);
+        }
+}
+
+    async function getUsersData(){
+        
+        setSearching(true);
+        setOffset(offset+10); // update the offset for every call
+
+        try {    
+            const result  = await getUsers(process.env.NEXT_PUBLIC_API_PASS)
+            const queryResult = await result.json() // get data
+// console.log(queryResult.data);
+            // check for the status
+            if(queryResult.status == 200){
+
+                // check if data exits
+                if(queryResult.data.length > 0){
+
+                    // set the state
+                    // total students
+                    const result = queryResult.data;
+
+                    // Iterate through the array
+                    for (const element of result) {
+                        if (element.mediaCount == 1) {
+                            console.log('checking');
+                            setUsersToDelete(usersToDelete => [...usersToDelete, element.userObjectId]);
+                            
+                        }
+                    }
+
+                    // Calculate studentsInCampus
+                    console.log(usersToDelete)
+                    if(usersToDelete.length > 0){
+                        
+                        // readImagesAndPrintReferences();
+                    }
                     setDataFound(true);
                 }
                 else {

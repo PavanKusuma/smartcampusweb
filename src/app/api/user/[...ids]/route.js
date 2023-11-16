@@ -220,7 +220,8 @@ export async function GET(request,{params}) {
                     WHERE mediaCount = 1 AND profileUpdated = 0`;
                     let q3 = `SELECT *
                      FROM user 
-                     WHERE (mediaCount = 1 OR mediaCount = 0) AND profileUpdated = 0 ORDER BY (mediaCount = 1) DESC, CAST(userObjectId AS SIGNED) ASC LIMIT 10 OFFSET `+params.ids[2];
+                     WHERE (mediaCount = 1 OR mediaCount = 0) AND profileUpdated = 0 ORDER BY (mediaCount = 1) DESC, CAST(userObjectId AS SIGNED) ASC `;
+                    //  WHERE (mediaCount = 1 OR mediaCount = 0) AND profileUpdated = 0 ORDER BY (mediaCount = 1) DESC, CAST(userObjectId AS SIGNED) ASC LIMIT 10 OFFSET `+params.ids[2];
                     
                     const [rows, fields] = await connection.execute(q1);
                     const [rows1, fields1] = await connection.execute(q2);

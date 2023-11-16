@@ -485,12 +485,15 @@ export async function GET(request,{params}) {
                             // check for the double scan, that means check if 'checkoutOn' is already present or not
                             if(rows[0].checkoutOn == null){
                                 
-                                if(true){ // check if student tries to checkout way before their checkout time
-                                // if(dayjs(params.ids[2]).diff(dayjs(rows[0].requestTo), 'minute') < 30){
+                                if(true){ 
+                                    
+                                // check if student tries to checkout way before their checkout time
+                                // also the checkout should be before the requestTo
+                                if(dayjs(params.ids[2]).diff(dayjs(rows[0].requestFrom), 'minute') >= -60 && dayjs(params.ids[2]).isBefore(dayjs(rows[0].requestTo))){
 
                                     // mark as InOuting
                                     const [rows1, fields] = await connection.execute('UPDATE request SET isStudentOut = 1, requestStatus ="InOuting", checkoutOn = ? WHERE requestId = ? AND isOpen = 1 AND checkoutOn IS NULL',[params.ids[2],rows[0].requestId]);
-
+                                    
                                         // check if the request is updated. 
                                         // It will not get updated incase Any Admin has cancelled the request before checkout
                                         if(rows1.affectedRows == 0){
@@ -523,6 +526,10 @@ export async function GET(request,{params}) {
                                             return Response.json({status: 200, message:'Checkout success!',notification: notificationResult,}, {status: 200})
                                             // return Response.json({status: 200, message:'You checked out of the campus!',notification: notificationResult,}, {status: 200})
                                         }
+                                }
+                                else {
+                                    return Response.json({status: 199, message:'Check out is invalid. Contact admin!'}, {status: 200})
+                                }
                                         
                                 }
                                 else {

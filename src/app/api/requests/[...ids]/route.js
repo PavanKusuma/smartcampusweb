@@ -59,10 +59,10 @@ export async function GET(request,{params}) {
 
                     // check for request type (official or general)
                     if(params.ids[6] == '3'){
-                        query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestType="3" AND requestStatus = "'+params.ids[2]+'" ORDER BY requestFrom ASC LIMIT 50 OFFSET '+params.ids[3];
+                        query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestType="3" AND requestStatus = "'+params.ids[2]+'" AND isOpen = 1 ORDER BY requestFrom ASC LIMIT 50 OFFSET '+params.ids[3];
                     }
                     else {
-                        query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestType!="3" AND requestStatus = "'+params.ids[2]+'" ORDER BY requestFrom ASC LIMIT 50 OFFSET '+params.ids[3];
+                        query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestType!="3" AND requestStatus = "'+params.ids[2]+'" AND isOpen = 1 ORDER BY requestFrom ASC LIMIT 50 OFFSET '+params.ids[3];
                     }
                 }
                 else if(params.ids[2] == 'Approved'){
@@ -74,7 +74,7 @@ export async function GET(request,{params}) {
                     // query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY issuedOn DESC LIMIT 50 OFFSET '+params.ids[3];
                 }
                 else if(params.ids[2] == 'Returned' ){
-                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY requestFrom ASC LIMIT 50 OFFSET '+params.ids[3];
+                    query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY returnedOn ASC LIMIT 50 OFFSET '+params.ids[3];
                     // query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" ORDER BY returnedOn DESC LIMIT 50 OFFSET '+params.ids[3];
                 }
                 else {
@@ -139,7 +139,7 @@ export async function GET(request,{params}) {
                     // we want to return all requests irrespective of official or general outing just for viewing
                     // if user is asking for pending requests (approved), then only return what they can approve
                     if(params.ids[2] == 'Approved'){
-                        query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND requestType!="3" ORDER BY requestFrom ASC LIMIT 20 OFFSET '+params.ids[3];
+                        query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND requestType!="3" AND isOpen = 1 ORDER BY requestFrom ASC LIMIT 20 OFFSET '+params.ids[3];
                         // query = 'SELECT r.*,u.* FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND requestStatus = "'+params.ids[2]+'" AND requestType!="3" ORDER BY approvedOn DESC LIMIT 20 OFFSET '+params.ids[3];
                     }
                     else {
