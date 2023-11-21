@@ -53,8 +53,11 @@ export async function GET(request,{params}) {
             // this is to get the count of HOSTEL students who are available for food on a given day.
           else if(params.ids[1] == 'U3'){
                 try {
+                    // Students Available for Breakfast
+                    // Incampus strength + (Inouting Students checkin before 9AM) - (Submitted/Approved/Issued Students checkout before 7AM)
+                    
                     // Students Available for lunch
-                    // Incampus strength + (Inouting Students checkin before 2PM) - (Submitted/Approved/Issued Students checkout before 12PM)
+                    // Incampus strength + (Inouting Students checkin before 2PM) - (Submitted/Approved/Issued Students checkout before 11AM)
                     
                     // Students Available for dinner
                     // Incampus strength + (Inouting Students checkin after 2PM) - (Submitted/Approved/Issued Students checkout before 7PM)
@@ -65,9 +68,8 @@ export async function GET(request,{params}) {
                                     (
                                         (SELECT COUNT(*) FROM user WHERE type = 'hostel' AND role = 'student')
                                         - (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting')
-                                        + (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting' AND DATE(requestTo) = "`+params.ids[2]+`" AND TIME(requestTo) < '10:00:00')
+                                        + (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting' AND DATE(requestTo) = "`+params.ids[2]+`" AND TIME(requestTo) < '09:00:00')
                                         - (SELECT COUNT(*) FROM request WHERE requestStatus IN ('Submitted', 'Approved', 'Issued') AND DATE(requestFrom) = "`+params.ids[2]+`" AND TIME(requestFrom) < '7:00:00')
-                                        + (SELECT CASE WHEN SUM(foodCount) > 0 THEN SUM(foodCount) ELSE 0 END AS BREAKFAST FROM visitorpass WHERE DATE(visitOn) = "`+params.ids[2]+`" AND isOpen = 1)
                                         ) AS SIGNED
                                     ) as count
                             
@@ -80,7 +82,17 @@ export async function GET(request,{params}) {
                                         (SELECT COUNT(*) FROM user WHERE type = 'hostel' AND role = 'student')
                                         - (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting')
                                         + (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting' AND DATE(requestTo) = "`+params.ids[2]+`" AND TIME(requestTo) < '14:00:00')
-                                        - (SELECT COUNT(*) FROM request WHERE requestStatus IN ('Submitted', 'Approved', 'Issued') AND DATE(requestFrom) = "`+params.ids[2]+`" AND TIME(requestFrom) < '12:00:00')
+                                        - (SELECT COUNT(*) FROM request WHERE requestStatus IN ('Submitted', 'Approved', 'Issued') AND DATE(requestFrom) = "`+params.ids[2]+`" AND TIME(requestFrom) < '11:00:00')
+                                    ) AS SIGNED 
+                                ) as count
+                            
+                            UNION
+
+                            SELECT 
+                                'VisitorsLunch + Students' as requestStatus,
+                                CAST(
+                                    (
+                                        (SELECT COUNT(*) FROM visitorpass WHERE DATE(visitOn) = "`+params.ids[2]+`" AND TIME(visitOn) < '14:00:00' AND isOpen = 1)
                                         + (SELECT CASE WHEN SUM(foodCount) > 0 THEN SUM(foodCount) ELSE 0 END AS LUNCH FROM visitorpass WHERE DATE(visitOn) = "`+params.ids[2]+`" AND isOpen = 1)
                                     ) AS SIGNED 
                                 ) as count
@@ -95,7 +107,6 @@ export async function GET(request,{params}) {
                                         - (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting')
                                         + (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting' AND DATE(requestTo) = "`+params.ids[2]+`" AND TIME(requestTo) > '14:00:00')
                                         - (SELECT COUNT(*) FROM request WHERE requestStatus IN ('Submitted', 'Approved', 'Issued') AND DATE(requestFrom) = "`+params.ids[2]+`" AND TIME(requestFrom) < '19:00:00')
-                                        + (SELECT CASE WHEN SUM(foodCount) > 0 THEN SUM(foodCount) ELSE 0 END AS DINNER FROM visitorpass WHERE DATE(visitOn) = "`+params.ids[2]+`" AND isOpen = 1)
                                         ) AS SIGNED
                                     ) as count;
                             `;
@@ -131,4 +142,49 @@ export async function GET(request,{params}) {
         return Response.json({status: 500, message:'Facing issues. Please try again!'}, {status: 200})
     }
   }
+  
+
+
+
+  ///
+//   SELECT
+//                                 'Breakfast' as requestStatus,
+//                                 CAST(
+//                                     (
+//                                         (SELECT COUNT(*) FROM user WHERE type = 'hostel' AND role = 'student')
+//                                         - (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting')
+//                                         + (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting' AND DATE(requestTo) = "`+params.ids[2]+`" AND TIME(requestTo) < '10:00:00')
+//                                         - (SELECT COUNT(*) FROM request WHERE requestStatus IN ('Submitted', 'Approved', 'Issued') AND DATE(requestFrom) = "`+params.ids[2]+`" AND TIME(requestFrom) < '7:00:00')
+//                                         + (SELECT CASE WHEN SUM(foodCount) > 0 THEN SUM(foodCount) ELSE 0 END AS BREAKFAST FROM visitorpass WHERE DATE(visitOn) = "`+params.ids[2]+`" AND isOpen = 1)
+//                                         ) AS SIGNED
+//                                     ) as count
+                            
+//                             UNION
+
+//                             SELECT 
+//                                 'Lunch' as requestStatus,
+//                                 CAST(
+//                                     (
+//                                         (SELECT COUNT(*) FROM user WHERE type = 'hostel' AND role = 'student')
+//                                         - (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting')
+//                                         + (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting' AND DATE(requestTo) = "`+params.ids[2]+`" AND TIME(requestTo) < '14:00:00')
+//                                         - (SELECT COUNT(*) FROM request WHERE requestStatus IN ('Submitted', 'Approved', 'Issued') AND DATE(requestFrom) = "`+params.ids[2]+`" AND TIME(requestFrom) < '12:00:00')
+//                                         + (SELECT CASE WHEN SUM(foodCount) > 0 THEN SUM(foodCount) ELSE 0 END AS LUNCH FROM visitorpass WHERE DATE(visitOn) = "`+params.ids[2]+`" AND isOpen = 1)
+//                                     ) AS SIGNED 
+//                                 ) as count
+                            
+//                             UNION
+                            
+//                             SELECT
+//                                 'Dinner' as requestStatus,
+//                                 CAST(
+//                                     (
+//                                         (SELECT COUNT(*) FROM user WHERE type = 'hostel' AND role = 'student')
+//                                         - (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting')
+//                                         + (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting' AND DATE(requestTo) = "`+params.ids[2]+`" AND TIME(requestTo) > '14:00:00')
+//                                         - (SELECT COUNT(*) FROM request WHERE requestStatus IN ('Submitted', 'Approved', 'Issued') AND DATE(requestFrom) = "`+params.ids[2]+`" AND TIME(requestFrom) < '19:00:00')
+//                                         + (SELECT CASE WHEN SUM(foodCount) > 0 THEN SUM(foodCount) ELSE 0 END AS DINNER FROM visitorpass WHERE DATE(visitOn) = "`+params.ids[2]+`" AND isOpen = 1)
+//                                         ) AS SIGNED
+//                                     ) as count;
+  //
   

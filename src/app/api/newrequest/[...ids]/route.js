@@ -28,6 +28,11 @@ export async function GET(request,{params}) {
 
             // // check the type of request
             // if(params.ids[2] != 3){
+              // check if consent is provided by student
+              var consent = '-';
+              if(params.ids[13]!=null){
+                consent = params.ids[13];
+              }
 
                 try {
 
@@ -39,7 +44,7 @@ export async function GET(request,{params}) {
 
                       // check if the user is not blocked by the admin
                       // if profileUpdated column value is 3, then user is meant to be blocked by admin.
-                      const [rows1, fields1] = await connection.execute('SELECT profileUpdated from user where collegeId=?', [ params.ids[4] ]);
+                      const [rows1, fields1] = await connection.execute('SELECT branch, profileUpdated from user where collegeId=?', [ params.ids[4] ]);
                       
                       if(rows1[0].profileUpdated == 3){
                         // mention that admin blocked the user to raise request
@@ -50,7 +55,7 @@ export async function GET(request,{params}) {
                         // create query for insert
                         const q = 'INSERT INTO request (requestId, requestType, oRequestId, collegeId, description, requestFrom, requestTo, duration, requestStatus, requestDate, approver, approverName, approvedOn, comment, issuer, issuerName, issuedOn, consentBy, isOpen, isStudentOut, checkoutOn, returnedOn, isAllowed) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )';
                         // create new request
-                        const [rows, fields] = await connection.execute(q, [ params.ids[1], params.ids[2], params.ids[3], params.ids[4], decodeURIComponent(params.ids[5]), params.ids[6], params.ids[7], params.ids[8], "Submitted", params.ids[10] ,  '-','-', null, '-', '-','-',null, '-', 1, 0, null, null, params.ids[9]]);
+                        const [rows, fields] = await connection.execute(q, [ params.ids[1], params.ids[2], params.ids[3], params.ids[4], decodeURIComponent(params.ids[5]), params.ids[6], params.ids[7], params.ids[8], "Submitted", params.ids[10] ,  '-','-', null, '-', '-','-',null, consent, 1, 0, null, null, params.ids[9]]);
 
                         // TEMPORARY DAY PASS, we need to request for each date
                         if(params.ids[2] == 4){
@@ -78,8 +83,22 @@ export async function GET(request,{params}) {
                         sendSMS(params.ids[11], params.ids[12], dayjs(params.ids[6]).format('DD-MM-YY hh:mm A'), dayjs(params.ids[7]).format('DD-MM-YY hh:mm A'))
                         // sendSMS(params.ids[11], params.ids[12], dayjs(params.ids[6]).format('DD-MM-YY hh:mm A'), dayjs(params.ids[7]).format('YYYY-MM-DD'))
 
+                        // get the gcm_regIds of SuperAdmin and branch admin to notify
+                        const [nrows, nfields] = await connection.execute('SELECT gcm_regId FROM `user` where role IN ("SuperAdmin") or (role="Admin" AND branch = ?)', [ rows1[0].branch ],);
+
+                        // get the gcm_regIds list from the query result
+                        var gcmIds = [];
+                        for (let index = 0; index < nrows.length; index++) {
+                          const element = nrows[index].gcm_regId;
+                          if(element.length > 3)
+                            gcmIds.push(element); 
+                        }
+
+                        // var gcmIds = 
+                        // console.log(gcmIds);
+
                         // send the notification
-                        const notificationResult = await send_notification('Outing request by '+params.ids[4], 'fd65be57-ccf5-4a28-b859-639fe66049e3', 'Single');
+                        const notificationResult = await send_notification('Outing request by '+params.ids[4], gcmIds, 'Multiple');
                             
                         // return successful update
                         return Response.json({status: 200, message:'Request submitted!', notification: notificationResult}, {status: 200})
@@ -154,12 +173,12 @@ export async function GET(request,{params}) {
   // use the playerIds of the users.
   // check if playerId length > 2
   async function send_notification(message, playerId, type) {
-
+// console.log(playerId);
     return new Promise(async (resolve, reject) => {
       // send notification only if there is playerId for the user
       if (playerId.length > 0) {
-        var playerIds = [];
-        playerIds.push(playerId);
+        // var playerIds = [];
+        // playerIds.push(playerId);
   
         var notification;
         // notification object
@@ -177,7 +196,7 @@ export async function GET(request,{params}) {
             contents: {
               'en': message,
             },
-            include_player_ids: playerIds,
+            include_player_ids: playerId,
           };
         }
   
