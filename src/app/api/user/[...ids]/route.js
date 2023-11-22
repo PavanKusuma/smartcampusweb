@@ -518,14 +518,14 @@ export async function GET(request,{params}) {
                     const [rows2, fields2] = await connection.execute('SELECT gcm_regId FROM user WHERE collegeId = "'+params.ids[2]+'"');
 
                     // send the notification
-                    const notificationResult = await send_notification('✅ Your outing type is changed by admin. Refresh profile to view.', rows2[0].gcm_regId, Single);
+                    const notificationResult = await send_notification('✅ Your outing type is changed by admin. Refresh profile to view.', rows2[0].gcm_regId, 'Single');
                         
                     connection.release();
                     // return successful update
                     return Response.json({status: 200, message:'Outing type updated!',notification: notificationResult}, {status: 200})
 
                 } catch (error) { // error updating
-                    return Response.json({status: 404, message:'No user found!'}, {status: 200})
+                    return Response.json({status: 404, message:'No user found!',error: error.message}, {status: 200})
                 }
             }
             // Change the phoneNumber
