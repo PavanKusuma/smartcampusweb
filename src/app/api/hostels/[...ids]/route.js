@@ -83,6 +83,7 @@ export async function GET(request,{params}) {
                                         - (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting')
                                         + (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting' AND DATE(requestTo) = "`+params.ids[2]+`" AND TIME(requestTo) < '14:00:00')
                                         - (SELECT COUNT(*) FROM request WHERE requestStatus IN ('Submitted', 'Approved', 'Issued') AND DATE(requestFrom) = "`+params.ids[2]+`" AND TIME(requestFrom) < '11:00:00')
+                                        - (SELECT COUNT(*) FROM visitorpass WHERE foodCount > 0 AND DATE(visitOn) = "`+params.ids[2]+`" AND isOpen = 1)
                                     ) AS SIGNED 
                                 ) as count
                             
@@ -92,7 +93,7 @@ export async function GET(request,{params}) {
                                 'VisitorsLunch + Students' as requestStatus,
                                 CAST(
                                     (
-                                        (SELECT COUNT(*) FROM visitorpass WHERE DATE(visitOn) = "`+params.ids[2]+`" AND TIME(visitOn) < '14:00:00' AND isOpen = 1)
+                                        (SELECT COUNT(*) FROM visitorpass WHERE DATE(visitOn) = "`+params.ids[2]+`" AND TIME(visitOn) < '14:00:00' AND isOpen = 1 AND foodCount > 0)
                                         + (SELECT CASE WHEN SUM(foodCount) > 0 THEN SUM(foodCount) ELSE 0 END AS LUNCH FROM visitorpass WHERE DATE(visitOn) = "`+params.ids[2]+`" AND isOpen = 1)
                                     ) AS SIGNED 
                                 ) as count
