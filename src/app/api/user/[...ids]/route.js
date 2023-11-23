@@ -498,7 +498,7 @@ export async function GET(request,{params}) {
                     const [rows2, fields2] = await connection.execute('SELECT gcm_regId FROM user WHERE collegeId = "'+params.ids[2]+'"');
 
                     // send the notification
-                    const notificationResult = await send_notification('✅ Your profile is updated by admin. Refresh profile to view.', rows2[0].gcm_regId, Single);
+                    const notificationResult = await send_notification('✅ Your profile is updated by admin. Refresh profile to view.', rows2[0].gcm_regId, 'Single');
                         
                     connection.release();
                     // return successful update
@@ -544,7 +544,7 @@ export async function GET(request,{params}) {
             // Hostel
             else if(params.ids[1] == 'U16'){
                 try {
-                    const [rows, fields] = await connection.execute('UPDATE user SET type ="'+params.ids[3]+'" where collegeId = "'+params.ids[2]+'"');
+                    const [rows, fields] = await connection.execute('UPDATE user SET type ="'+decodeURIComponent(+params.ids[3])+'" where collegeId = "'+params.ids[2]+'"');
                     const [rows2, fields2] = await connection.execute('SELECT gcm_regId FROM user WHERE collegeId = "'+params.ids[2]+'"');
 
                     // send the notification
