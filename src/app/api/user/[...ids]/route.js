@@ -492,9 +492,14 @@ export async function GET(request,{params}) {
             // 2 – Active & profile is not updated
             // 1 – Active & profile is updated
             // 0 – Inactive – out of college
+
+            // Also change the student Type
+            // Day Scholar
+            // Hostel
             else if(params.ids[1] == 'U13'){
                 try {
-                    const [rows, fields] = await connection.execute('UPDATE user SET profileUpdated ="'+params.ids[3]+'" where collegeId = "'+params.ids[2]+'"');
+                    
+                    const [rows, fields] = await connection.execute('UPDATE user SET profileUpdated ="'+params.ids[3]+'" and type = "'+params.ids[4]+'" where collegeId = "'+params.ids[2]+'"');
                     const [rows2, fields2] = await connection.execute('SELECT gcm_regId FROM user WHERE collegeId = "'+params.ids[2]+'"');
 
                     // send the notification
@@ -537,25 +542,6 @@ export async function GET(request,{params}) {
                     return Response.json({status: 200, message:'Phone number updated!'}, {status: 200})
                 } catch (error) { // error updating
                     return Response.json({status: 404, message:'No user found!'}, {status: 200})
-                }
-            }
-            // Change the student Type
-            // Day Scholar
-            // Hostel
-            else if(params.ids[1] == 'U16'){
-                try {
-                    const [rows, fields] = await connection.execute('UPDATE user SET type ="'+decodeURIComponent(+params.ids[3])+'" where collegeId = "'+params.ids[2]+'"');
-                    const [rows2, fields2] = await connection.execute('SELECT gcm_regId FROM user WHERE collegeId = "'+params.ids[2]+'"');
-
-                    // send the notification
-                    const notificationResult = await send_notification('✅ Your student type is changed by admin. Refresh profile to view.', rows2[0].gcm_regId, 'Single');
-                        
-                    connection.release();
-                    // return successful update
-                    return Response.json({status: 200, message:'Outing type updated!',notification: notificationResult}, {status: 200})
-
-                } catch (error) { // error updating
-                    return Response.json({status: 404, message:'No user found!',error: error.message}, {status: 200})
                 }
             }
             else {
