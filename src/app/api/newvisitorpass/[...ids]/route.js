@@ -34,36 +34,43 @@ export async function GET(request,{params}) {
                     const [rows0, fields0] = await connection.execute(q0);
                     
                     if(rows0.length == 0){
-                    
-                        // create visitor request
-                        const q = 'INSERT INTO visitorpass (vRequestId, campusId, collegeId, visitOn, vStatus, isOpen, description, checkin, checkout, count, comment, foodCount, foodAvail, requestDate, approver, approverName, approvedOn, isAllowed) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )';
-                        // create new request
-                        const [rows, fields] = await connection.execute(q, [ params.ids[1], campusId, params.ids[2], params.ids[3], "Submitted", 1, decodeURIComponent(params.ids[4]), null, null, params.ids[5], "-", params.ids[6], 0, params.ids[7], "-","-",null, params.ids[9]]);
-                        
-                        // check if the request is created and add the visitors list
-                        if(rows.affectedRows == false){
-                            return Response.json({status: 404, message:'No request created!'}, {status: 200})
+
+                        if(params.ids[5] > 0){
+                            
+                            // create visitor request
+                            const q = 'INSERT INTO visitorpass (vRequestId, campusId, collegeId, visitOn, vStatus, isOpen, description, checkin, checkout, count, comment, foodCount, foodAvail, requestDate, approver, approverName, approvedOn, isAllowed) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )';
+                            // create new request
+                            const [rows, fields] = await connection.execute(q, [ params.ids[1], campusId, params.ids[2], params.ids[3], "Submitted", 1, decodeURIComponent(params.ids[4]), null, null, params.ids[5], "-", params.ids[6], 0, params.ids[7], "-","-",null, params.ids[9]]);
+                            
+                            // check if the request is created and add the visitors list
+                            if(rows.affectedRows == false){
+                                return Response.json({status: 404, message:'No request created!'}, {status: 200})
+                            }
+                            else {
+                                // create visitors
+                                const q1 = 'INSERT INTO visitors (vRequestId, name, phoneNumber, relation) VALUES ( ?, ?, ?, ?)';
+                                
+                                // get the visitorsData
+                                const visitorsDataArray = JSON.parse(params.ids[8]);
+                                // iterate through the visitors data and create each visitor
+                                visitorsDataArray.forEach(async (obj, index) => {
+
+                                    // create
+                                    const [rows1, fields] = await connection.execute(q1, [ params.ids[1], obj.name, obj.phoneNumber, obj.relation]);
+                                    
+                                });
+                                connection.release();
+
+                                // send SMS to parent
+                                sendSMS(params.ids[10], params.ids[11], dayjs(params.ids[3]).format('DD-MM-YY hh:mm A'), params.ids[9]);
+
+                                // return successful update
+                                return Response.json({status: 200, message:'Updated!',}, {status: 200})
+                            }
                         }
                         else {
-                            // create visitors
-                            const q1 = 'INSERT INTO visitors (vRequestId, name, phoneNumber, relation) VALUES ( ?, ?, ?, ?)';
-                            
-                            // get the visitorsData
-                            const visitorsDataArray = JSON.parse(params.ids[8]);
-                            // iterate through the visitors data and create each visitor
-                            visitorsDataArray.forEach(async (obj, index) => {
-
-                                // create
-                                const [rows1, fields] = await connection.execute(q1, [ params.ids[1], obj.name, obj.phoneNumber, obj.relation]);
-                                
-                            });
-                            connection.release();
-
-                            // send SMS to parent
-                            sendSMS(params.ids[10], params.ids[11], dayjs(params.ids[3]).format('DD-MM-YY hh:mm A'), params.ids[9]);
-
                             // return successful update
-                            return Response.json({status: 200, message:'Updated!',}, {status: 200})
+                        return Response.json({status: 201, message:'Add alteast 1 visitor'}, {status: 201})
                         }
                     }
                     else {
