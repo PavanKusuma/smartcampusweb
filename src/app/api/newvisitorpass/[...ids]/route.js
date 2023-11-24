@@ -35,6 +35,7 @@ export async function GET(request,{params}) {
                     
                     if(rows0.length == 0){
 
+                        // check if the visitor count is > 0
                         if(params.ids[5] > 0){
                             
                             // create visitor request
