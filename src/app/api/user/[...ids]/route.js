@@ -498,8 +498,9 @@ export async function GET(request,{params}) {
             // Hostel
             else if(params.ids[1] == 'U13'){
                 try {
+                    let type = decodeURIComponent(params.ids[4]);
                     
-                    const [rows, fields] = await connection.execute('UPDATE user SET profileUpdated ="'+params.ids[3]+'", type = "'+decodeURIComponent(params.ids[4])+'" where collegeId = "'+params.ids[2]+'"');
+                    const [rows, fields] = await connection.execute('UPDATE user SET profileUpdated ="'+params.ids[3]+'", type = "'+type+'" where collegeId = "'+params.ids[2]+'"');
                     const [rows2, fields2] = await connection.execute('SELECT gcm_regId FROM user WHERE collegeId = "'+params.ids[2]+'"');
 
                     // send the notification
