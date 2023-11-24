@@ -66,7 +66,7 @@ export async function GET(request,{params}) {
                                 'Breakfast' as requestStatus,
                                 CAST(
                                     (
-                                        (SELECT COUNT(*) FROM user WHERE type = 'hostel' AND role = 'student')
+                                        (SELECT COUNT(*) FROM user WHERE type = 'hostel' AND role = 'student' and (year=1 or year=2 or year=3))
                                         - (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting')
                                         + (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting' AND DATE(requestTo) = "`+params.ids[2]+`" AND TIME(requestTo) < '09:00:00')
                                         - (SELECT COUNT(*) FROM request WHERE requestStatus IN ('Submitted', 'Approved', 'Issued') AND DATE(requestFrom) = "`+params.ids[2]+`" AND TIME(requestFrom) < '7:00:00')
@@ -79,7 +79,7 @@ export async function GET(request,{params}) {
                                 'Lunch' as requestStatus,
                                 CAST(
                                     (
-                                        (SELECT COUNT(*) FROM user WHERE type = 'hostel' AND role = 'student')
+                                        (SELECT COUNT(*) FROM user WHERE type = 'hostel' AND role = 'student' and (year=1 or year=2 or year=3))
                                         - (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting')
                                         + (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting' AND DATE(requestTo) = "`+params.ids[2]+`" AND TIME(requestTo) < '14:00:00')
                                         - (SELECT COUNT(*) FROM request WHERE requestStatus IN ('Submitted', 'Approved', 'Issued') AND DATE(requestFrom) = "`+params.ids[2]+`" AND TIME(requestFrom) < '11:00:00')
@@ -104,7 +104,7 @@ export async function GET(request,{params}) {
                                 'Dinner' as requestStatus,
                                 CAST(
                                     (
-                                        (SELECT COUNT(*) FROM user WHERE type = 'hostel' AND role = 'student')
+                                        (SELECT COUNT(*) FROM user WHERE type = 'hostel' AND role = 'student' and (year=1 or year=2 or year=3))
                                         - (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting')
                                         + (SELECT COUNT(*) FROM request WHERE requestStatus = 'InOuting' AND DATE(requestTo) = "`+params.ids[2]+`" AND TIME(requestTo) > '14:00:00')
                                         - (SELECT COUNT(*) FROM request WHERE requestStatus IN ('Submitted', 'Approved', 'Issued') AND DATE(requestFrom) = "`+params.ids[2]+`" AND TIME(requestFrom) < '19:00:00')
