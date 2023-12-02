@@ -90,7 +90,7 @@ export async function GET(request,{params}) {
                             UNION
 
                             SELECT 
-                                'VisitorsLunch + Students' as requestStatus,
+                                'Visitors' as requestStatus,
                                 CAST(
                                     (
                                         (SELECT COUNT(*) FROM visitorpass WHERE DATE(visitOn) = "`+params.ids[2]+`" AND TIME(visitOn) < '14:00:00' AND isOpen = 1 AND foodCount > 0)

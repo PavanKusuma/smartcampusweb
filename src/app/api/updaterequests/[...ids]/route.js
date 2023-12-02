@@ -1,6 +1,7 @@
 import pool from '../../db'
 import { Keyverify } from '../../secretverify';
 import dayjs from 'dayjs'
+import nodemailer from 'nodemailer';
 const OneSignal = require('onesignal-node')
 
 const client = new OneSignal.Client(process.env.ONE_SIGNAL_APPID, process.env.ONE_SIGNAL_APIKEY)
@@ -61,6 +62,9 @@ export async function GET(request,{params}) {
                         if(params.ids[6] == 'Approved'){
                             // send the notification
                             const notificationResult = await send_notification('🙌 Your outing is approved and is ⏳ waiting for issue by the warden!', params.ids[9], params.ids[10]);
+
+                            // email
+                            
                             
                             // return the response
                             return Response.json({status: 200,message: 'Updated!',notification: notificationResult,});

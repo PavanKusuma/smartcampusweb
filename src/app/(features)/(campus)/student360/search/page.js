@@ -115,9 +115,14 @@ export default function SearchStudents() {
     // this is the selected student object that will be call to update after every panel closes
     const updateSelectedStudent = (selectedStudent1) => {
         setSelectedStudent(selectedStudent1);
-
-        
     }
+
+    const [selectedSearchOption, setSelectedSearchOption] = useState(null);
+
+    // Handler function for radio button changes
+    const handleRadioChange = (event) => {
+      setSelectedSearchOption(event.target.value);
+    };
 
     // // a varaiable for showing enlarged image
     // const [isEnlarged, setIsEnlarged] = useState(false);
@@ -484,6 +489,27 @@ export default function SearchStudents() {
                 <div className={styles.carddatasection} key={1234} style={{height:'100%'}}>
                        
                     <div className={styles.verticalsection} style={{height:'100%',overflow:'scroll'}}>
+
+                        <div className={styles.horizontalsection}>
+                        
+                            <div className={styles.horizontalsection}>
+                                <input type="radio" name="searchByCollegeId" value="searchByCollegeId" aria-label="Option 1"  checked={selectedSearchOption === 'searchByCollegeId'} onChange={handleRadioChange}/>
+                                
+                                <span className={`${inter.className} ${styles.text2}`}>College Id</span>
+                            </div>
+                            <div className={styles.horizontalsection}>
+                                <input type="radio" name="searchByName" value="searchByName" checked={selectedSearchOption === 'searchByName'} onChange={handleRadioChange}/>
+                                
+                                <span className={`${inter.className} ${styles.text2}`}>Name</span>
+                            </div>
+                            <div className={styles.horizontalsection}>
+                                <input type="radio" name="browseAll" value="browseAll" checked={selectedSearchOption === 'browseAll'} onChange={handleRadioChange}/>
+                                
+                                <span className={`${inter.className} ${styles.text2}`}>Browse All</span>
+                            </div>
+                            
+                        </div>
+                   
                         <p className={`${inter.className} ${styles.text3_heading}`}>Search by collegeId</p>
                         
                          <div className={`${inter.className}`} style={{display:'flex',flexDirection:'row',alignItems:'center',gap:'8px'}}>
