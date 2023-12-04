@@ -532,7 +532,9 @@ export async function GET(request,{params}) {
                                         }
                                 }
                                 else {
-                                    return Response.json({status: 199, message:'Check out is invalid. Contact admin!'}, {status: 200})
+                                    // return Response.json({status: 199, message:'Check out is invalid. Contact admin!'}, {status: 200})
+                                    // student is not allowed to checkout way before. Show warning.
+                                    return Response.json({status: 198, message:'Not allowed. Your checkout time is at'+ rows[0].requestTo}, {status: 200})
                                 }
                                         
                                 }
