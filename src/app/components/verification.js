@@ -89,6 +89,19 @@ export default function Vertification() {
         }
     },[session]);
  
+     // Function to handle the "Enter" key press
+     const handleKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            loginHere();
+        }
+    };
+    
+    // Function to handle the "Enter" key press
+     const handleOTPKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            verifyOTP();
+        }
+    };
 
 // verify the collegeId by calling the API
 async function loginHere(){
@@ -335,7 +348,7 @@ function verifyOTP(){
                 <div className={styles.card_block1}>
             
                     <p className={`${inter.className} ${styles.text2}`}>Your college registered Id </p><br/>
-                    <input id="collegeId" className={`${inter.className} ${styles.text2} ${styles.textInput}`} placeholder=""/>
+                    <input id="collegeId" className={`${inter.className} ${styles.text2} ${styles.textInput}`} placeholder="" onKeyDown={handleKeyPress}/>
                     <br/><br/>
                     <button id="submit" onClick={loginHere.bind(this)} className={`${inter.className} ${styles.text2} ${styles.primarybtn}`}>Sign in</button>
                     <br/>
@@ -397,7 +410,7 @@ function verifyOTP(){
                     <p className={`${inter.className} ${styles.text2}`}>Please enter the verification code sent to {email.slice(0, 4).padEnd(email.length, '*')}</p>
                     {/* {phone.slice(0, 4).padEnd(phone.length, '*')} or  */}
                     <br/>
-                    <input id="otp" className={`${styles.input_one} ${inter.className} ${styles.text3}`} placeholder="OTP" maxLength="4" style={{letterSpacing:30}} />
+                    <input id="otp" className={`${styles.input_one} ${inter.className} ${styles.text3}`} placeholder="OTP" maxLength="4" style={{letterSpacing:30}}  onKeyDown={handleOTPKeyPress}/>
                     <br/>
                     <br/>
                     <button onClick={clearCookies.bind(this)} className={`${inter.className} ${styles.secondarybtn}`}>back</button> &nbsp;&nbsp;

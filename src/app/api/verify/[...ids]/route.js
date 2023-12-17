@@ -67,9 +67,52 @@ export async function GET(request,{params}) {
                     }
 
                     // create query for insert
-                    const q1 = 'INSERT INTO user_sessions (collegeId, deviceId, sessionToken, isLoggedIn, lastActivityTime) VALUES ( ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE isLoggedIn = isLoggedIn + 1, lastActivityTime = "'+currentDate+'";';
-                    // create new request
-                    const [rows1, fields] = await connection.execute(q1, [ params.ids[1], params.ids[3], randomUUID(), 1, currentDate]);
+                    // const q1 = 'INSERT INTO user_sessions (collegeId, deviceId, sessionToken, isLoggedIn, lastActivityTime) VALUES ( ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE isLoggedIn = isLoggedIn + 1, lastActivityTime = "'+currentDate+'";';
+                    // // create new request
+                    // const [rows1, fields] = await connection.execute(q1, [ params.ids[1], params.ids[3], randomUUID(), 1, currentDate]);
+                    
+                    // check if the user logged in previously with the app type.
+                    // if logged in, increment that app session
+                    // else create new session
+                    var sessionExists;
+                    if(params.ids[4]!= null){
+                        sessionExists = 'SELECT * FROM user_sessions WHERE collegeId=? and app = ?'
+                        const [rowsSession, fieldsSession] = await connection.execute(sessionExists, [ params.ids[1], params.ids[4]]);
+
+                        // check if there are already user sessions
+                        if(rowsSession.length > 0){
+                            const updateSession = 'UPDATE user_sessions SET isLoggedIn = isLoggedIn + 1, lastActivityTime = ? WHERE collegeId=? and app = ?'
+                            const [rowsUpdateSession, fieldsUpdateSession] = await connection.execute(updateSession, [ currentDate, params.ids[1], params.ids[4]]);
+                        }
+                        else {
+                            // create query for insert
+                            const q1 = 'INSERT INTO user_sessions (collegeId, deviceId, sessionToken, isLoggedIn, lastActivityTime, app) VALUES ( ?, ?, ?, ?, ?, ?);';
+                            // create new request
+                            const [rows1, fields] = await connection.execute(q1, [ params.ids[1], params.ids[3], randomUUID(), 1, currentDate, params.ids[4]]);
+                        }
+                    }
+                    else {
+                        // const sessionExists = 'SELECT * FROM user_sessions WHERE collegeId=?'
+                        // const [rowsSession, fieldsSession] = await connection.execute(sessionExists, [ params.ids[1]]);
+
+                        // create query for insert
+                        const q1 = 'INSERT INTO user_sessions (collegeId, deviceId, sessionToken, isLoggedIn, lastActivityTime, app) VALUES ( ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE isLoggedIn = isLoggedIn + 1, lastActivityTime = "'+currentDate+'";';
+                        // create new request
+                        const [rows1, fields] = await connection.execute(q1, [ params.ids[1], params.ids[3], randomUUID(), 1, currentDate, 'SMART']);
+                        
+                    }
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
                     connection.release();
                     // console.log("Message sent: %s", info.messageId);
                     // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>

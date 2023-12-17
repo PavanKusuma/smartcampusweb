@@ -35,7 +35,28 @@ export async function GET(request,{params}) {
                     else {
                         // q = 'SELECT s.status AS requestStatus, COUNT(r.requestStatus) AS count FROM (SELECT "Submitted" AS status UNION SELECT "Approved" UNION SELECT "Issued" UNION SELECT "InOuting" UNION SELECT "Rejected" UNION SELECT "Cancelled" UNION SELECT "Returned") AS s LEFT JOIN request r ON s.status = r.requestStatus AND r.isOpen = 1 GROUP BY s.status UNION SELECT "InCampus" AS requestStatus, COUNT(*) AS COUNT FROM user WHERE type = "hostel" AND branch="'+params.ids[2]+'"';
                         // q = 'SELECT r.requestStatus, count(*) as count FROM request r JOIN user u WHERE r.collegeId = u.collegeId AND u.branch="'+params.ids[2]+'" GROUP BY r.requestStatus';
-                        q = 'SELECT s.status AS requestStatus, COUNT(r.requestStatus) AS count FROM ( SELECT "Submitted" AS status UNION SELECT "Approved" UNION SELECT "Issued" UNION SELECT "InOuting" UNION SELECT "Rejected" UNION SELECT "Cancelled" UNION SELECT "Returned" UNION SELECT "InCampus" AS status) AS s LEFT JOIN ( SELECT requestStatus, collegeId FROM request WHERE collegeId IN ( SELECT collegeId FROM user WHERE FIND_IN_SET("'+params.ids[2]+'",branch) > 0 ) UNION ALL SELECT "InCampus", collegeId FROM user WHERE type = "hostel" AND (year=1 or year=2 or year=3) AND FIND_IN_SET("'+params.ids[2]+'",branch) > 0) AS r ON s.status = r.requestStatus GROUP BY s.status ORDER BY s.status = "InCampus" DESC, s.status';
+
+                        // break down the branch string for admins
+                        var branchesString = params.ids[2];
+
+                        // Split the string into an array
+                        let branches = branchesString.split(',');
+
+                        // check if there are more than 1 branch
+                        var conditionsString = '';
+                        if(branches.length > 1){
+                            // Build the LIKE conditions with case sensitivity
+                            let likeConditions = branches.map(branch => `BINARY CONCAT(u.department,'-',u.branch,'-',u.year) LIKE '%${branch}%'`);
+
+                            // Join the conditions with OR
+                            conditionsString = likeConditions.join(' OR ');
+                        }
+                        else {
+                            conditionsString = `BINARY CONCAT(u.department,'-',u.branch,'-',u.year) LIKE '%${branchesString}%'`;
+                        }
+
+                        q = `SELECT s.status AS requestStatus, COUNT(r.requestStatus) AS count FROM ( SELECT "Submitted" AS status UNION SELECT "Approved" UNION SELECT "Issued" UNION SELECT "InOuting" UNION SELECT "Rejected" UNION SELECT "Cancelled" UNION SELECT "Returned" UNION SELECT "InCampus" AS status) AS s LEFT JOIN ( SELECT requestStatus, collegeId FROM request WHERE collegeId IN ( SELECT collegeId FROM user u WHERE (${conditionsString})) UNION ALL SELECT "InCampus", collegeId FROM user u WHERE type = "hostel" AND (${conditionsString}) ) AS r ON s.status = r.requestStatus GROUP BY s.status ORDER BY s.status = "InCampus" DESC, s.status`;
+                        // q = 'SELECT s.status AS requestStatus, COUNT(r.requestStatus) AS count FROM ( SELECT "Submitted" AS status UNION SELECT "Approved" UNION SELECT "Issued" UNION SELECT "InOuting" UNION SELECT "Rejected" UNION SELECT "Cancelled" UNION SELECT "Returned" UNION SELECT "InCampus" AS status) AS s LEFT JOIN ( SELECT requestStatus, collegeId FROM request WHERE collegeId IN ( SELECT collegeId FROM user WHERE FIND_IN_SET("'+params.ids[2]+'",branch) > 0 ) UNION ALL SELECT "InCampus", collegeId FROM user WHERE type = "hostel" AND (year=1 or year=2 or year=3) AND FIND_IN_SET("'+params.ids[2]+'",branch) > 0) AS r ON s.status = r.requestStatus GROUP BY s.status ORDER BY s.status = "InCampus" DESC, s.status';
                         // q = 'SELECT s.status AS requestStatus, COUNT(r.requestStatus) AS count FROM ( SELECT "Submitted" AS status UNION SELECT "Approved" UNION SELECT "Issued" UNION SELECT "InOuting" UNION SELECT "Rejected" UNION SELECT "Cancelled" UNION SELECT "Returned" UNION SELECT "InCampus" AS status) AS s LEFT JOIN ( SELECT requestStatus, collegeId FROM request WHERE collegeId IN ( SELECT collegeId FROM user WHERE branch = "'+params.ids[2]+'" ) UNION ALL SELECT "InCampus", collegeId FROM user WHERE type = "hostel" AND (year=2 or year=3) AND branch = "'+params.ids[2]+'") AS r ON s.status = r.requestStatus GROUP BY s.status ORDER BY s.status = "InCampus" DESC, s.status';
                     }
                 }
