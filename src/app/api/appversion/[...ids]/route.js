@@ -22,7 +22,7 @@ export async function GET(request,{params}) {
             if(rows[0].profileUpdated != 0){
 
                 // check for the updated app version
-                if(params.ids[1] == '1.1.5'){
+                if(params.ids[1] == '1.1.6'){
 
                     // return the requests data
                     return Response.json({status: 200, message:'Updated!', data: rows[0]}, {status: 200})

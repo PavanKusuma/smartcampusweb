@@ -48,7 +48,7 @@ export async function GET(request,{params}) {
 
                       // check if the user is not blocked by the admin
                       // if profileUpdated column value is 3, then user is meant to be blocked by admin.
-                      const [rows1, fields1] = await connection.execute('SELECT branch, profileUpdated from user where collegeId=?', [ params.ids[4] ]);
+                      const [rows1, fields1] = await connection.execute('SELECT * from user where collegeId=?', [ params.ids[4] ]);
                       
                       if(rows1[0].profileUpdated == 3){
                         // mention that admin blocked the user to raise request
@@ -88,7 +88,11 @@ export async function GET(request,{params}) {
                         // sendSMS(params.ids[11], params.ids[12], dayjs(params.ids[6]).format('DD-MM-YY hh:mm A'), dayjs(params.ids[7]).format('YYYY-MM-DD'))
 
                         // get the gcm_regIds of SuperAdmin and branch admin to notify
-                        const [nrows, nfields] = await connection.execute('SELECT gcm_regId FROM `user` where role IN ("SuperAdmin") or (role="Admin" AND branch = ?)', [ rows1[0].branch ],);
+                        // const [nrows, nfields] = await connection.execute('SELECT gcm_regId FROM `user` where role IN ("SuperAdmin") or (role="Admin" AND branch LIKE %'+"-"+rows1[0].branch+"-"+'%');
+                        // console.log('SELECT gcm_regId FROM `user` where role IN ("SuperAdmin") or (role="Admin" AND branch LIKE "%-'+rows1[0].branch+'-%"');
+                        const [nrows, nfields] = await connection.execute('SELECT gcm_regId FROM `user` where role IN ("SuperAdmin") or (role="Admin" AND branch LIKE "%-'+rows1[0].branch+'-%")');
+                        // const [nrows, nfields] = await connection.execute(`SELECT gcm_regId FROM user where role IN ("SuperAdmin") or (role="Admin" AND branch = %?%)`, [ "-"+rows1[0].branch+"-" ],);
+                        // const [nrows, nfields] = await connection.execute('SELECT gcm_regId FROM `user` where role IN ("SuperAdmin") or (role="Admin" AND branch LIKE %?%)', [ rows1[0].department+"-"+rows1[0].branch+"-"+rows1[0].year ],);
 
                         // get the gcm_regIds list from the query result
                         var gcmIds = [];
