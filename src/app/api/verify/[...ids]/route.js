@@ -76,25 +76,28 @@ export async function GET(request,{params}) {
                     // else create new session
                     var sessionExists;
                     if(params.ids[4]!= null){
+                        console.log('Check');
                         sessionExists = 'SELECT * FROM user_sessions WHERE collegeId=? and app = ?'
                         const [rowsSession, fieldsSession] = await connection.execute(sessionExists, [ params.ids[1], params.ids[4]]);
 
                         // check if there are already user sessions
                         if(rowsSession.length > 0){
+                            console.log('Check1');
                             const updateSession = 'UPDATE user_sessions SET isLoggedIn = isLoggedIn + 1, lastActivityTime = ? WHERE collegeId=? and app = ?'
                             const [rowsUpdateSession, fieldsUpdateSession] = await connection.execute(updateSession, [ currentDate, params.ids[1], params.ids[4]]);
                         }
                         else {
+                            console.log('Check2');
                             // create query for insert
-                            const q1 = 'INSERT INTO user_sessions (collegeId, deviceId, sessionToken, isLoggedIn, lastActivityTime, app) VALUES ( ?, ?, ?, ?, ?, ?);';
+                            const q1 = 'INSERT INTO user_sessions (collegeId, deviceId, sessionToken, isLoggedIn, lastActivityTime, app) VALUES ( ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE isLoggedIn = isLoggedIn + 1, lastActivityTime = "'+currentDate+'";';
                             // create new request
-                            const [rows1, fields] = await connection.execute(q1, [ params.ids[1], params.ids[3], randomUUID(), 1, currentDate, params.ids[4]]);
+                            const [rows1, fields] = await connection.execute(q1, [ params.ids[1], params.ids[3], randomUUID(), 1, currentDate, 'SMART']);
                         }
                     }
                     else {
                         // const sessionExists = 'SELECT * FROM user_sessions WHERE collegeId=?'
                         // const [rowsSession, fieldsSession] = await connection.execute(sessionExists, [ params.ids[1]]);
-
+                        console.log('Check3');
                         // create query for insert
                         const q1 = 'INSERT INTO user_sessions (collegeId, deviceId, sessionToken, isLoggedIn, lastActivityTime, app) VALUES ( ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE isLoggedIn = isLoggedIn + 1, lastActivityTime = "'+currentDate+'";';
                         // create new request
