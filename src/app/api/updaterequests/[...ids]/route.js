@@ -39,7 +39,7 @@ export async function GET(request,{params}) {
     }
 
     // current date time for updating
-    // var currentDate =  dayjs(new Date(Date.now())).format('YYYY-MM-DD HH:mm:ss');
+    var currentDate =  dayjs(new Date(Date.now())).format('YYYY-MM-DD HH:mm:ss');
     
     try{
 
@@ -493,10 +493,14 @@ export async function GET(request,{params}) {
                                     
                                 // check if student tries to checkout way before their checkout time
                                 // also the checkout should be before the requestTo
-                                if(dayjs(params.ids[2]).diff(dayjs(rows[0].requestFrom), 'minute') >= -60 && dayjs(params.ids[2]).isBefore(dayjs(rows[0].requestTo))){
+                                // console.log(currentDate);
+                                // console.log(dayjs(currentDate));
+                                if(dayjs(currentDate).diff(dayjs(rows[0].requestFrom), 'minute') >= -60 && dayjs(currentDate).isBefore(dayjs(rows[0].requestTo))){
+                                // if(dayjs(params.ids[2]).diff(dayjs(rows[0].requestFrom), 'minute') >= -60 && dayjs(params.ids[2]).isBefore(dayjs(rows[0].requestTo))){
 
                                     // mark as InOuting
-                                    const [rows1, fields] = await connection.execute('UPDATE request SET isStudentOut = 1, requestStatus ="InOuting", checkoutOn = ? WHERE requestId = ? AND isOpen = 1 AND checkoutOn IS NULL',[params.ids[2],rows[0].requestId]);
+                                    const [rows1, fields] = await connection.execute('UPDATE request SET isStudentOut = 1, requestStatus ="InOuting", checkoutOn = ? WHERE requestId = ? AND isOpen = 1 AND checkoutOn IS NULL',[currentDate,rows[0].requestId]);
+                                    // const [rows1, fields] = await connection.execute('UPDATE request SET isStudentOut = 1, requestStatus ="InOuting", checkoutOn = ? WHERE requestId = ? AND isOpen = 1 AND checkoutOn IS NULL',[params.ids[2],rows[0].requestId]);
                                     
                                         // check if the request is updated. 
                                         // It will not get updated incase Any Admin has cancelled the request before checkout
@@ -509,7 +513,8 @@ export async function GET(request,{params}) {
                                             // check if its the first day of day pass and update the status
                                             if(rows[0].requestType == 4){
                                                 // update checkoutOn for the first time
-                                                const [passRows, passFields] = await connection.execute(`UPDATE passrequest SET requestStatus ="InOuting", checkoutOn = ? WHERE requestId = ? AND DATE(requestFrom) = ? AND checkoutOn IS NULL`,[params.ids[2],rows[0].requestId,dayjs(params.ids[2]).format('YYYY-MM-DD')]);
+                                                const [passRows, passFields] = await connection.execute(`UPDATE passrequest SET requestStatus ="InOuting", checkoutOn = ? WHERE requestId = ? AND DATE(requestFrom) = ? AND checkoutOn IS NULL`,[currentDate,rows[0].requestId,dayjs(params.ids[2]).format('YYYY-MM-DD')]);
+                                                // const [passRows, passFields] = await connection.execute(`UPDATE passrequest SET requestStatus ="InOuting", checkoutOn = ? WHERE requestId = ? AND DATE(requestFrom) = ? AND checkoutOn IS NULL`,[params.ids[2],rows[0].requestId,dayjs(params.ids[2]).format('YYYY-MM-DD')]);
                                                 // const [passRows, passFields] = await connection.execute('UPDATE passrequest SET requestStatus ="InOuting", checkoutOn = ? WHERE requestId = ? AND requestFrom = ? AND checkoutOn IS NULL',[params.ids[2],rows[0].requestId, dayjs(params.ids[2]).format('hh:mm A, DD-MM-YY')]);
 
                                                 if(passRows.affectedRows == 0){
@@ -534,13 +539,13 @@ export async function GET(request,{params}) {
                                 else {
                                     // return Response.json({status: 199, message:'Check out is invalid. Contact admin!'}, {status: 200})
                                     // student is not allowed to checkout way before. Show warning.
-                                    return Response.json({status: 198, message:'Not allowed. Your checkout time is at'+ rows[0].requestTo}, {status: 200})
+                                    return Response.json({status: 198, message:'Not allowed. Your checkout time is at '+ rows[0].requestFrom}, {status: 200})
                                 }
                                         
                                 }
                                 else {
                                     // student is not allowed to checkout way before. Show warning.
-                                    return Response.json({status: 198, message:'Not allowed. Your checkout time is at'+ rows[0].requestTo}, {status: 200})
+                                    return Response.json({status: 198, message:'Not allowed. Your checkout time is at '+ rows[0].requestFrom}, {status: 200})
                                 }
                             }
                             else {
