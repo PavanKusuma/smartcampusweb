@@ -90,8 +90,10 @@ export async function GET(request,{params}) {
                         // get the gcm_regIds of SuperAdmin and branch admin to notify
                         // const [nrows, nfields] = await connection.execute('SELECT gcm_regId FROM `user` where role IN ("SuperAdmin") or (role="Admin" AND branch LIKE %'+"-"+rows1[0].branch+"-"+'%');
                         // console.log('SELECT gcm_regId FROM `user` where role IN ("SuperAdmin") or (role="Admin" AND branch LIKE "%-'+rows1[0].branch+'-%"');
-                        const [nrows, nfields] = await connection.execute('SELECT gcm_regId FROM `user` where role IN ("SuperAdmin") or (role="Admin" AND branch LIKE "%-'+rows1[0].branch+'-%")');
-                        // const [nrows, nfields] = await connection.execute(`SELECT gcm_regId FROM user where role IN ("SuperAdmin") or (role="Admin" AND branch = %?%)`, [ "-"+rows1[0].branch+"-" ],);
+                        // console.log('SELECT gcm_regId FROM `user` where role IN ("SuperAdmin") or (role="Admin" AND branch LIKE "%'+rows1[0].department+'-'+rows1[0].branch+'-'+rows1[0].year+'%")');
+                        const [nrows, nfields] = await connection.execute('SELECT gcm_regId FROM `user` where role IN ("SuperAdmin") or (role="Admin" AND branch LIKE "%'+rows1[0].department+'-'+rows1[0].branch+'-'+rows1[0].year+'%")');
+                        // const [nrows, nfields] = await connection.execute('SELECT gcm_regId FROM `user` where role IN ("SuperAdmin") or (role="Admin" AND branch LIKE "%-'+rows1[0].branch+'-%")');
+                        
                         // const [nrows, nfields] = await connection.execute('SELECT gcm_regId FROM `user` where role IN ("SuperAdmin") or (role="Admin" AND branch LIKE %?%)', [ rows1[0].department+"-"+rows1[0].branch+"-"+rows1[0].year ],);
 
                         // get the gcm_regIds list from the query result
