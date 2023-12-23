@@ -41,7 +41,7 @@ export async function GET(request,{params}) {
                 try {
 
 
-                  if(dayjs(new Date(Date.now())).isBefore( dayjs(params.ids[6]))){
+                  // if(dayjs(new Date(Date.now())).isBefore( dayjs(params.ids[6]))){
 
                     // check if any active request exists for the provided collegeId
                     const q0 = 'select collegeId from request where collegeId="'+params.ids[4]+'" and isOpen = 1';
@@ -129,11 +129,11 @@ export async function GET(request,{params}) {
                       return Response.json({status: 201, message:'Close active requests before raising new one!'}, {status: 201})
                     }
 
-                  }
-                  else {
-                    // return message to inform to select before time
-                    return Response.json({status: 199, message:'Date or time of this request is backdated!'}, {status: 201})
-                  }
+                  // }
+                  // else {
+                  //   // return message to inform to select before time
+                  //   return Response.json({status: 199, message:'Date or time of this request is backdated!'}, {status: 201})
+                  // }
 
                     
                 } catch (error) {
