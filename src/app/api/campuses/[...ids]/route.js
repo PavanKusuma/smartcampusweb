@@ -28,7 +28,7 @@ export async function GET(request,{params}) {
             }
             else{
                 
-              const [rows, fields] = await connection.execute('SELECT campusId as campusId, campusName as campusName, courses as courses, departments as departments FROM campus where campusId=? order by modifiedDate DESC',[params.ids[1]]);
+              const [rows, fields] = await connection.execute('SELECT campusId as campusId, campusName as campusName, courses as courses, departments as departments FROM campus where campusId=? order by modifiedDate DESC',[params.ids[2]]);
               connection.release();
 
               
