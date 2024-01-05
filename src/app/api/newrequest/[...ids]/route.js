@@ -40,7 +40,11 @@ export async function GET(request,{params}) {
 
                 try {
 
-
+                  // Query the current date and time from MySQL
+                  const [results, fields1] = await connection.execute('SELECT NOW()',[]);
+                  var sqlTime = results[0]['NOW()'];
+                  
+                  if(dayjs(sqlTime).isBefore( dayjs(params.ids[6]))){
                   // if(dayjs(new Date(Date.now())).isBefore( dayjs(params.ids[6]))){
 
                     // check if any active request exists for the provided collegeId
@@ -128,12 +132,12 @@ export async function GET(request,{params}) {
                       // return message to close active requests
                       return Response.json({status: 201, message:'Close active requests before raising new one!'}, {status: 201})
                     }
-
-                  // }
-                  // else {
-                  //   // return message to inform to select before time
-                  //   return Response.json({status: 199, message:'Date or time of this request is backdated!'}, {status: 201})
-                  // }
+                  }
+                  else {
+                    // message to notify the request is in the past date and time
+                    return Response.json({status: 199, message:'Your checkout date and time is in past. Update to future time!'}, {status: 201})
+                    
+                  }
 
                     
                 } catch (error) {
